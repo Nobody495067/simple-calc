@@ -7,7 +7,7 @@ const art = JSON.parse(read("game-art-manifest.json")) as Record<string, string 
 
 describe("Four requested library additions", () => {
   it("preserves the current four additions after the existing library", () => {
-    expect(games).toHaveLength(975);
+    expect(games).toHaveLength(976);
     expect(games.slice(-4)).toEqual([
       "https://master234534567.github.io/calc/gamelist/Plague-Inc/index.html",
       "./additions/pokerogue/index.html",
@@ -18,7 +18,7 @@ describe("Four requested library additions", () => {
   });
 
   it("replaces only the former Grand V slot with the official PokéRogue embed", () => {
-    expect(games[972]).toBe("./additions/pokerogue/index.html");
+    expect(games[973]).toBe("./additions/pokerogue/index.html");
     expect(games).not.toContain("./additions/grand-v.html");
     expect(games).not.toContain("./additions/mythos/index.html");
   });
