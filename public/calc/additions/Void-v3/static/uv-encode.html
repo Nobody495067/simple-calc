@@ -109,7 +109,7 @@
                 if (!uvServiceWorkerActive) {
                     // Register the UV service worker
                     await navigator.serviceWorker.register('/uv/sw.js', {
-                        scope: '/uv/',
+                        scope: '/',
                         updateViaCache: 'none'
                     });
                     
