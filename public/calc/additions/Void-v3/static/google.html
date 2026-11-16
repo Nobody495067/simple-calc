@@ -432,6 +432,76 @@
     <!-- Essential UV Scripts -->
     <script src="uv/uv.bundle.js"></script>
     <script src="uv/uv.config.js"></script>
+    
+    <!-- VOID_UV_ROOT_REGISTRATION -->
+    <script>
+    (function () {
+      'use strict';
+
+      window.__voidUVReady = false;
+
+      async function initializeVoidUV() {
+        if (!('serviceWorker' in navigator)) {
+          throw new Error('This browser does not support service workers.');
+        }
+
+        if (!window.isSecureContext) {
+          throw new Error('Service workers require a secure context.');
+        }
+
+        console.log('[VOID UV] Registering root service worker...');
+
+        const registration = await navigator.serviceWorker.register(
+          '/uv/sw.js',
+          {
+            scope: '/',
+            updateViaCache: 'none'
+          }
+        );
+
+        console.log('[VOID UV] Registration:', registration);
+        console.log('[VOID UV] Scope:', registration.scope);
+
+        await navigator.serviceWorker.ready;
+
+        console.log('[VOID UV] Worker is active.');
+
+        if (!navigator.serviceWorker.controller) {
+          const reloadKey = 'void_uv_root_reload';
+
+          if (!sessionStorage.getItem(reloadKey)) {
+            sessionStorage.setItem(reloadKey, '1');
+            console.log('[VOID UV] Reloading once to obtain controller...');
+            window.location.reload();
+            return;
+          }
+
+          console.error(
+            '[VOID UV] Worker is active but does not control this page.'
+          );
+
+          return;
+        }
+
+        sessionStorage.removeItem('void_uv_root_reload');
+
+        window.__voidUVReady = true;
+
+        console.log(
+          '[VOID UV] SUCCESS: Page is controlled by:',
+          navigator.serviceWorker.controller.scriptURL
+        );
+
+        window.dispatchEvent(new Event('void-uv-ready'));
+      }
+
+      window.__voidUVRegistration = initializeVoidUV().catch(error => {
+        console.error('[VOID UV] Registration failed:', error);
+        window.__voidUVReady = false;
+      });
+    })();
+    </script>
+
 
     <!-- Configure UV to inject our CSS -->
     <script>
