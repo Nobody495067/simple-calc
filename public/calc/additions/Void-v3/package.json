@@ -18,7 +18,6 @@
     "express": "^4.21.2",
     "gopd": "^1.2.0",
     "http": "^0.0.1-security",
-    "node": "^18.20.3",
     "particles.js": "^2.0.0",
     "socket.io": "^4.8.1"
   },
