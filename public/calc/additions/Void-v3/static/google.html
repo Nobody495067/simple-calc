@@ -452,7 +452,23 @@
                         html = html.replace('<body', '<body class="hide-ddg-search"');
                         
                         // Add our style to the head
-                        html = html.replace('</head>', style + '</head>');
+                        html = html.replace('
+<script>
+window.loadHTML = async function(url, elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(response.status);
+        element.innerHTML = await response.text();
+    } catch (error) {
+        console.error("Failed to load " + url, error);
+    }
+};
+</script>
+
+</head>', style + '</head>');
                         
                         // Try to also use direct HTML manipulation to remove the header element
                         // Target the exact structure the user provided
@@ -508,16 +524,16 @@
             <!-- Footer -->
             <div class="footer">
                 <button onclick="reloadPage()" title="Reload">
-                    <img src="/img/nav/reload.png" alt="Reload">
+                    <span aria-label="Reload">↻</span>
                 </button>
                 <button onclick="toggleFullScreen()" title="Fullscreen">
                     <img src="/img/nav/fullscreenbutton.png" alt="Fullscreen">
                 </button>
                 <button onclick="goBack()" title="Back">
-                    <img src="/img/nav/back.png" alt="Go Back" onerror="this.src='/img/nav/reload.png'">
+                    <span aria-label="Go Back">←</span>
                 </button>
                 <button onclick="goForward()" title="Forward">
-                    <img src="/img/nav/forward.png" alt="Go Forward" onerror="this.src='/img/nav/reload.png'">
+                    <span aria-label="Go Forward">→</span>
                 </button>
             </div>
         </div>

@@ -84,6 +84,22 @@
     <!-- UV things -->
     <script src="uv/uv.bundle.js"></script>
     <script src="uv/uv.config.js"></script>
+
+<script>
+window.loadHTML = async function(url, elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(response.status);
+        element.innerHTML = await response.text();
+    } catch (error) {
+        console.error("Failed to load " + url, error);
+    }
+};
+</script>
+
 </head>
 
 <body>

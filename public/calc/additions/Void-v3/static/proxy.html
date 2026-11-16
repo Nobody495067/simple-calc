@@ -259,6 +259,22 @@ document.addEventListener('DOMContentLoaded', function() {
       opacity: 1;
     }
   </style>
+
+<script>
+window.loadHTML = async function(url, elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(response.status);
+        element.innerHTML = await response.text();
+    } catch (error) {
+        console.error("Failed to load " + url, error);
+    }
+};
+</script>
+
 </head>
 <body>
   <div id="header"></div>
@@ -283,8 +299,14 @@ document.addEventListener('DOMContentLoaded', function() {
   <!-- UPDATED SEARCH HANDLER FUNCTIONS -->
   <script>
     // Load header and footer
-    loadHTML("/assets/html/header.html", "header")
-    loadHTML("/assets/html/footer.html", "footer")
+    async function loadHTML(url, elementId) {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Could not load " + url);
+        document.getElementById(elementId).innerHTML = await response.text();
+    }
+
+    loadHTML("assets/html/header.html", "header")
+    loadHTML("assets/html/footer.html", "footer")
 
     function parseSearch(str) {
       if (str.includes("http") && str.includes(":")) {
@@ -301,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let url = parseSearch(document.getElementById("uvsearch").value);
         let encodedUrl = __uv$config.prefix + __uv$config.encodeUrl(url);
        
-        location.href = "/google.html?url=" + encodeURIComponent(encodedUrl);
+        location.href = "google.html?url=" + encodeURIComponent(encodedUrl);
         e.preventDefault();
       }
     }
