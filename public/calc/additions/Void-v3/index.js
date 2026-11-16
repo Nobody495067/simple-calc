@@ -129,6 +129,13 @@ function getFileHash(filePath) {
   return fileHashes[hashedPath] || CACHE_BUSTER;
 }
 
+// ==== ULTRAVIOLET SERVICE WORKER (HIGH PRIORITY) ====
+app.get('/sw.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+  res.sendFile(path.join(dirname, 'static/uv/sw.js'));
+});
+
 // ==== GLOBAL CACHE-BUSTING MIDDLEWARE ====
 // This middleware sets appropriate cache headers for all responses
 app.use((req, res, next) => {
@@ -433,10 +440,6 @@ app.get("/", function(req, res) {
   res.sendFile(path.join(dirname, "static/index.html"));
 });
 
-app.get('/sw.js', (req, res) => {
-    res.type('application/javascript');
-    res.sendFile(path.join(dirname, 'static/uv/sw.js'));
-});
 
 // ==== STATIC FILES FALLBACK ====
 // Only used if our optimized handler doesn't catch something
