@@ -22,21 +22,17 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Install Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.4.4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - uses: actions/configure-pages@v5
         id: pages
-      - run: bun install --frozen-lockfile
+      - run: npm ci
       # Use the package's Vitest script, not Bun's incompatible native test runner.
       - name: Run calculator and library tests (Vitest)
-        run: bun run test
+        run: npm test
       - name: Build static calculator and library
-        run: bun run build
+        run: npm run build
         env:
           GITHUB_PAGES_BASE: ${{ steps.pages.outputs.base_path }}
       - name: Check static export
