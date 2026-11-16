@@ -451,8 +451,7 @@
 
         console.log('[VOID UV] Registering root service worker...');
 
-        const registration = await navigator.serviceWorker.register(
-          '/uv/sw.js',
+        const registration = await navigator.serviceWorker.register('/sw.js',
           {
             scope: '/',
             updateViaCache: 'none'

@@ -432,9 +432,9 @@ app.get("/", function(req, res) {
   res.sendFile(path.join(dirname, "static/index.html"));
 });
 
-app.get('/uv/sw.js', (req, res) => {
-  res.setHeader('Service-Worker-Allowed', '/');
-  res.sendFile(path.join(dirname, 'static/uv/sw.js'));
+app.get('/sw.js', (req, res) => {
+    res.type('application/javascript');
+    res.sendFile(path.join(dirname, 'static/uv/sw.js'));
 });
 
 // ==== STATIC FILES FALLBACK ====

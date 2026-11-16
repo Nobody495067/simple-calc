@@ -1,8 +1,8 @@
 /*global UVServiceWorker,__uv$config*/
-importScripts('uv.bundle.js');
-importScripts('uv.config.js');
-importScripts('encode.js'); // Load enhanced encoder
-importScripts(__uv$config.sw || 'uv.sw.js');
+importScripts('/uv/uv.bundle.js');
+importScripts('/uv/uv.config.js');
+importScripts('/uv/encode.js'); // Load enhanced encoder
+importScripts(__uv$config.sw || '/uv/uv.sw.js');
 
 const sw = new UVServiceWorker();
 
