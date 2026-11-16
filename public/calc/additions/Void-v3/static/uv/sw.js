@@ -1332,6 +1332,9 @@ async function injectGameFixes(response, url) {
 // Enhanced fetch with comprehensive slow device optimizations
 async function enhancedFetch(event, retries = CONFIG.RETRY_COUNT) {
   const url = new URL(event.request.url).toString();
+  if (new URL(url).pathname.startsWith("/uv/service/")) return await sw.fetch(event);
+
+  const url = new URL(event.request.url).toString();
   
   if (shouldBypassUrl(url)) {
     return await sw.fetch(event);
