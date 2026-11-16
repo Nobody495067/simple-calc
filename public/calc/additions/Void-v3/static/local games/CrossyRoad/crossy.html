@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Void Games Mines</title>
+    <link rel="shortcut icon" href="./assets/favicon.png" type="image/png">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Pro Display', Roboto, Helvetica, Arial, sans-serif;
+            overflow-x: hidden;
+            font-weight: 300;
+            background-attachment: fixed;
+        }
+
+        /* Animated Background */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at top left, rgba(40,40,40,0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at top right, rgba(60,60,60,0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom left, rgba(30,30,30,0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(50,50,50,0.2) 0%, transparent 50%),
+                linear-gradient(135deg, #000000 0%, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%, #000000 100%);
+            background-size: 200% 200%, 200% 200%, 200% 200%, 200% 200%, 100% 100%;
+            animation: gentleFlow 12s ease-in-out infinite;
+            z-index: -2;
+        }
+
+        .matrix-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 40%, rgba(255,255,255,0.02) 0%, transparent 60%),
+                radial-gradient(circle at 70% 80%, rgba(255,255,255,0.015) 0%, transparent 60%),
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.01) 0%, transparent 60%);
+            animation: floatingLights 15s ease-in-out infinite;
+        }
+
+        .matrix-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                0deg,
+                transparent 0%,
+                rgba(255,255,255,0.005) 50%,
+                transparent 100%
+            );
+            animation: subtleShimmer 8s ease-in-out infinite;
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 40%, transparent 70%);
+            border-radius: 50%;
+            animation: elegantFloat 18s infinite ease-in-out;
+            filter: blur(1px);
+            opacity: 0.6;
+        }
+
+        /* Main Container */
+        .game-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 0 1rem;
+        }
+
+        /* Header */
+        .header {
+            padding: 2rem 3rem;
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%),
+                rgba(0,0,0,0.4);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            position: relative;
+            box-shadow: 
+                0 1px 40px rgba(0,0,0,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                inset 0 -1px 0 rgba(255,255,255,0.02);
+            flex-shrink: 0;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: gentleGlow 6s ease-in-out infinite;
+        }
+
+        .nav-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 500;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 30%, #e8e8e8 70%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            opacity: 0;
+            animation: logoShine 4s ease-in-out infinite;
+        }
+
+        .coin-display {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%),
+                rgba(0,0,0,0.2);
+            padding: 0.9rem 1.6rem;
+            border-radius: 25px;
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.15),
+                inset 0 1px 0 rgba(255,255,255,0.15),
+                inset 0 -1px 0 rgba(0,0,0,0.1);
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .coin-display:hover {
+            transform: translateY(-1px);
+            box-shadow: 
+                0 12px 40px rgba(0,0,0,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.2),
+                inset 0 -1px 0 rgba(0,0,0,0.1);
+        }
+
+        .coin-icon {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFC107 30%, #FF8F00 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 4px 12px rgba(255,215,0,0.25),
+                inset 0 1px 0 rgba(255,255,255,0.4),
+                inset 0 -1px 0 rgba(0,0,0,0.1);
+            animation: coinPulse 4s ease-in-out infinite;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .coin-icon::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+            border-radius: 50%;
+        }
+
+        .earnings-display {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            background: 
+                linear-gradient(135deg, rgba(76, 175, 80, 0.12) 0%, rgba(76, 175, 80, 0.06) 100%),
+                rgba(0,0,0,0.2);
+            padding: 0.9rem 1.6rem;
+            border-radius: 25px;
+            border: 1px solid rgba(76, 175, 80, 0.12);
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.15),
+                inset 0 1px 0 rgba(76, 175, 80, 0.15),
+                inset 0 -1px 0 rgba(0,0,0,0.1);
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .earnings-icon {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 4px 12px rgba(76, 175, 80, 0.25),
+                inset 0 1px 0 rgba(255,255,255,0.4),
+                inset 0 -1px 0 rgba(0,0,0,0.1);
+            animation: coinPulse 4s ease-in-out infinite;
+            position: relative;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .earnings-icon::after {
+            content: '+';
+        }
+
+        /* Main Content - Reduce padding to give more space to game */
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            position: relative;
+            min-height: 0;
+            max-width: none;
+            margin: 0;
+            width: 100%;
+        }
+
+        /* Game Container - MUCH larger to take up most of the screen */
+        .game-container-inner {
+            width: 98%;
+            max-width: none;
+            height: 85vh;
+            min-height: 800px;
+            max-height: none;
+            animation: elegantEntrance 1.8s cubic-bezier(0.19, 1, 0.22, 1);
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%),
+                rgba(0,0,0,0.3);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(40px) saturate(180%);
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.1),
+                inset 0 -1px 0 rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%),
+                rgba(0,0,0,0.4);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(40px) saturate(180%);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 30%, #e8e8e8 70%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .game-board {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%),
+                rgba(0,0,0,0.2);
+            padding: 4rem;
+        }
+
+        /* Mines Grid - Much larger for big screen utilization */
+        .mines-grid {
+            display: grid;
+            gap: 15px;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            z-index: 10;
+        }
+
+        .grid-24 {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .grid-44 {
+            grid-template-columns: repeat(8, 1fr);
+            gap: 12px;
+        }
+
+        .grid-64 {
+            grid-template-columns: repeat(8, 1fr);
+            gap: 10px;
+        }
+
+        /* Mine cells - Much larger for big screen */
+        .mine-cell {
+            aspect-ratio: 1/1;
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%),
+                rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            position: relative;
+            z-index: 20;
+            user-select: none;
+            min-height: 70px;
+            min-width: 70px;
+            backdrop-filter: blur(20px) saturate(150%);
+            box-shadow: 
+                0 4px 16px rgba(0,0,0,0.15),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .mine-cell:hover {
+            transform: scale(1.05);
+            box-shadow: 
+                0 8px 24px rgba(0,0,0,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.25);
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%),
+                rgba(0,0,0,0.3);
+        }
+
+        .mine-cell.revealed-safe {
+            background: 
+                linear-gradient(135deg, rgba(76, 175, 80, 0.2) 0%, rgba(76, 175, 80, 0.1) 100%),
+                rgba(0,0,0,0.4);
+            border-color: rgba(76, 175, 80, 0.4);
+            box-shadow: 
+                0 8px 24px rgba(76, 175, 80, 0.15),
+                inset 0 1px 0 rgba(76, 175, 80, 0.3);
+            cursor: default;
+            animation: revealSafe 0.5s ease-out;
+        }
+
+        .mine-cell.revealed-bomb {
+            background: 
+                linear-gradient(135deg, rgba(244, 67, 54, 0.2) 0%, rgba(244, 67, 54, 0.1) 100%),
+                rgba(0,0,0,0.4);
+            border-color: rgba(244, 67, 54, 0.4);
+            box-shadow: 
+                0 8px 24px rgba(244, 67, 54, 0.15),
+                inset 0 1px 0 rgba(244, 67, 54, 0.3);
+            cursor: default;
+            animation: revealBomb 0.5s ease-out;
+        }
+
+        .game-info {
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%),
+                rgba(0,0,0,0.3);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 1.5rem 2rem;
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            max-width: 90%;
+            backdrop-filter: blur(20px) saturate(150%);
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.15),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        /* Overlays */
+        .game-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: 
+                linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.8) 100%);
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(20px) saturate(150%);
+        }
+
+        .game-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .overlay-content {
+            text-align: center;
+            padding: 2.5rem;
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%),
+                rgba(0,0,0,0.6);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(40px) saturate(180%);
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+            max-width: 90%;
+            animation: floatEffect 4s infinite ease-in-out;
+        }
+
+        .overlay-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 30%, #e8e8e8 70%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 500;
+        }
+
+        .overlay-title.win {
+            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 50%, #4CAF50 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .overlay-title.lose {
+            background: linear-gradient(135deg, #f44336 0%, #E91E63 50%, #f44336 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .overlay-message {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.6;
+        }
+
+        .option-selector {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .option-btn {
+            padding: 1rem 2rem;
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.04) 100%),
+                rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px) saturate(150%);
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.15),
+                inset 0 1px 0 rgba(255,255,255,0.15),
+                inset 0 -1px 0 rgba(0,0,0,0.1);
+            min-width: 150px;
+        }
+
+        .option-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .option-btn:hover::before {
+            left: 100%;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 
+                0 16px 48px rgba(0,0,0,0.25),
+                inset 0 1px 0 rgba(255,255,255,0.2),
+                inset 0 -1px 0 rgba(0,0,0,0.1);
+            border-color: rgba(255,255,255,0.25);
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%),
+                rgba(0,0,0,0.1);
+        }
+
+        .option-btn.selected {
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%),
+                rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 
+                0 12px 40px rgba(0,0,0,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.25);
+        }
+
+        .bomb-count-selector {
+            margin: 1.5rem 0;
+        }
+
+        .bomb-count-display {
+            font-size: 1.3rem;
+            color: #ff9800;
+            margin: 0.5rem 0;
+            font-weight: 500;
+        }
+
+        .reward-display {
+            font-size: 1.1rem;
+            color: #4caf50;
+            margin: 1rem 0;
+            font-weight: 500;
+        }
+
+        .bomb-slider-container {
+            width: 100%;
+            padding: 0 1rem;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .bomb-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #2E7D32, #f44336);
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .bomb-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .bomb-count-controls {
+            display: flex;
+            justify-content: space-between;
+            max-width: 300px;
+            margin: 0.5rem auto;
+        }
+
+        .bomb-count-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.04) 100%),
+                rgba(0,0,0,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.15);
+            cursor: pointer;
+            backdrop-filter: blur(20px) saturate(150%);
+            transition: all 0.2s;
+        }
+
+        .bomb-count-btn:hover {
+            transform: scale(1.1);
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%),
+                rgba(0,0,0,0.1);
+        }
+
+        .game-btn {
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.04) 100%),
+                rgba(0,0,0,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(20px) saturate(150%);
+            transition: all 0.3s ease;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.15),
+                inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+
+        .game-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+            transition: all 0.6s ease;
+        }
+
+        .game-btn:hover::before {
+            left: 100%;
+        }
+
+        .game-btn:hover {
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%),
+                rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+            box-shadow: 
+                0 16px 48px rgba(0,0,0,0.25),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+
+        .cashout-btn {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            background: 
+                linear-gradient(135deg, rgba(76, 175, 80, 0.2) 0%, rgba(76, 175, 80, 0.1) 100%),
+                rgba(0,0,0,0.2);
+            color: #fff;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(20px) saturate(150%);
+            transition: all 0.3s ease;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 1rem;
+            box-shadow: 
+                0 8px 32px rgba(76, 175, 80, 0.15),
+                inset 0 1px 0 rgba(76, 175, 80, 0.2);
+        }
+
+        .cashout-btn:hover {
+            background: 
+                linear-gradient(135deg, rgba(76, 175, 80, 0.3) 0%, rgba(76, 175, 80, 0.15) 100%),
+                rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+            box-shadow: 
+                0 16px 48px rgba(76, 175, 80, 0.25),
+                inset 0 1px 0 rgba(76, 175, 80, 0.3);
+        }
+
+        .cashout-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: 
+                linear-gradient(135deg, rgba(100,100,100,0.1) 0%, rgba(100,100,100,0.05) 100%),
+                rgba(0,0,0,0.2);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%),
+                rgba(0,0,0,0.4);
+            border-radius: 0 0 20px 20px;
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%),
+                rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(20px) saturate(150%);
+        }
+
+        .back-btn:hover {
+            color: #fff;
+            border-color: rgba(255,255,255,0.25);
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%),
+                rgba(0,0,0,0.2);
+        }
+
+        /* Animations */
+        @keyframes elegantFloat {
+            0% { 
+                transform: translateY(100vh) rotate(0deg) scale(0.5); 
+                opacity: 0; 
+            }
+            5% { 
+                opacity: 0.3; 
+                transform: translateY(95vh) rotate(18deg) scale(0.8);
+            }
+            15% { 
+                opacity: 0.6; 
+                transform: translateY(85vh) rotate(45deg) scale(1);
+            }
+            85% { 
+                opacity: 0.6; 
+                transform: translateY(15vh) rotate(315deg) scale(1);
+            }
+            95% { 
+                opacity: 0.3; 
+                transform: translateY(5vh) rotate(342deg) scale(0.8);
+            }
+            100% { 
+                transform: translateY(-5vh) rotate(360deg) scale(0.5); 
+                opacity: 0; 
+            }
+        }
+
+        @keyframes gentleFlow {
+            0%, 100% { 
+                background-position: 0% 50%, 0% 50%, 0% 50%, 0% 50%, 0% 0%; 
+                transform: scale(1);
+            }
+            25% { 
+                background-position: 25% 75%, 75% 25%, 25% 25%, 75% 75%, 25% 25%; 
+                transform: scale(1.02);
+            }
+            50% { 
+                background-position: 100% 50%, 50% 100%, 100% 100%, 50% 50%, 50% 50%; 
+                transform: scale(1);
+            }
+            75% { 
+                background-position: 75% 25%, 25% 75%, 75% 75%, 25% 25%, 75% 75%; 
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes floatingLights {
+            0%, 100% { 
+                background-position: 30% 40%, 70% 80%, 20% 80%; 
+                opacity: 0.5;
+            }
+            33% { 
+                background-position: 70% 20%, 30% 60%, 80% 40%; 
+                opacity: 0.8;
+            }
+            66% { 
+                background-position: 50% 90%, 90% 30%, 10% 70%; 
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes subtleShimmer {
+            0%, 100% { 
+                transform: translateX(-100%) skewX(-15deg); 
+                opacity: 0; 
+            }
+            50% { 
+                transform: translateX(100%) skewX(-15deg); 
+                opacity: 0.3; 
+            }
+        }
+
+        @keyframes gentleGlow {
+            0%, 100% { 
+                opacity: 0.6; 
+                transform: translateX(-50%) scaleX(0.8); 
+            }
+            50% { 
+                opacity: 1; 
+                transform: translateX(-50%) scaleX(1.2); 
+            }
+        }
+
+        @keyframes logoShine {
+            0%, 100% { 
+                opacity: 0; 
+                transform: scaleX(0); 
+            }
+            20%, 80% { 
+                opacity: 0.6; 
+                transform: scaleX(1); 
+            }
+        }
+
+        @keyframes coinPulse {
+            0%, 100% { 
+                transform: scale(1) rotate(0deg); 
+                box-shadow: 0 4px 12px rgba(255,215,0,0.25);
+            }
+            25% { 
+                transform: scale(1.05) rotate(90deg); 
+                box-shadow: 0 6px 18px rgba(255,215,0,0.35);
+            }
+            50% { 
+                transform: scale(1.08) rotate(180deg); 
+                box-shadow: 0 8px 24px rgba(255,215,0,0.4);
+            }
+            75% { 
+                transform: scale(1.05) rotate(270deg); 
+                box-shadow: 0 6px 18px rgba(255,215,0,0.35);
+            }
+        }
+
+        @keyframes elegantEntrance {
+            0% { 
+                transform: translateY(40px) scale(0.95); 
+                opacity: 0; 
+                filter: blur(20px);
+            }
+            50% { 
+                transform: translateY(20px) scale(0.98); 
+                opacity: 0.7; 
+                filter: blur(10px);
+            }
+            100% { 
+                transform: translateY(0) scale(1); 
+                opacity: 1; 
+                filter: blur(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes floatEffect {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes revealSafe {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes revealBomb {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.2); }
+            50% { transform: scale(0.9); }
+            75% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .coin-change {
+            position: absolute;
+            top: -30px;
+            right: 50%;
+            transform: translateX(50%);
+            font-size: 1rem;
+            font-weight: 600;
+            z-index: 1000;
+            pointer-events: none;
+            animation: coinChangeFloat 2s ease-out forwards;
+        }
+
+        .coin-change.positive {
+            color: #4CAF50;
+        }
+
+        .coin-change.negative {
+            color: #f44336;
+        }
+
+        @keyframes coinChangeFloat {
+            0% {
+                opacity: 1;
+                transform: translateX(50%) translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(50%) translateY(-50px);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem 1.5rem;
+            }
+            
+            .logo {
+                font-size: 1.3rem;
+            }
+            
+            .coin-display, .earnings-display {
+                padding: 0.6rem 1rem;
+                gap: 0.6rem;
+            }
+
+            .coin-icon, .earnings-icon {
+                width: 16px;
+                height: 16px;
+            }
+            
+            .main-content {
+                padding: 0.5rem;
+            }
+            
+            .game-container-inner {
+                width: 99%;
+                height: 85vh;
+                min-height: 650px;
+            }
+            
+            .mines-grid {
+                max-width: 600px;
+                gap: 12px;
+            }
+            
+            .mine-cell {
+                min-height: 55px;
+                min-width: 55px;
+                font-size: 2rem;
+            }
+            
+            .overlay-content {
+                padding: 2rem;
+            }
+            
+            .overlay-title {
+                font-size: 1.5rem;
+            }
+
+            .game-board {
+                padding: 2.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-container-inner {
+                width: 99%;
+                height: 85vh;
+                min-height: 600px;
+            }
+            
+            .mines-grid {
+                max-width: 500px;
+                gap: 10px;
+            }
+            
+            .mine-cell {
+                min-height: 45px;
+                min-width: 45px;
+                font-size: 1.8rem;
+            }
+            
+            .option-selector {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .option-btn {
+                min-width: 200px;
+            }
+            
+            .overlay-content {
+                padding: 1.5rem;
+            }
+
+            .game-board {
+                padding: 2rem;
+            }
+
+            .game-info {
+                font-size: 1rem;
+                padding: 1rem 1.5rem;
+            }
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="matrix-bg"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="game-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="nav-row">
+                <div class="logo">Void Mines</div>
+                <div style="display: flex; gap: 1rem;">
+                    <div class="coin-display">
+                        <div class="coin-icon"></div>
+                        <span id="coinDisplay">0</span>
+                    </div>
+                    <div class="earnings-display">
+                        <div class="earnings-icon"></div>
+                        <span id="earningsDisplay">0</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="game-container-inner">
+                <div class="game-header">
+                    <div class="game-title">Mines</div>
+                </div>
+                
+                <div class="game-board">
+                    <div id="mines-game-container" style="display: none; width: 100%; height: 100%; position: relative;">
+                        <div class="game-info" id="game-info">Select squares to reveal. Find safe squares to earn coins!</div>
+                        <div id="mines-grid" class="mines-grid"></div>
+                        <button id="cashout-btn" class="cashout-btn" disabled>Cash Out</button>
+                    </div>
+
+                    <!-- Start Screen Overlay -->
+                    <div class="game-overlay visible" id="start-screen">
+                        <div class="overlay-content">
+                            <h2 class="overlay-title">Mines</h2>
+                            <p class="overlay-message">Select the number of squares to play with:<br>
+                            24 Squares: Higher risk, higher reward<br>
+                            44 Squares: Balanced risk and reward<br>
+                            64 Squares: Lower risk, lower reward</p>
+
+                            <div class="option-selector">
+                                <button class="option-btn selected" data-squares="24" data-base-reward="1">24 Squares</button>
+                                <button class="option-btn" data-squares="44" data-base-reward="1">44 Squares</button>
+                                <button class="option-btn" data-squares="64" data-base-reward="1">64 Squares</button>
+                            </div>
+
+                            <button id="next-btn" class="game-btn">Next</button>
+                        </div>
+                    </div>
+
+                    <!-- Bomb Selection Screen -->
+                    <div class="game-overlay" id="bomb-select-screen">
+                        <div class="overlay-content">
+                            <h2 class="overlay-title">Select Bombs</h2>
+                            <p class="overlay-message">More bombs = higher reward per safe square!<br>
+                            Maximum reward is 1,000,000 coins with almost all bombs.</p>
+
+                            <div class="bomb-count-selector">
+                                <div class="bomb-count-display" id="bomb-count-display">Bombs: 1</div>
+                                <div class="reward-display" id="reward-display">Reward per square: 1 coin</div>
+
+                                <div class="bomb-slider-container">
+                                    <input type="range" min="1" max="23" value="1" class="bomb-slider" id="bomb-slider">
+                                </div>
+
+                                <div class="bomb-count-controls">
+                                    <button class="bomb-count-btn" id="decrease-bomb">-</button>
+                                    <button class="bomb-count-btn" id="increase-bomb">+</button>
+                                </div>
+                            </div>
+
+                            <button id="start-btn" class="game-btn">Start Game (5 coins)</button>
+                        </div>
+                    </div>
+
+                    <!-- Game Over Overlay -->
+                    <div class="game-overlay" id="game-over-screen">
+                        <div class="overlay-content">
+                            <h2 class="overlay-title lose">Bomb Found!</h2>
+                            <p class="overlay-message">You hit a bomb!<br>You revealed <span id="revealed-count">0</span> safe squares<br>Lost: <span id="lost-earnings" style="color: #f44336; font-weight: 600;">0</span> coins</p>
+                            <button id="play-again-btn" class="game-btn">Play Again</button>
+                        </div>
+                    </div>
+
+                    <!-- Cashout Screen Overlay -->
+                    <div class="game-overlay" id="cashout-screen">
+                        <div class="overlay-content">
+                            <h2 class="overlay-title win">Cashed Out!</h2>
+                            <p class="overlay-message">Congratulations!<br>You revealed <span id="cashout-count">0</span> safe squares<br>Won: <span id="cashout-reward" style="color: #4CAF50; font-weight: 600;">0</span> coins</p>
+                            <button id="new-game-btn" class="game-btn">Play Again</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="back-btn" class="back-btn">Back to Games</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase and Game Scripts -->
+    <script type="module">
+        // Firebase imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc, 
+            updateDoc, 
+            setDoc, 
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCkAp_GCGCtw4zv7GgHJOE9GPgIaPEuOvQ",
+            authDomain: "void-games-c8d9e.firebaseapp.com",
+            projectId: "void-games-c8d9e",
+            storageBucket: "void-games-c8d9e.firebasestorage.app",
+            messagingSenderId: "1063089929776",
+            appId: "1:1063089929776:web:8e226a23a4f3ab9c5777f5"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Game variables
+        let currentUser = null;
+        let _coinBalance = 0;
+        let gameActive = false;
+        let currentEarnings = 0;
+        let totalSquares = 24;
+        let bombCount = 1;
+        let revealedSquares = [];
+        let bombPositions = [];
+
+        // DOM elements
+        const coinDisplay = document.getElementById('coinDisplay');
+        const earningsDisplay = document.getElementById('earningsDisplay');
+        const startScreen = document.getElementById('start-screen');
+        const bombSelectScreen = document.getElementById('bomb-select-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const cashoutScreen = document.getElementById('cashout-screen');
+        const minesGameContainer = document.getElementById('mines-game-container');
+        const minesGrid = document.getElementById('mines-grid');
+        const gameInfo = document.getElementById('game-info');
+        const cashoutBtn = document.getElementById('cashout-btn');
+
+        // Initialize particles animation
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            
+            setInterval(() => {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                
+                const size = Math.random() * 8 + 3;
+                particle.style.width = particle.style.height = size + 'px';
+                particle.style.animationDuration = (Math.random() * 8 + 12) + 's';
+                particle.style.animationDelay = (Math.random() * 2) + 's';
+                
+                particlesContainer.appendChild(particle);
+                
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        particle.remove();
+                    }
+                }, 22000);
+            }, 600);
+        }
+
+        // Coin management functions
+        async function loadUserBalance() {
+            if (!currentUser) {
+                _coinBalance = 1000;
+                updateCoinDisplay();
+                return;
+            }
+
+            try {
+                const userRef = doc(db, 'users', currentUser.uid);
+                const userDoc = await getDoc(userRef);
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    _coinBalance = userData.accountBalance || 1000;
+                    updateCoinDisplay();
+                } else {
+                    await setDoc(userRef, { 
+                        accountBalance: 1000,
+                        username: currentUser.displayName || "Player",
+                        email: currentUser.email,
+                        createdAt: serverTimestamp()
+                    });
+                    _coinBalance = 1000;
+                    updateCoinDisplay();
+                }
+            } catch (error) {
+                console.error("Error loading balance:", error);
+                _coinBalance = 1000;
+                updateCoinDisplay();
+            }
+        }
+
+        async function updateCoins(amount, showAnimation = true) {
+            _coinBalance += amount;
+            updateCoinDisplay();
+
+            if (showAnimation && amount !== 0) {
+                showCoinChangeAnimation(amount);
+            }
+
+            if (!currentUser) return true;
+
+            try {
+                const userRef = doc(db, 'users', currentUser.uid);
+                await updateDoc(userRef, {
+                    accountBalance: _coinBalance,
+                    lastUpdated: serverTimestamp()
+                });
+                return true;
+            } catch (error) {
+                console.error("Error updating coins:", error);
+                return true;
+            }
+        }
+
+        function updateCoinDisplay() {
+            coinDisplay.textContent = _coinBalance.toLocaleString();
+        }
+
+        function updateEarningsDisplay() {
+            earningsDisplay.textContent = currentEarnings.toLocaleString();
+        }
+
+        function showCoinChangeAnimation(amount) {
+            const coinChange = document.createElement('div');
+            coinChange.className = `coin-change ${amount > 0 ? 'positive' : 'negative'}`;
+            coinChange.textContent = `${amount > 0 ? '+' : ''}${amount}`;
+            
+            const coinDisplayElement = document.querySelector('.coin-display');
+            coinDisplayElement.style.position = 'relative';
+            coinDisplayElement.appendChild(coinChange);
+            
+            setTimeout(() => {
+                if (coinChange.parentNode) {
+                    coinChange.remove();
+                }
+            }, 2000);
+        }
+
+        // Game functions
+        function generateBombPositions() {
+            bombPositions = [];
+            while (bombPositions.length < bombCount) {
+                const pos = Math.floor(Math.random() * totalSquares);
+                if (!bombPositions.includes(pos)) {
+                    bombPositions.push(pos);
+                }
+            }
+        }
+
+        function calculateRewardPerSquare() {
+            const maxBombs = totalSquares - 1;
+            const bombRatio = bombCount / maxBombs;
+            const rewardPerSquare = Math.floor(Math.pow(1000000, bombRatio));
+            return Math.max(1, rewardPerSquare);
+        }
+
+        function createMinesGrid() {
+            minesGrid.innerHTML = '';
+            minesGrid.className = `mines-grid grid-${totalSquares}`;
+            revealedSquares = [];
+
+            for (let i = 0; i < totalSquares; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'mine-cell';
+                cell.setAttribute('data-index', i);
+                cell.addEventListener('click', () => handleCellClick(i));
+                minesGrid.appendChild(cell);
+            }
+        }
+
+        function handleCellClick(index) {
+            if (!gameActive || revealedSquares.includes(index)) return;
+
+            const cell = minesGrid.children[index];
+            revealedSquares.push(index);
+
+            if (bombPositions.includes(index)) {
+                // Hit a bomb
+                cell.classList.add('revealed-bomb');
+                cell.innerHTML = '💣';
+                gameActive = false;
+
+                // Reveal all bombs
+                bombPositions.forEach(bombIndex => {
+                    if (bombIndex !== index) {
+                        const bombCell = minesGrid.children[bombIndex];
+                        setTimeout(() => {
+                            bombCell.classList.add('revealed-bomb');
+                            bombCell.innerHTML = '💣';
+                        }, 200 + Math.random() * 300);
+                    }
+                });
+
+                // Apply penalty
+                updateCoins(-10000);
+                
+                setTimeout(() => {
+                    showGameOver();
+                }, 1500);
+            } else {
+                // Safe square
+                cell.classList.add('revealed-safe');
+                cell.innerHTML = '🪙';
+                
+                const reward = calculateRewardPerSquare();
+                currentEarnings += reward;
+                updateEarningsDisplay();
+                
+                // Enable cashout
+                if (currentEarnings > 0) {
+                    cashoutBtn.disabled = false;
+                }
+            }
+        }
+
+        function showGameOver() {
+            const revealedCount = document.getElementById('revealed-count');
+            const lostEarnings = document.getElementById('lost-earnings');
+            
+            const safeSquares = revealedSquares.length - 1; // Subtract the bomb
+            revealedCount.textContent = safeSquares;
+            lostEarnings.textContent = `${currentEarnings.toLocaleString()} + 10,000 bomb penalty`;
+            
+            gameOverScreen.classList.add('visible');
+        }
+
+        function showCashoutScreen() {
+            const cashoutCount = document.getElementById('cashout-count');
+            const cashoutReward = document.getElementById('cashout-reward');
+            
+            cashoutCount.textContent = revealedSquares.length;
+            cashoutReward.textContent = currentEarnings.toLocaleString();
+            
+            // Award the earnings
+            updateCoins(currentEarnings);
+            currentEarnings = 0;
+            updateEarningsDisplay();
+            
+            gameActive = false;
+            cashoutScreen.classList.add('visible');
+        }
+
+        function startGame() {
+            if (_coinBalance < 5) {
+                alert('Insufficient coins! You need 5 coins to play.');
+                return;
+            }
+
+            // Deduct game cost
+            updateCoins(-5);
+            
+            gameActive = true;
+            currentEarnings = 0;
+            updateEarningsDisplay();
+            
+            // Hide bomb selection screen
+            bombSelectScreen.classList.remove('visible');
+            
+            // Generate bombs and create grid
+            generateBombPositions();
+            createMinesGrid();
+            
+            // Show game
+            minesGameContainer.style.display = 'flex';
+            minesGameContainer.style.flexDirection = 'column';
+            minesGameContainer.style.alignItems = 'center';
+            minesGameContainer.style.justifyContent = 'center';
+            
+            const reward = calculateRewardPerSquare();
+            gameInfo.textContent = `Find safe squares to earn ${reward.toLocaleString()} coins each! Avoid the ${bombCount} bomb${bombCount > 1 ? 's' : ''}!`;
+            
+            cashoutBtn.disabled = true;
+        }
+
+        function resetGame() {
+            gameActive = false;
+            currentEarnings = 0;
+            updateEarningsDisplay();
+            
+            minesGameContainer.style.display = 'none';
+            startScreen.classList.add('visible');
+            bombSelectScreen.classList.remove('visible');
+            gameOverScreen.classList.remove('visible');
+            cashoutScreen.classList.remove('visible');
+            
+            cashoutBtn.disabled = true;
+        }
+
+        function updateBombCountDisplay() {
+            const bombCountDisplay = document.getElementById('bomb-count-display');
+            const rewardDisplay = document.getElementById('reward-display');
+            const bombSlider = document.getElementById('bomb-slider');
+            
+            bombCount = parseInt(bombSlider.value);
+            bombCountDisplay.textContent = `Bombs: ${bombCount}`;
+            
+            const reward = calculateRewardPerSquare();
+            rewardDisplay.textContent = `Reward per square: ${reward.toLocaleString()} coins`;
+        }
+
+        function updateStartButtonAppearance() {
+            const startBtn = document.getElementById('start-btn');
+            if (_coinBalance < 5) {
+                startBtn.textContent = "Insufficient Coins (Need 5)";
+                startBtn.disabled = true;
+                startBtn.style.opacity = '0.5';
+            } else {
+                startBtn.textContent = "Start Game (5 coins)";
+                startBtn.disabled = false;
+                startBtn.style.opacity = '1';
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            
+            // Option buttons
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    totalSquares = parseInt(btn.dataset.squares);
+                });
+            });
+
+            // Bomb slider
+            const bombSlider = document.getElementById('bomb-slider');
+            bombSlider.addEventListener('input', updateBombCountDisplay);
+
+            // Bomb count buttons
+            document.getElementById('decrease-bomb').addEventListener('click', () => {
+                if (bombSlider.value > 1) {
+                    bombSlider.value = parseInt(bombSlider.value) - 1;
+                    updateBombCountDisplay();
+                }
+            });
+
+            document.getElementById('increase-bomb').addEventListener('click', () => {
+                const maxBombs = totalSquares - 1;
+                if (bombSlider.value < maxBombs) {
+                    bombSlider.value = parseInt(bombSlider.value) + 1;
+                    updateBombCountDisplay();
+                }
+            });
+
+            // Game buttons
+            document.getElementById('next-btn').addEventListener('click', () => {
+                startScreen.classList.remove('visible');
+                
+                // Update bomb slider max
+                const maxBombs = totalSquares - 1;
+                bombSlider.max = maxBombs;
+                bombSlider.value = 1;
+                updateBombCountDisplay();
+                
+                bombSelectScreen.classList.add('visible');
+            });
+
+            document.getElementById('start-btn').addEventListener('click', startGame);
+            document.getElementById('cashout-btn').addEventListener('click', () => {
+                if (gameActive && currentEarnings > 0) {
+                    showCashoutScreen();
+                }
+            });
+
+            document.getElementById('play-again-btn').addEventListener('click', () => {
+                gameOverScreen.classList.remove('visible');
+                resetGame();
+            });
+
+            document.getElementById('new-game-btn').addEventListener('click', () => {
+                cashoutScreen.classList.remove('visible');
+                resetGame();
+            });
+
+            document.getElementById('back-btn').addEventListener('click', () => {
+                window.location.href = '/learning.html';
+            });
+
+            // Initialize display
+            updateBombCountDisplay();
+        });
+
+        // Authentication state listener
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadUserBalance();
+                updateStartButtonAppearance();
+            } else {
+                currentUser = null;
+                _coinBalance = 1000;
+                updateCoinDisplay();
+                updateStartButtonAppearance();
+            }
+        });
+
+        // Initialize without user
+        if (!currentUser) {
+            _coinBalance = 1000;
+            updateCoinDisplay();
+            updateStartButtonAppearance();
+        }
+    </script>
+</body>
+</html>

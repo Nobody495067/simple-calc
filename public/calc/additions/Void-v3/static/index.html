@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+
+<script>document.addEventListener('DOMContentLoaded',function(){const style=document.createElement('style');style.textContent='#voidGamesOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:10000;display:flex;justify-content:center;align-items:center;opacity:0;animation:fadeIn 0.5s ease-out forwards}#voidGamesPopup{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);border:2px solid #ffffff;border-radius:20px;padding:30px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;position:relative;box-shadow:0 20px 40px rgba(0,0,0,0.8);transform:scale(0.8);animation:popupScale 0.5s ease-out 0.2s forwards}#voidGamesCloseBtn{position:absolute;top:15px;right:15px;width:30px;height:30px;background:#ffffff;color:#000000;border:none;border-radius:50%;font-size:18px;font-weight:bold;cursor:pointer;display:none;align-items:center;justify-content:center;transition:all 0.3s ease;z-index:10001}#voidGamesCloseBtn:hover{background:#f0f0f0;transform:scale(1.1)}#voidGamesPopup h1{color:#ffffff;font-family:Arial,sans-serif;font-size:28px;font-weight:bold;text-align:center;margin:0 0 25px 0;text-shadow:2px 2px 4px rgba(0,0,0,0.5);letter-spacing:1px}#voidGamesPopup .subtitle{color:#cccccc;font-family:Arial,sans-serif;font-size:16px;text-align:center;margin-bottom:25px;font-style:italic}#voidGamesPopup .section-title{color:#ffffff;font-family:Arial,sans-serif;font-size:20px;font-weight:bold;margin:20px 0 15px 0;border-bottom:2px solid #ffffff;padding-bottom:5px}#voidGamesPopup ul{list-style:none;padding:0;margin:0 0 20px 0}#voidGamesPopup li{color:#e0e0e0;font-family:Arial,sans-serif;font-size:14px;line-height:1.6;margin-bottom:12px;padding-left:20px;position:relative}#voidGamesPopup li:before{content:"▶";color:#ffffff;position:absolute;left:0;top:0}#voidGamesPopup .closing-message{color:#ffffff;font-family:Arial,sans-serif;font-size:16px;text-align:center;margin-top:25px;padding:15px;background:rgba(255,255,255,0.1);border-radius:10px;border:1px solid rgba(255,255,255,0.2)}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes popupScale{from{transform:scale(0.8)}to{transform:scale(1)}}@keyframes closeButtonAppear{from{opacity:0;transform:scale(0.5)}to{opacity:1;transform:scale(1)}}@keyframes fadeOut{from{opacity:1}to{opacity:0}}@media(max-width:600px){#voidGamesPopup{padding:20px;margin:20px;max-height:85vh}#voidGamesPopup h1{font-size:24px}#voidGamesPopup .section-title{font-size:18px}}';document.head.appendChild(style);const overlay=document.createElement('div');overlay.id='voidGamesOverlay';overlay.innerHTML='<div id="voidGamesPopup"><button id="voidGamesCloseBtn" onclick="closeVoidGamesPopup()">×</button><h1>🎮 BIG UPDATE! 🎮</h1><h1>THE VOID GAMES HAVE BEEN RE-RELEASED!</h1><p class="subtitle">To access the games, press the <strong>Coin Icon</strong> at the top of your screen.</p><div class="section-title">✨ What\'s New:</div><ul><li><strong>Bug-Free Experience:</strong> Eliminated all glitches and bugs within the games and main page for seamless gameplay.</li><li><strong>Advanced Anti-Cheat System:</strong> Implemented cutting-edge security measures to prevent users from obtaining unfair coin advantages or cheating in online games.</li><li><strong>Two Brand New Games:</strong> Expanded our collection with exciting new gaming experiences for you to explore.</li><li><strong>Universal Compatibility:</strong> Optimized everything for slower devices and smaller screens, ensuring everyone can enjoy The Void Games.</li></ul><div class="closing-message">We sincerely apologize that this update took longer than expected to release, but we promise it\'s worth the wait! Thank you for your patience and continued support.</div></div>';document.body.appendChild(overlay);window.closeVoidGamesPopup=function(){overlay.style.animation='fadeOut 0.3s ease-out forwards';setTimeout(()=>overlay.remove(),300)};setTimeout(()=>{const closeBtn=document.getElementById('voidGamesCloseBtn');closeBtn.style.display='flex';closeBtn.style.animation='closeButtonAppear 0.3s ease-out forwards'},3000);overlay.addEventListener('click',e=>{if(e.target===overlay)closeVoidGamesPopup()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeVoidGamesPopup()})});</script>
+
+<script>
+(function() {
+  const isInIframe = window !== window.top;
+
+  function blockParentSite() {
+    try {
+      const parentUrl = document.referrer || '';
+
+      if (parentUrl.toLowerCase().includes('w3spaces.com')) {
+        // Try to take over parent window
+        try {
+          window.top.location = 'data:text/html;charset=utf-8,' + encodeURIComponent(`
+            <html>
+              <head><title>Blocked</title></head>
+              <body style="background-color: #111; color: #fff; font-family: Arial, sans-serif; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+                <h1>This URL can't be used anymore :)</h1>
+                <p>womp womp.</p>
+                <p>Go to the Discord at <a href="https://discord.gg/voidnetworkgames" style="color: #00ffff;">https://discord.gg/voidnetworkgames</a></p>
+                <p>or go to a different URL.</p>
+                <h2 id="countdown">Closing in 5...</h2>
+                <audio autoplay>
+                  <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
+                </audio>
+                <script>
+                  let countdown = 5;
+                  const interval = setInterval(() => {
+                    countdown--;
+                    document.getElementById('countdown').textContent = 'Closing in ' + countdown + '...';
+                    if (countdown <= 0) {
+                      clearInterval(interval);
+                      window.close(); // Try to close the parent window
+                    }
+                  }, 1000);
+                <\/script>
+              </body>
+            </html>
+          `);
+        } catch (err) {
+          // If we can’t redirect the top frame, show fallback in iframe
+          showBlockMessageInsideIframe();
+        }
+      }
+    } catch (e) {
+      console.error("Error attempting to control top window", e);
+      showBlockMessageInsideIframe();
+    }
+  }
+
+  function showBlockMessageInsideIframe() {
+    const blockHTML = `
+      <html>
+        <head><title>Blocked</title></head>
+        <body style="background-color: #111; color: #fff; font-family: Arial, sans-serif; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; pointer-events: none;">
+          <h1>This URL can't be used anymore :)</h1>
+          <p>womp womp.</p>
+          <p>Go to the Discord at <a href="https://discord.gg/voidnetworkgames" style="color: #00ffff;">https://discord.gg/voidnetworkgames</a></p>
+          <p>or go to a different URL.</p>
+          <h2 id="countdown">You are blocked.</h2>
+        </body>
+      </html>
+    `;
+    const dataUrl = "data:text/html;charset=utf-8," + encodeURIComponent(blockHTML);
+    window.location.href = dataUrl;
+  }
+
+  if (isInIframe) {
+    blockParentSite();
+  }
+})();
+</script>
+
+
+
+
+<script type="text/javascript"> adroll_adv_id = "CMBDEOH2TVFW5NFJMY5CA2"; adroll_pix_id = "4BMA6DUDGRA6TFHYFRMJS6"; adroll_version = "2.0";  (function(w, d, e, o, a) { w.__adroll_loaded = true; w.adroll = w.adroll || []; w.adroll.f = [ 'setProperties', 'identify', 'track', 'identify_email', 'get_cookie' ]; var roundtripUrl = "https://s.adroll.com/j/" + adroll_adv_id + "/roundtrip.js"; for (a = 0; a < w.adroll.f.length; a++) { w.adroll[w.adroll.f[a]] = w.adroll[w.adroll.f[a]] || (function(n) { return function() { w.adroll.push([ n, arguments ]) } })(w.adroll.f[a]) }  e = d.createElement('script'); o = d.getElementsByTagName('script')[0]; e.async = 1; e.src = roundtripUrl; o.parentNode.insertBefore(e, o); })(window, document); adroll.track("pageView"); </script> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>edpuzzle.com</title>
+    <script src="/assets/js/particles.js"></script>
+    <script src="/js/popup-client.js"></script>
+    <script src="/assets/js/game-preloader.js"></script>
+
+<!-- Enhanced Error Handling Script -->
+<script>
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+    console.error('Error: ', msg, 'Script: ', url, 'Line: ', lineNo, 'Column: ', columnNo, 'Error object: ', error);
+    if (window.loadingDebugInfo) {
+        window.loadingDebugInfo.errors.push({msg, url, lineNo, columnNo, error});
+    }
+    return false;
+};
+
+window.loadingDebugInfo = {
+    started: Date.now(),
+    stages: {},
+    errors: []
+};
+
+function markStage(stage) {
+    window.loadingDebugInfo.stages[stage] = Date.now() - window.loadingDebugInfo.started;
+    console.log(`Stage: ${stage} completed at ${window.loadingDebugInfo.stages[stage]}ms`);
+}
+</script>
+
+
+
+<!-- Prevent browser caching with meta tags -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<!-- Inject this script to modify all links to include cache-busting -->
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+    try {
+      // Generate a unique timestamp for this page load
+      const timestamp = Date.now();
+      
+      // Add cache-busting parameter to all links to internal pages
+      document.querySelectorAll('a').forEach(link => {
+        try {
+          // Only modify internal links
+          if (link.href && link.href.startsWith(window.location.origin)) {
+            // Add cache-busting parameter
+            const url = new URL(link.href);
+            url.searchParams.set('cb', timestamp);
+            link.href = url.toString();
+          }
+        } catch (e) {
+          console.warn('Failed to add cache-busting to link:', link.href, e);
+        }
+      });
+      
+      // Override fetch to add cache-busting parameter
+      const originalFetch = window.fetch;
+      window.fetch = function(resource, init) {
+        if (typeof resource === 'string' && resource.startsWith(window.location.origin)) {
+          try {
+            // Add cache-busting parameter to internal requests
+            const url = new URL(resource, window.location.origin);
+            url.searchParams.set('cb', timestamp);
+            resource = url.toString();
+          } catch (e) {
+            console.warn('Failed to add cache-busting to fetch:', resource, e);
+          }
+        }
+        return originalFetch.call(this, resource, init);
+      };
+      
+      // Override XMLHttpRequest to add cache-busting parameter
+      const originalOpen = XMLHttpRequest.prototype.open;
+      XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+        if (typeof url === 'string' && url.startsWith(window.location.origin)) {
+          try {
+            // Add cache-busting parameter to internal requests
+            const urlObj = new URL(url, window.location.origin);
+            urlObj.searchParams.set('cb', timestamp);
+            url = urlObj.toString();
+          } catch (e) {
+            console.warn('Failed to add cache-busting to XHR:', url, e);
+          }
+        }
+        return originalOpen.call(this, method, url, ...rest);
+      };
+      
+      console.log(`Cache buster active for this session: ${timestamp}`);
+    } catch (error) {
+      console.error('Cache-busting script error:', error);
+    }
+  });
+</script>
+
+<script>
+(function() {
+    // Mobile detection function
+    function isMobileDevice() {
+        // Check user agent for mobile indicators
+        const userAgent = navigator.userAgent.toLowerCase();
+        const mobileKeywords = [
+            'android', 'webos', 'iphone', 'ipad', 'ipod', 'blackberry', 
+            'windows phone', 'opera mini', 'iemobile', 'mobile'
+        ];
+        
+        const isMobileUA = mobileKeywords.some(keyword => userAgent.includes(keyword));
+        
+        // Also check screen size as backup
+        const isSmallScreen = window.innerWidth <= 768 || window.screen.width <= 768;
+        
+        // Check for touch capability
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
+        return isMobileUA || (isSmallScreen && isTouchDevice);
+    }
+    
+    // Create and show mobile blocking overlay
+    function showMobileBlocker() {
+        // Create overlay element
+        const overlay = document.createElement('div');
+        overlay.id = 'mobile-blocker-overlay';
+        
+        // Styles for the overlay
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999999;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            backdrop-filter: blur(10px);
+        `;
+        
+        // Create content container
+        const content = document.createElement('div');
+        content.style.cssText = `
+            max-width: 400px;
+            padding: 40px 30px;
+            border: 2px solid #333333;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            animation: fadeInScale 0.6s ease-out;
+        `;
+        
+        // Add animation keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInScale {
+                from {
+                    opacity: 0;
+                    transform: scale(0.9) translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                }
+            }
+            
+            .mobile-icon {
+                width: 60px;
+                height: 60px;
+                margin: 0 auto 25px;
+                border: 3px solid #666666;
+                border-radius: 12px;
+                position: relative;
+                background: #222222;
+            }
+            
+            .mobile-icon::before {
+                content: '';
+                position: absolute;
+                top: 8px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 20px;
+                height: 2px;
+                background: #666666;
+                border-radius: 1px;
+            }
+            
+            .mobile-icon::after {
+                content: '';
+                position: absolute;
+                bottom: 8px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 8px;
+                height: 8px;
+                background: #666666;
+                border-radius: 50%;
+            }
+        `;
+        
+        document.head.appendChild(style);
+        
+        // Create mobile icon
+        const icon = document.createElement('div');
+        icon.className = 'mobile-icon';
+        
+        // Create title
+        const title = document.createElement('h1');
+        title.style.cssText = `
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0 0 20px 0;
+            letter-spacing: -0.5px;
+        `;
+        title.textContent = 'Mobile Access Temporarily Unavailable';
+        
+        // Create message
+        const message = document.createElement('p');
+        message.style.cssText = `
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 0 0 25px 0;
+            color: #cccccc;
+            font-weight: 400;
+        `;
+        message.innerHTML = `
+            We're currently optimizing <strong style="color: #ffffff;">Void Network</strong> for mobile devices. 
+            Our development team is working diligently to bring you the best mobile experience possible.
+        `;
+        
+        // Create status message
+        const status = document.createElement('p');
+        status.style.cssText = `
+            font-size: 14px;
+            color: #999999;
+            margin: 0 0 30px 0;
+            font-style: italic;
+        `;
+        status.textContent = 'Expected to be available within the next few days';
+        
+        // Create suggestion
+        const suggestion = document.createElement('p');
+        suggestion.style.cssText = `
+            font-size: 14px;
+            color: #bbbbbb;
+            margin: 0;
+            padding: 20px 0 0 0;
+            border-top: 1px solid #333333;
+        `;
+        suggestion.innerHTML = `
+            For the best experience, please visit <strong style="color: #ffffff;">Void Network</strong> on a desktop or laptop computer.
+        `;
+        
+        // Assemble the content
+        content.appendChild(icon);
+        content.appendChild(title);
+        content.appendChild(message);
+        content.appendChild(status);
+        content.appendChild(suggestion);
+        
+        overlay.appendChild(content);
+        
+        // Add to page
+        document.body.appendChild(overlay);
+        
+        // Prevent scrolling on the background
+        document.body.style.overflow = 'hidden';
+    }
+    
+    // Run detection when DOM is ready
+    function init() {
+        if (isMobileDevice()) {
+            showMobileBlocker();
+        }
+    }
+    
+    // Execute immediately if DOM is already loaded, otherwise wait
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+    
+    // Also check on window resize in case of device rotation or responsive design testing
+    window.addEventListener('resize', function() {
+        if (isMobileDevice() && !document.getElementById('mobile-blocker-overlay')) {
+            showMobileBlocker();
+        }
+    });
+})();
+</script>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="./assets/favicon.png" type="image/png">
+    
+    <!-- Preload UV Service Worker -->
+    <link rel="preload" href="/uv/sw.js" as="script">
+    <link rel="preload" href="/uv/uv.bundle.js" as="script">
+    <link rel="preload" href="/uv/uv.config.js" as="script">
+    
+    <!-- Preload critical resources for better performance -->
+    <link rel="preload" href="/config.js" as="script">
+    <link rel="preload" href="/global.js" as="script">
+    <link rel="preload" href="./assets/json/games.js" as="script">
+    <link rel="preload" href="./assets/json/games2.js" as="script">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="/assets/css/index.css">
+    
+    <!-- Scripts -->
+    <script src="/config.js" onerror="console.error('Failed to load config.js')"></script>
+    <script src="/global.js" onerror="console.error('Failed to load global.js')"></script>
+    <script src="uv/uv.bundle.js" onerror="console.error('Failed to load uv.bundle.js')"></script>
+    <script src="uv/uv.config.js" onerror="console.error('Failed to load uv.config.js')"></script>
+    <script src="/assets/js/footer2.js" onerror="console.error('Failed to load footer2.js')"></script>
+    <script src="/assets/js/favicon-handler.js" onerror="console.error('Failed to load favicon-handler.js')"></script>
+    <script src="https://partner.senty.com.au/partner-445be54d.js" async onerror="console.error('Failed to load senty partner script')"></script>
+    <script src="https://partner.senty.com.au/partner-445be54d.js" async onerror="console.error('Failed to load senty partner script (duplicate)')"></script>
+
+    <!-- Comprehensive GA4 Tracking Solution -->
+    <script>
+    (function(w,d,s,g,m){
+        try {
+            // Common variables
+            var currentScript = d.currentScript || (function() {
+                var scripts = d.getElementsByTagName('script');
+                return scripts[scripts.length - 1];
+            })();
+            var trackingAttempted = false;
+            var clientId = (function() {
+                // Try to get stored client ID or generate a new one
+                try {
+                    var storedId = localStorage.getItem('_ga_cid');
+                    if(storedId) return storedId;
+                    var newId = Math.floor(Math.random() * 1e9) + '.' + Math.floor(Date.now() / 1000);
+                    localStorage.setItem('_ga_cid', newId);
+                    return newId;
+                } catch(e) {
+                    return Math.floor(Math.random() * 1e9) + '.' + Math.floor(Date.now() / 1000);
+                }
+            })();
+            
+            // Standard GA4 implementation
+            function loadGA4() {
+                if(w.dataLayer !== undefined) return;
+                w.dataLayer = w.dataLayer || [];
+                w.gtag = function(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', g, {
+                    'client_id': clientId,
+                    'debug_mode': false,
+                    'transport_url': 'https://www.google-analytics.com',
+                    'transport_type': 'beacon',
+                    'allow_google_signals': true,
+                    'allow_ad_personalization_signals': true
+                });
+                
+                var gaScript = d.createElement('script');
+                gaScript.async = true;
+                gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + g;
+                var firstScript = d.getElementsByTagName('script')[0];
+                firstScript.parentNode.insertBefore(gaScript, firstScript);
+                trackingAttempted = true;
+            }
+            
+            // Pixel fallback method
+            function pixelFallback() {
+                var params = {
+                    v: 2,
+                    tid: g,
+                    sid: s,
+                    cid: clientId,
+                    dl: encodeURIComponent(w.location.href),
+                    dt: encodeURIComponent(d.title),
+                    sr: w.screen ? (w.screen.width + 'x' + w.screen.height) : '',
+                    ul: (navigator.language || navigator.userLanguage || ''),
+                    _s: 1
+                };
+                
+                var queryString = Object.keys(params).map(function(key) {
+                    return key + '=' + params[key];
+                }).join('&');
+                
+                var img = new Image();
+                img.src = 'https://www.google-analytics.com/collect?' + queryString;
+                img.style.display = 'none';
+                d.body.appendChild(img);
+            }
+            
+            // Beacon API fallback
+            function beaconFallback() {
+                if(navigator.sendBeacon) {
+                    var params = new URLSearchParams();
+                    params.append('v', 2);
+                    params.append('tid', g);
+                    params.append('sid', s);
+                    params.append('cid', clientId);
+                    params.append('dl', w.location.href);
+                    params.append('dt', d.title);
+                    params.append('t', 'pageview');
+                    
+                    navigator.sendBeacon('https://www.google-analytics.com/collect', params);
+                }
+            }
+            
+            // Fetch API fallback
+            function fetchFallback() {
+                if(w.fetch) {
+                    var data = {
+                        v: 2,
+                        tid: g,
+                        sid: s,
+                        cid: clientId,
+                        dl: w.location.href,
+                        dt: d.title,
+                        t: 'pageview'
+                    };
+                    
+                    fetch('https://www.google-analytics.com/collect', {
+                        method: 'POST',
+                        body: JSON.stringify(data),
+                        keepalive: true,
+                        headers: {'Content-Type': 'application/json'}
+                    }).catch(function() {});
+                }
+            }
+            
+            // Try all methods
+            function trackWithAllMethods() {
+                loadGA4();
+                setTimeout(function() {
+                    if(!trackingAttempted) {
+                        pixelFallback();
+                        beaconFallback();
+                        fetchFallback();
+                    }
+                }, 1000);
+            }
+            
+            // Execute tracking on page load
+            if(d.readyState === 'complete') {
+                trackWithAllMethods();
+            } else {
+                w.addEventListener('load', trackWithAllMethods);
+            }
+            
+            // Track on page exit
+            w.addEventListener('beforeunload', function() {
+                beaconFallback();
+            });
+            
+            // Create noscript fallback
+            var noscriptTag = d.createElement('noscript');
+            var imgHtml = '<img src="https://www.google-analytics.com/collect?v=2&tid=' + g + '&sid=' + s + 
+                        '&cid=555&dl=' + encodeURIComponent(w.location.href) + 
+                        '&dt=' + encodeURIComponent(d.title) + 
+                        '&t=pageview&_s=1" height="1" width="1" style="display:none">';
+            noscriptTag.innerHTML = imgHtml;
+            
+            // Insert noscript right after the current script
+            if(currentScript && currentScript.parentNode) {
+                currentScript.parentNode.insertBefore(noscriptTag, currentScript.nextSibling);
+            } else {
+                // Fallback if current script can't be determined
+                d.head.appendChild(noscriptTag);
+            }
+            
+            // Also create a noscript tag for the body
+            var bodyNoscript = noscriptTag.cloneNode(true);
+            if(d.body) {
+                d.body.insertBefore(bodyNoscript, d.body.firstChild);
+            } else {
+                // If body isn't loaded yet, wait and then insert
+                d.addEventListener('DOMContentLoaded', function() {
+                    d.body.insertBefore(bodyNoscript, d.body.firstChild);
+                });
+            }
+        } catch (error) {
+            console.error('GA4 tracking error:', error);
+        }
+    })(window, document, "10184903349", "G-814Y2X3KSF");
+    </script>
+
+    <!-- Loading Styles -->
+    <style id="loading-style">
+        body,html{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
+        #loadingOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#000 0,#1a1a1a 100%);display:flex;justify-content:center;align-items:center;z-index:999999;transition:opacity 1s ease-in-out}
+        #loadingContainer{text-align:center;color:#fff}
+        #loadingLogo{width:200px;height:200px;margin-bottom:30px;opacity:0;animation:fadeIn 1s ease-in-out forwards}
+        #loadingLogo img{width:100%;height:100%;object-fit:contain;filter:brightness(1.2)}
+        #loadingText{font-size:1.5rem;text-align:center;color:#fff;margin-bottom:10px;letter-spacing:.2em;text-transform:uppercase;opacity:0;animation:slideIn 2s ease-in-out forwards}
+        #loadingBar{width:200px;height:2px;background:#1a1a1a;margin:20px auto;position:relative;border-radius:15px;overflow:hidden}
+        #progressFill{height:100%;width:0;background:#fff;position:absolute;transition:width .1s linear}
+        .dots::after{content:'';animation:dotAnimation 2s infinite}
+        @keyframes dotAnimation{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}100%{content:''}}
+        @keyframes fadeIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+        @keyframes slideIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}
+        }
+        .fade-out{opacity:0;pointer-events:none}
+    </style>
+
+    <!-- Additional Styles -->
+    <style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        color: #fff;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .games-box {
+        background: #000;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 1000px;
+        height: 70vh;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        padding: 2px;
+        box-shadow: 
+            0 0 2px #fff,
+            0 0 4px #fff,
+            0 0 6px #fff,
+            0 0 8px #fff,
+            inset 0 0 2px rgba(255, 255, 255, 0.2);
+        z-index: 3;
+    }
+
+    .games-box::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        background: transparent ;
+        border-radius: 10px;
+        z-index: -1;
+        box-shadow: 
+            0 0 15px #fff,
+            0 0 30px rgba(255, 255, 255, 0.8),
+            0 0 40px rgba(255, 255, 255, 0.6),
+            0 0 50px rgba(255, 255, 255, 0.4);
+        opacity: 0.5;
+    }
+
+    .games-header {
+        padding: 1.5rem;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        z-index: 1;
+    }
+
+    .site-title {
+        font-size: 2.5rem;
+        margin: 0 0 0.5rem 0;
+        background: linear-gradient(45deg, #fff, #a0a0a0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: bold;
+    }
+
+    .games-title {
+        font-size: 1.2rem;
+        margin: 0.5rem 0;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    #searchGames {
+        width: 80%;
+        max-width: 400px;
+        padding: 0.8rem 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        margin: 1rem auto 0 auto;
+        display: block;
+    }
+
+    #searchGames:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    #searchGames::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .scrollable-content {
+        overflow-y: auto;
+        flex-grow: 1;
+        padding: 1.5rem;
+    }
+
+    .games-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .games-grid::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .games-grid::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        margin: 4px;
+        border-radius: 4px;
+    }
+
+    .games-grid::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+    }
+
+    .games-grid::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .game-item {
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .game-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .game-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .game-title {
+        font-size: 1rem;
+        color: #fff;
+        margin: 0;
+        font-weight: normal;
+        transition: all 0.3s ease;
+    }
+
+    .game-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .game-item:hover .game-title {
+        color: #fff;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    @media (max-width: 768px) {
+        .games-box {
+            width: 95%;
+            height: 80vh;
+        }
+        
+        .games-grid {
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        }
+        
+        .game-icon {
+            width: 48px;
+            height: 48px;
+        }
+        
+        .game-title {
+            font-size: 0.9rem;
+        }
+        
+        .site-title {
+            font-size: 2rem;
+        }
+
+        .scrollable-content {
+            padding: 1rem;
+        }
+    }
+    </style>
+</head>
+
+<body>
+    <!-- Primary Noscript Tracking Backup -->
+    <noscript>
+        <img src="https://www.google-analytics.com/collect?v=2&tid=G-814Y2X3KSF&sid=10184903349&cid=555&dl=pageview&dt=Page%20View&t=pageview&_s=1" height="1" width="1" style="display:none">
+        <iframe src="https://www.googletagmanager.com/ns.html?id=G-814Y2X3KSF" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+
+    <div id="header"></div>
+        
+    <div class="container">
+        <div class="games-box">
+            <div class="games-header">
+                <h1 class="site-title">Void Network</h1>
+                <h2 class="games-title">Games</h2>
+                <input type="text" id="searchGames" placeholder="Search games...">
+            </div>
+
+            <div class="scrollable-content">
+                <div class="games-grid" id="gamesList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+<!-- Loading Styles -->
+<style id="loading-style">
+    #loadingOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999999;
+        transition: opacity 1s ease-in-out;
+    }
+
+    #loadingContainer {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+    }
+
+    #loadingLogo {
+        width: 250px;
+        height: 250px;
+        perspective: 1000px;
+    }
+
+    #loadingLogo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 40px;
+        box-shadow: 0 15px 35px rgba(255,255,255,0.2);
+        animation: wave-and-float 2.5s ease-in-out infinite;
+        transition: transform 0.3s ease;
+    }
+
+    #loadingText {
+        color: #fff;
+        font-size: 1.5rem;
+        letter-spacing: 3px;
+        font-weight: 300;
+        opacity: 0.8;
+    }
+
+    .dots::after {
+        content: '.';
+        display: inline-block;
+        animation: pulsing-dots 1.4s infinite;
+    }
+
+    #loadingBar {
+        width: 400px;
+        height: 10px;
+        background-color: rgba(255,255,255,0.1);
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    #progressFill {
+        width: 0;
+        height: 100%;
+        background: linear-gradient(
+            90deg, 
+            rgba(255,255,255,0.1) 0%, 
+            rgba(255,255,255,0.5) 50%, 
+            rgba(255,255,255,0.1) 100%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite linear;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes wave-and-float {
+        0%, 100% { transform: translateY(0) rotate(-5deg); }
+        50% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    @keyframes pulsing-dots {
+        0%, 20% { content: '.'; }
+        33%, 53% { content: '..'; }
+        66%, 100% { content: '...'; }
+    }
+
+    @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    .fade-out {
+        opacity: 0;
+        pointer-events: none;
+    }
+</style>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+    <div id="loadingContainer">
+        <div id="loadingLogo">
+            <img src="https://lh7-us.googleusercontent.com/eYCncOvo340yyc4WrRIu-NlQqsva9--NcEBRmUvEGc6JmTFYY43yq5sUKt7EmBTJcnjYCBZwncY2pQUP5u1ZhMx5JPGZwt0MWzKiaexKPIXXcrO-P5is7yd6WcgCwSVeAViZ4ALZal1df6IZ8lpZbeqx8WcHy7w3n02-zBWB9J7jbnQJlUvta7ARD5Q1L1ZClmQp76-I?key=yj4V8pHW144VjA9YlEbf1Q" alt="Logo">
+        </div>
+        <div id="loadingText">Loading<span class="dots"></span></div>
+        <div id="loadingBar">
+            <div id="progressFill"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Loading Script with better error handling -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const progressFill = document.getElementById('progressFill');
+        
+        // Progress animation with better error handling
+        function animateProgress() {
+            let progress = 0;
+            const maxProgress = 100;
+            const speed = 0.5;
+
+            function updateProgress() {
+                try {
+                    if (progress < maxProgress) {
+                        progress += speed;
+                        progressFill.style.width = `${Math.min(progress, maxProgress)}%`;
+                        
+                        if (progress < maxProgress) {
+                            requestAnimationFrame(updateProgress);
+                        } else {
+                            // Final checks and removal
+                            setTimeout(() => {
+                                loadingOverlay.classList.add('fade-out');
+                                loadingOverlay.addEventListener('transitionend', () => {
+                                    if (loadingOverlay.parentNode) {
+                                        loadingOverlay.remove();
+                                    }
+                                });
+                            }, 500);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Progress animation error:', error);
+                    // Force completion on error
+                    loadingOverlay.classList.add('fade-out');
+                }
+            }
+
+            // Ensure initial visibility
+            progressFill.style.width = '1%';
+            requestAnimationFrame(updateProgress);
+        }
+
+        // Ensure all critical resources are loaded with timeout
+        function waitForCriticalResources() {
+            const startTime = Date.now();
+            const timeout = 10000; // 10 second timeout
+            
+            const criticalChecks = [
+                () => window.CONFIG !== undefined,
+                () => window.loadHTML !== undefined,
+                () => window.__uv$config !== undefined,
+                () => {
+                    try {
+                        return window.gamesData || window.games2Data;
+                    } catch {
+                        return false;
+                    }
+                }
+            ];
+
+            function checkResources() {
+                try {
+                    const allLoaded = criticalChecks.every(check => {
+                        try {
+                            return check();
+                        } catch {
+                            return false;
+                        }
+                    });
+                    
+                    if (allLoaded || Date.now() - startTime > timeout) {
+                        animateProgress();
+                    } else {
+                        // If not loaded, check again after a short delay
+                        setTimeout(checkResources, 100);
+                    }
+                } catch (error) {
+                    console.error('Resource checking error:', error);
+                    animateProgress();
+                }
+            }
+
+            // Start initial check
+            checkResources();
+        }
+
+        // Kick off the loading process
+        waitForCriticalResources();
+
+        // Ensure loading bar is visible even if resources are cached
+        window.addEventListener('load', () => {
+            try {
+                if (loadingOverlay && !loadingOverlay.classList.contains('fade-out')) {
+                    animateProgress();
+                }
+            } catch (error) {
+                console.error('Window load error:', error);
+            }
+        });
+        
+        // Safety timeout to prevent infinite loading
+        setTimeout(() => {
+            try {
+                if (loadingOverlay && !loadingOverlay.classList.contains('fade-out')) {
+                    console.warn('Loading timeout reached, forcing completion');
+                    loadingOverlay.classList.add('fade-out');
+                }
+            } catch (error) {
+                console.error('Safety timeout error:', error);
+            }
+        }, 15000);
+    });
+</script>
+
+<!-- Enhanced Service Worker Registration with timeout and retry -->
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const stockSW = "/uv/sw.js";
+        const swScope = "/uv/"; 
+        const swAllowedHostnames = ["localhost", "127.0.0.1"];
+        
+        // Function to preload and register the service worker with timeout and retry
+        async function preloadServiceWorker(retries = 3) {
+            for (let attempt = 1; attempt <= retries; attempt++) {
+                try {
+                    // Check if service workers are supported
+                    if (!('serviceWorker' in navigator)) {
+                        console.error("Service workers are not supported in this browser");
+                        return false;
+                    }
+                    
+                    // Check if we're on HTTPS or allowed development hostnames
+                    if (location.protocol !== 'https:' && !swAllowedHostnames.includes(location.hostname)) {
+                        console.warn("Service workers require HTTPS (except on localhost/127.0.0.1)");
+                        return false;
+                    }
+                    
+                    console.log(`Attempt ${attempt}/${retries}: Registering UV service worker with scope:`, swScope);
+                    
+                    // Register the service worker with timeout
+                    const registration = await Promise.race([
+                        navigator.serviceWorker.register(stockSW, { 
+                            scope: swScope,
+                            updateViaCache: 'none'
+                        }),
+                        new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('Service worker registration timeout')), 5000)
+                        )
+                    ]);
+                    
+                    // Wait for the service worker to be ready with timeout
+                    await Promise.race([
+                        navigator.serviceWorker.ready,
+                        new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('Service worker ready timeout')), 5000)
+                        )
+                    ]);
+                    
+                    // If we have an active service worker, send it a message to skip waiting
+                    if (registration.active) {
+                        registration.active.postMessage({ type: 'SKIP_WAITING' });
+                    }
+                    
+                    console.log('UV service worker successfully registered with scope:', registration.scope);
+                    window.__uv$serviceWorkerRegistered = true;
+                    markStage('SERVICE_WORKER_READY');
+                    
+                    return true;
+                } catch (error) {
+                    console.error(`Service worker registration attempt ${attempt}/${retries} failed:`, error);
+                    
+                    if (attempt < retries) {
+                        // Wait before retry with exponential backoff
+                        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                    }
+                }
+            }
+            
+            // All attempts failed, but don't block the page
+            console.error('All service worker registration attempts failed');
+            markStage('SERVICE_WORKER_ERROR');
+            
+            // Continue without service worker
+            return false;
+        }
+        
+        // Start preloading the service worker
+        preloadServiceWorker();
+    });
+</script>
+
+<!-- Enhanced Games Loading and Header/Footer Inclusion with better error handling and FIXED IMAGE FALLBACK -->
+<script type="module">
+    try {
+        const gamesList = document.getElementById("gamesList");
+        
+        // Data URI for a simple fallback icon (gray square with game controller icon)
+        const FALLBACK_ICON = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjMzMzIiByeD0iOCIvPgo8cGF0aCBkPSJNMjQgMjRoMTZ2NGgtMTZ6IiBmaWxsPSIjNjY2Ii8+CjxwYXRoIGQ9Ik0zMCAyMGg0djE2aC00eiIgZmlsbD0iIzY2NiIvPgo8Y2lyY2xlIGN4PSI0NCIgY3k9IjMyIiByPSI0IiBmaWxsPSIjNjY2Ii8+CjxjaXJjbGUgY3g9IjIwIiBjeT0iMzIiIHI9IjQiIGZpbGw9IiM2NjYiLz4KPC9zdmc+';
+        
+        // Enhanced wait for UV config with timeout
+        await new Promise(resolve => {
+            let attempts = 0;
+            const maxAttempts = 50; // 5 seconds
+            
+            if (window.__uv$config) {
+                resolve();
+            } else {
+                const checkUV = setInterval(() => {
+                    attempts++;
+                    if (window.__uv$config || attempts >= maxAttempts) {
+                        clearInterval(checkUV);
+                        if (!window.__uv$config) {
+                            console.warn('UV config not loaded after timeout, continuing anyway...');
+                        }
+                        resolve();
+                    }
+                }, 100);
+            }
+        });
+
+        // Load games data with retry mechanism
+        let gamesData = [];
+        let games2Data = [];
+        
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                console.log(`Attempt ${attempt}: Loading games data`);
+                
+                const [gamesModule, games2Module] = await Promise.all([
+                    import("./assets/json/games.js").catch(err => {
+                        console.warn('Failed to load games.js:', err);
+                        return { gamesData: [] };
+                    }),
+                    import("./assets/json/games2.js").catch(err => {
+                        console.warn('Failed to load games2.js:', err);
+                        return { games2Data: [] };
+                    })
+                ]);
+                
+                gamesData = gamesModule.gamesData || [];
+                games2Data = games2Module.games2Data || [];
+                
+                // If both are empty and we have more attempts, retry
+                if (gamesData.length === 0 && games2Data.length === 0 && attempt < 3) {
+                    console.warn(`Both game files empty, retrying in ${attempt}s...`);
+                    await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                    continue;
+                }
+                
+                break; // Success, exit retry loop
+            } catch (error) {
+                console.error(`Attempt ${attempt} failed:`, error);
+                if (attempt === 3) {
+                    // Final attempt failed, use empty arrays
+                    gamesData = [];
+                    games2Data = [];
+                }
+            }
+        }
+        
+        // Combine all games
+        const games = [...gamesData, ...games2Data];
+        
+        // Fallback games if everything failed
+        if (games.length === 0) {
+            games.push({
+                title: 'Games temporarily unavailable',
+                imgSrc: FALLBACK_ICON,
+                link: '#'
+            });
+        }
+
+        // Load game function with FIXED error handling for images
+        function loadGame(game) {
+            try {
+                const gameElement = document.createElement("div");
+                gameElement.className = "game-item";
+                
+                // Create image element first
+                const img = document.createElement('img');
+                img.alt = (game.title || 'Game') + ' icon';
+                
+                // Handle image loading with proper fallback
+                let imageLoadAttempted = false;
+                
+                function setImageSrc() {
+                    if (!imageLoadAttempted) {
+                        imageLoadAttempted = true;
+                        img.src = game.imgSrc || FALLBACK_ICON;
+                    } else {
+                        // This prevents infinite loop - if the fallback fails, don't try again
+                        img.src = FALLBACK_ICON;
+                        img.style.background = 'rgba(255, 255, 255, 0.1)';
+                    }
+                }
+                
+                img.onerror = function() {
+                    if (!this.src.startsWith('data:') && imageLoadAttempted) {
+                        // If the current src is not already our fallback and we've tried once
+                        this.src = FALLBACK_ICON;
+                    }
+                };
+                
+                // Initial image load
+                setImageSrc();
+                
+                gameElement.innerHTML = `<div class="game-icon"></div>
+                    <h3 class="game-title">${game.title || 'Unnamed Game'}</h3>
+                `;
+                
+                // Insert the image into the game-icon div
+                gameElement.querySelector('.game-icon').appendChild(img);
+                
+                // Update click handler with error handling
+                gameElement.onclick = async () => {
+                    try {
+                        // Show loading overlay if available
+                        const loadingOverlay = document.getElementById('loadingOverlay');
+                        if (loadingOverlay && loadingOverlay.classList.contains('fade-out')) {
+                            loadingOverlay.classList.remove('fade-out');
+                            document.getElementById('loadingText').textContent = 'Preparing game...';
+                            document.getElementById('progressFill').style.width = '0%';
+                        }
+                        
+                        try {
+                            // Progress animation
+                            const progressFill = document.getElementById('progressFill');
+                            if (progressFill) {
+                                progressFill.style.width = '30%';
+                                await new Promise(resolve => setTimeout(resolve, 100));
+                                progressFill.style.width = '60%';
+                                await new Promise(resolve => setTimeout(resolve, 100));
+                                progressFill.style.width = '100%';
+                                await new Promise(resolve => setTimeout(resolve, 200));
+                            }
+                        } catch (error) {
+                            console.error('Error in loading animation:', error);
+                        } finally {
+                            // Navigate to the game
+                            window.location.href = `/Classes.html?game=${encodeURIComponent(game.link)}`;
+                        }
+                    } catch (error) {
+                        console.error('Error clicking game:', error);
+                        // Hide loading overlay on error
+                        const loadingOverlay = document.getElementById('loadingOverlay');
+                        if (loadingOverlay) {
+                            loadingOverlay.classList.add('fade-out');
+                        }
+                    }
+                };
+                
+                gamesList.appendChild(gameElement);
+            } catch (error) {
+                console.error('Error loading game element:', error);
+            }
+        }
+
+        // Render games with error handling
+        try {
+            if (Array.isArray(games)) {
+                games.forEach(game => {
+                    try {
+                        loadGame(game);
+                    } catch (error) {
+                        console.error('Error loading individual game:', error);
+                    }
+                });
+            } else {
+                console.error("Games is not an array:", games);
+                gamesList.innerHTML = '<div style="color: white;">Error: Games data is not in the correct format</div>';
+            }
+        } catch (error) {
+            console.error('Error rendering games:', error);
+            gamesList.innerHTML = '<div style="color: white;">Error loading games list</div>';
+        }
+
+        // Search functionality with error handling
+        try {
+            document.getElementById("searchGames").addEventListener("keyup", function(e) {
+                try {
+                    gamesList.innerHTML = '';
+                    const searchTerm = this.value.toLowerCase();
+                    for (const game of games) {
+                        if (game.title && game.title.toLowerCase().includes(searchTerm)) {
+                            loadGame(game);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Search error:', error);
+                }
+            });
+        } catch (error) {
+            console.error('Search setup error:', error);
+        }
+        
+        // Load header and footer with retry mechanism
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                await loadHTML("/assets/html/header.html", "header");
+                await loadHTML("/assets/html/footer.html", "footer");
+                markStage('HEADER_FOOTER_LOADED');
+                break;
+            } catch (error) {
+                console.error(`Header/Footer loading attempt ${attempt} failed:`, error);
+                if (attempt === 3) {
+                    console.error('Failed to load header/footer after all attempts');
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+            }
+        }
+        
+        markStage('COMPLETE');
+        
+    } catch (error) {
+        console.error("Critical error loading games:", error);
+        const gamesList = document.getElementById("gamesList");
+        if (gamesList) {
+            gamesList.innerHTML = `
+                <div style="color: #ff6b6b; text-align: center; padding: 2rem;">
+                    <h3>Error loading games</h3>
+                    <p>${error.message}</p>
+                    <button onclick="window.location.reload()" 
+                            style="padding: 8px 16px; background: #fff; color: #000; border: none; border-radius: 4px; cursor: pointer;">
+                        Refresh Page
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Still try to load header/footer
+        try {
+            loadHTML("/assets/html/header.html", "header");
+            loadHTML("/assets/html/footer.html", "footer");
+        } catch (headerFooterError) {
+            console.error('Failed to load header/footer after critical error:', headerFooterError);
+        }
+    }
+</script>
+
+
+</body>
+</html>

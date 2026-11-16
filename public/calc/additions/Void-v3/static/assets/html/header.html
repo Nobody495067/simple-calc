@@ -1,0 +1,75 @@
+<style>
+    .header {
+        position: fixed;
+        width: calc(100% - 2rem);
+        max-width: 400px; /* Adjust as needed to mimic Dynamic Island width */
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.95);
+        color: white;
+        top: 0.5rem;
+        z-index: 1000;
+        font-size: 0.8rem;
+        font-family: "Be Vietnam Pro", sans-serif;
+        font-weight: 700;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+        transition: all 0.3s ease;
+        border-radius: 2rem; /* Large rounded corners to mimic Dynamic Island */
+        padding: 0.75rem 1rem;
+    }
+    .header:hover {
+        background: rgba(10,10,10,0.98);
+    }
+    .home_bttn {
+        background-color: transparent;
+        border: none;
+        height: 3vh;
+        width: 3vh;
+        margin: 0 1.5rem;
+        transition: all 0.3s ease;
+        filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
+    }
+    .home_bttn:hover {
+        transform: scale(1.2);
+        filter: drop-shadow(0 0 10px rgba(255,255,255,0.8));
+    }
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+</style>
+<header class="header">
+    <a href="/">
+        <img src="/img/nav/home.png" class="home_bttn" alt="Home">
+    </a>
+    <a href="/learn">
+        <img src="/img/nav/search.png" class="home_bttn" alt="Search">
+    </a>
+    <a href="/app">
+        <img src="/img/nav/apps.png" class="home_bttn" alt="Apps">
+    </a>
+    <a href="/learning.html">
+        <img src="/img/nav/voidgg.png" class="home_bttn" alt="Void Ga</x>mes">
+    </a>
+    <a href="/voidgpt">
+        <img src="/img/nav/vai.png" class="home_bttn" alt="Void GPT">
+    </a>
+    <a href="/voidvc">
+        <img src="/img/nav/void-vc.png" class="footer_icon" alt="Contact">
+    </a>
+</header>
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+    const buttons = document.querySelectorAll('.home_bttn');
+    buttons.forEach((button, index) => {
+        setTimeout(() => {
+            button.style.animation = 'pulse 2s infinite';
+        }, index * 200);
+    });
+});
+</script>

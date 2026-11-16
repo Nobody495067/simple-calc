@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ixl.com</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .loader {
+            border: 5px solid #333333;
+            border-top: 5px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #message {
+            margin: 20px 0;
+            font-size: 18px;
+            max-width: 600px;
+        }
+        
+        .success {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #111;
+            border-radius: 8px;
+            max-width: 600px;
+        }
+        
+        .highlight {
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Generating Fullscreen Iframe...</h1>
+    
+    <div class="loader" id="loader"></div>
+    
+    <div id="message">Loading... Please wait while we generate your iframe file.</div>
+    
+    <div class="success" id="success" style="display: none;">
+        <p class="highlight">Ok! The file has been downloaded!</p>
+        <p>Now open/run the file. It's an HTML file and it's completely safe.</p>
+        <p>If you don't trust it, you can always look into the code of it.</p>
+    </div>
+    
+    <script>
+        // Function to extract root domain from a URL
+        function extractRootDomain(url) {
+            // Add protocol if missing
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+            
+            try {
+                // Parse the URL
+                const urlObj = new URL(url);
+                // Return just the origin (protocol + hostname + port)
+                return urlObj.origin;
+            } catch (e) {
+                // If URL parsing fails, return the original input
+                console.error("Error parsing URL:", e);
+                return url;
+            }
+        }
+        
+        // Function to generate HTML content
+        function generateHTML(rootUrl) {
+            return `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ixl.com</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: black;
+        }
+        iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <iframe src="${rootUrl}" allowfullscreen></iframe>
+</body>
+</html>`;
+        }
+        
+        // Function to download HTML file
+        function downloadHTML(htmlContent, filename) {
+            // Create a blob with the HTML content
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            
+            // Create a download link
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename || 'iframe-page.html';
+            
+            // Append to body, click, and remove
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Show success message
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('message').style.display = 'none';
+            document.getElementById('success').style.display = 'block';
+        }
+        
+        // Automatically generate and download on page load
+        window.onload = function() {
+            // Use setTimeout to ensure the loading animation is visible
+            setTimeout(function() {
+                const currentUrl = window.location.href;
+                const rootUrl = extractRootDomain(currentUrl);
+                const htmlContent = generateHTML(rootUrl);
+                
+                // Use fixed filename
+                downloadHTML(htmlContent, 'ixl.html');
+            }, 1500); // Short delay for better UX
+        };
+    </script>
+</body>
+</html>

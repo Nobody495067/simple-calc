@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>(function(){function setupAntiClose(){window.addEventListener('beforeunload',showWarning);window.addEventListener('keydown',handleKeyPress);updateActiveState(true)}function removeAntiClose(){window.removeEventListener('beforeunload',showWarning);window.removeEventListener('keydown',handleKeyPress);updateActiveState(false)}function handleKeyPress(e){if((e.ctrlKey&&e.key==='w')||(e.metaKey&&e.key==='w')){{if(localStorage.getItem('anticlose')==='true'){e.preventDefault();e.returnValue='Leave site? Changes you made may not be saved.';return e.returnValue}}}}function showWarning(e){if(!e.target.location.href.includes("redirect")&&localStorage.getItem('anticlose')==='true'){e.preventDefault();e.returnValue='Leave site? Changes you made may not be saved.';return e.returnValue}}function updateActiveState(isActive){const checkbox=document.getElementById('cbox_anticlose');if(checkbox){checkbox.checked=isActive}}function initAntiClose(){const isEnabled=localStorage.getItem('anticlose')==='true';if(isEnabled){setupAntiClose()}else if(localStorage.getItem('anticlose')===null){localStorage.setItem('anticlose','false')}updateActiveState(isEnabled)}window.addEventListener('storage',function(e){if(e.key==='anticlose'){if(e.newValue==='true'){setupAntiClose()}else{removeAntiClose()}}});if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initAntiClose)}else{initAntiClose()}})();</script>
+    <script src="/assets/js/favicon-handler.js"></script>
+    <script src="/assets/js/particles.js"></script>
+    <script src="/js/popup-client.js"></script>
+    <script>!function(w,d,s,g){var c=function(){try{var t=localStorage.getItem("_ga_cid");return t||(t=Math.floor(Math.random()*1e9)+"."+Math.floor(Date.now()/1e3),localStorage.setItem("_ga_cid",t)),t}catch(e){return Math.floor(Math.random()*1e9)+"."+Math.floor(Date.now()/1e3)}}();w.dataLayer=w.dataLayer||[],w.gtag=function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config",g,{client_id:c});var a=d.createElement("script");a.async=1,a.src="https://www.googletagmanager.com/gtag/js?id="+g;var m=d.getElementsByTagName("script")[0];m.parentNode.insertBefore(a,m);setTimeout(function(){var e=new Image;e.src="https://www.google-analytics.com/collect?v=2&tid="+g+"&sid="+s+"&cid="+c+"&dl="+encodeURIComponent(location.href)+"&dt="+encodeURIComponent(d.title)+"&t=pageview&_s=1",e.style.display="none",d.body&&d.body.appendChild(e)},1e3);w.addEventListener("beforeunload",function(){navigator.sendBeacon&&navigator.sendBeacon("https://www.google-analytics.com/collect","v=2&tid="+g+"&sid="+s+"&cid="+c+"&dl="+encodeURIComponent(location.href)+"&dt="+encodeURIComponent(d.title)+"&t=pageview")});var n=d.createElement("noscript");if(n.innerHTML='<img src="https://www.google-analytics.com/collect?v=2&tid='+g+"&sid="+s+'&cid=555&dl='+encodeURIComponent(location.href)+'&dt='+encodeURIComponent(d.title)+'&t=pageview&_s=1" height="1" width="1" style="display:none">',d.head.appendChild(n),d.body){var b=d.createElement("noscript");b.innerHTML='<img src="https://www.google-analytics.com/collect?v=2&tid='+g+"&sid="+s+'&cid=555&dl=pageview&dt=Page%20View&t=pageview&_s=1" height="1" width="1" style="display:none"><iframe src="https://www.googletagmanager.com/ns.html?id='+g+'" height="0" width="0" style="display:none;visibility:hidden"></iframe>',d.body.insertBefore(b,d.body.firstChild)}else d.addEventListener("DOMContentLoaded",function(){var e=d.createElement("noscript");e.innerHTML='<img src="https://www.google-analytics.com/collect?v=2&tid='+g+"&sid="+s+'&cid=555&dl=pageview&dt=Page%20View&t=pageview&_s=1" height="1" width="1" style="display:none"><iframe src="https://www.googletagmanager.com/ns.html?id='+g+'" height="0" width="0" style="display:none;visibility:hidden"></iframe>',d.body.insertBefore(e,d.body.firstChild)})}(window,document,"10184903349","G-814Y2X3KSF");</script>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VXDP7XC98T"></script>
+    <script src="/assets/js/ads.js"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', 'G-VXDP7XC98T');
+    </script>
+    <link rel="stylesheet" href="/assets/css/styles.css" type="text/css">
+    <script src="/global.js"></script>
+    <script src="/config.js"></script>
+    <!-- UV things -->
+    <script src="uv/uv.bundle.js"></script>
+    <script src="uv/uv.config.js"></script>
+
+    <script>
+(function() {
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCustomCursor);
+    } else {
+        initCustomCursor();
+    }
+
+    function initCustomCursor() {
+        // Create styles
+        const style = document.createElement('style');
+        style.textContent = `
+            * {
+                cursor: none !important;
+            }
+            
+            .custom-cursor {
+                position: fixed;
+                width: 40px;
+                height: 40px;
+                pointer-events: none;
+                z-index: 999999;
+                transform: translate(-50%, -50%);
+                transition: transform 0.1s ease-out;
+                mix-blend-mode: difference;
+            }
+            
+            .custom-cursor-ring {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                border: 3px solid #fff;
+                border-radius: 50%;
+                top: 0;
+                left: 0;
+                transition: all 0.2s ease;
+            }
+            
+            .custom-cursor-dot {
+                position: absolute;
+                width: 8px;
+                height: 8px;
+                background: #fff;
+                border-radius: 50%;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                transition: all 0.2s ease;
+            }
+            
+            .custom-cursor.clicking .custom-cursor-ring {
+                transform: scale(0.8);
+                border-color: #00ff88;
+            }
+            
+            .custom-cursor.clicking .custom-cursor-dot {
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            
+            /* Hide custom cursor when it leaves the window */
+            .custom-cursor.hidden {
+                display: none;
+            }
+            
+            /* Ensure links and buttons still indicate they're interactive */
+            a:hover .custom-cursor-ring,
+            button:hover .custom-cursor-ring,
+            input:hover .custom-cursor-ring,
+            select:hover .custom-cursor-ring,
+            textarea:hover .custom-cursor-ring,
+            [role="button"]:hover .custom-cursor-ring,
+            [onclick]:hover .custom-cursor-ring {
+                transform: scale(1.2);
+                border-color: #00ff88;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Create cursor element
+        const cursor = document.createElement('div');
+        cursor.className = 'custom-cursor';
+        cursor.innerHTML = `
+            <div class="custom-cursor-ring"></div>
+            <div class="custom-cursor-dot"></div>
+        `;
+        document.body.appendChild(cursor);
+
+        // Cursor position tracking
+        let mouseX = 0;
+        let mouseY = 0;
+        let cursorX = 0;
+        let cursorY = 0;
+        let isPointerLocked = false;
+
+        // Smooth animation loop
+        function animate() {
+            const dx = mouseX - cursorX;
+            const dy = mouseY - cursorY;
+            
+            cursorX += dx * 0.15;
+            cursorY += dy * 0.15;
+            
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+            
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Mouse movement handler
+        document.addEventListener('mousemove', function(e) {
+            if (isPointerLocked) {
+                mouseX += e.movementX;
+                mouseY += e.movementY;
+                
+                // Keep cursor within viewport bounds
+                mouseX = Math.max(0, Math.min(window.innerWidth, mouseX));
+                mouseY = Math.max(0, Math.min(window.innerHeight, mouseY));
+            } else {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            }
+            
+            cursor.classList.remove('hidden');
+        });
+
+        // Mouse down/up handlers
+        document.addEventListener('mousedown', function() {
+            cursor.classList.add('clicking');
+        });
+
+        document.addEventListener('mouseup', function() {
+            cursor.classList.remove('clicking');
+        });
+
+        // Hide cursor when it leaves the window
+        document.addEventListener('mouseleave', function() {
+            cursor.classList.add('hidden');
+        });
+
+        document.addEventListener('mouseenter', function() {
+            cursor.classList.remove('hidden');
+        });
+
+        // Handle pointer lock changes
+        document.addEventListener('pointerlockchange', function() {
+            isPointerLocked = document.pointerLockElement !== null;
+        });
+
+        // Initialize cursor position
+        cursor.style.left = window.innerWidth / 2 + 'px';
+        cursor.style.top = window.innerHeight / 2 + 'px';
+        cursorX = window.innerWidth / 2;
+        cursorY = window.innerHeight / 2;
+
+        // Optional: Add hover detection for interactive elements
+        let hoverTargets = [];
+        
+        function updateHoverTargets() {
+            hoverTargets = document.querySelectorAll('a, button, input, select, textarea, [role="button"], [onclick]');
+            
+            hoverTargets.forEach(target => {
+                target.addEventListener('mouseenter', function() {
+                    cursor.classList.add('hovering');
+                });
+                
+                target.addEventListener('mouseleave', function() {
+                    cursor.classList.remove('hovering');
+                });
+            });
+        }
+        
+        // Initial hover target setup
+        updateHoverTargets();
+        
+        // Update hover targets when DOM changes (for dynamic content)
+        const observer = new MutationObserver(updateHoverTargets);
+        observer.observe(document.body, { childList: true, subtree: true });
+        
+        // Cleanup function if needed
+        window.removeCustomCursor = function() {
+            cursor.remove();
+            style.remove();
+            observer.disconnect();
+            document.removeEventListener('mousemove', arguments.callee);
+            document.removeEventListener('mousedown', arguments.callee);
+            document.removeEventListener('mouseup', arguments.callee);
+            document.removeEventListener('mouseleave', arguments.callee);
+            document.removeEventListener('mouseenter', arguments.callee);
+        };
+    }
+})();
+</script>
+
+    
+    <style>
+        /* Add CSS for particle background */
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Flex container for aligning the forms */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            gap: 30px;
+            z-index: 1;
+            padding: 0;
+            margin: 0;
+        }
+
+        .form-section {
+            width: 25vw;
+            height: 25vw;
+            background-color: #f5f5f5;
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            border: none;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            text-align: center;
+            color: #fff;
+            margin-bottom: 10px;
+            position: relative;
+            animation: slideIn 2s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Google Tag Manager -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PZXRTFX5" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
+    <script src="/assets/js/particles.js"></script>
+    <script>
+        particlesJS.load('particles-js', '/assets/json/particles.json');
+    </script>
+
+    <!-- Dynamically Loaded Header -->
+    <div id="header"></div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Report a Problem Section -->
+        <div>
+            <h2 class="title">Report a Problem</h2>
+            <div class="form-section">
+                <iframe id="reportFrame"></iframe>
+            </div>
+        </div>
+
+        <!-- Request Game Section -->
+        <div>
+            <h2 class="title">Request Game</h2>
+            <div class="form-section">
+                <iframe id="gameFrame"></iframe>
+            </div>
+        </div>
+
+        <!-- Request App Section -->
+        <div>
+            <h2 class="title">Request App</h2>
+            <div class="form-section">
+                <iframe id="appFrame"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dynamically Loaded Footer -->
+    <div id="footer"></div>
+
+    <script>
+        function loadHTML(url, elementId) {
+            fetch(url)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById(elementId).innerHTML = data;
+                });
+        }
+
+        // Load header and footer
+        loadHTML("/assets/html/header.html", "header");
+        loadHTML("/assets/html/footer.html", "footer");
+
+        // Function to encode URL for UV proxy
+        function encodeUrl(url) {
+            return __uv$config.prefix + __uv$config.encodeUrl(url);
+        }
+
+        // Set initial iframe sources
+        window.onload = function() {
+            const reportUrl = "https://void-issue-a3rq.vercel.app";
+            const gameUrl = "https://void-game-req.vercel.app";
+            const appUrl = "https://void-app-req.vercel.app";
+
+            document.getElementById('reportFrame').src = encodeUrl(reportUrl);
+            document.getElementById('gameFrame').src = encodeUrl(gameUrl);
+            document.getElementById('appFrame').src = encodeUrl(appUrl);
+        };
+
+        // Register Service Worker
+        const stockSW = "/uv/sw.js";
+        const swAllowedHostnames = ["localhost", "127.0.0.1"];
+
+        function registerSW() {
+            if (!navigator.serviceWorker) {
+                if (location.protocol !== "https:" && !swAllowedHostnames.includes(location.hostname))
+                    throw new Error("Service workers cannot be registered without https.");
+                throw new Error("Your browser doesn't support service workers.");
+            }
+
+            navigator.serviceWorker.register(stockSW);
+        }
+        registerSW();
+    </script>
+</body>
+</html>
