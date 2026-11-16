@@ -282,8 +282,9 @@ app.use((req, res, next) => {
 // ==== OPTIMIZED FILE HANDLER ====
 // Custom handler for static files with content-based ETags
 app.use((req, res, next) => {
-  // Skip for service and bare paths
+  // Skip for service, bare, and root UV worker paths
   if (
+    req.path === '/sw.js' ||
     req.path.startsWith('/bare/') ||
     req.path.includes('/service/') ||
     req.path.startsWith('/scramjet/')
