@@ -91,7 +91,13 @@ calculateDirectoryHashes(path.join(dirname, "static"));
 console.log(`Calculated hashes for ${Object.keys(fileHashes).length} files`);
 
 // Try to load local config if it exists
-let bareServerOptions = {};
+let bareServerOptions = {
+  connectionLimiter: {
+    maxConnectionsPerIP: 120,
+    windowDuration: 60,
+    blockDuration: 10
+  }
+};
 let serverSettings = {};
 let enableUvCaching = false;
 
