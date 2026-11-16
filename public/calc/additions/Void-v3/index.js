@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 const app = express();
 const server = http.createServer();
 const dirname = process.cwd();
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
 // Generate a cache buster value each time the server starts
 const CACHE_BUSTER = Date.now();

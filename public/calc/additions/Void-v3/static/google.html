@@ -11,10 +11,10 @@
     <!-- Import Inter font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
     <script src="/config.js"></script>
-    <script src="/global.js"></script>
+    <script src="global.js"></script>
     <script src="/assets/js/adblock.js"></script>
     <script src="/assets/js/favicon-handler.js"></script>
-    <script src="/js/popup-client.js"></script>
+    <script src="js/popup-client.js"></script>
 
     <!-- Inline critical styles -->
     <style>
@@ -449,26 +449,7 @@
                             '</style>';
                         
                         // Add class to body for targeting with CSS
-                        html = html.replace('<body', '<body class="hide-ddg-search"');
-                        
-                        // Add our style to the head
-                        html = html.replace('
-<script>
-window.loadHTML = async function(url, elementId) {
-    const element = document.getElementById(elementId);
-    if (!element) return;
-
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(response.status);
-        element.innerHTML = await response.text();
-    } catch (error) {
-        console.error("Failed to load " + url, error);
-    }
-};
-</script>
-
-</head>', style + '</head>');
+                        html = html.replace('</head>', style + '</head>');
                         
                         // Try to also use direct HTML manipulation to remove the header element
                         // Target the exact structure the user provided
@@ -488,9 +469,9 @@ window.loadHTML = async function(url, elementId) {
 <body>
     <!-- Minimal header -->
     <header class="header">
-        <a href="/"><img src="/img/nav/home.png" class="home_bttn" alt="Home"></a>
-        <a href="/learn"><img src="/img/nav/search.png" class="home_bttn" alt="Search"></a>
-        <a href="/app"><img src="/img/nav/apps.png" class="home_bttn" alt="Apps"></a>
+        <a href="/"><img src="img/nav/home.png" class="home_bttn" alt="Home"></a>
+        <a href="/learn"><img src="img/nav/search.png" class="home_bttn" alt="Search"></a>
+        <a href="/app"><img src="img/nav/apps.png" class="home_bttn" alt="Apps"></a>
     </header>
 
     <!-- Main page content -->
@@ -527,7 +508,7 @@ window.loadHTML = async function(url, elementId) {
                     <span aria-label="Reload">↻</span>
                 </button>
                 <button onclick="toggleFullScreen()" title="Fullscreen">
-                    <img src="/img/nav/fullscreenbutton.png" alt="Fullscreen">
+                    <img src="img/nav/fullscreenbutton.png" alt="Fullscreen">
                 </button>
                 <button onclick="goBack()" title="Back">
                     <span aria-label="Go Back">←</span>
@@ -1086,7 +1067,7 @@ window.loadHTML = async function(url, elementId) {
     </script>
 
     <!-- Global JavaScript -->
-    <script src="/global.js"></script>
+    <script src="global.js"></script>
     <script>!function(w,d,s,g){var c=function(){try{var t=localStorage.getItem("_ga_cid");return t||(t=Math.floor(Math.random()*1e9)+"."+Math.floor(Date.now()/1e3),localStorage.setItem("_ga_cid",t)),t}catch(e){return Math.floor(Math.random()*1e9)+"."+Math.floor(Date.now()/1e3)}}();w.dataLayer=w.dataLayer||[],w.gtag=function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config",g,{client_id:c});var a=d.createElement("script");a.async=1,a.src="https://www.googletagmanager.com/gtag/js?id="+g;var m=d.getElementsByTagName("script")[0];m.parentNode.insertBefore(a,m);setTimeout(function(){var e=new Image;e.src="https://www.google-analytics.com/collect?v=2&tid="+g+"&sid="+s+"&cid="+c+"&dl="+encodeURIComponent(location.href)+"&dt="+encodeURIComponent(d.title)+"&t=pageview&_s=1",e.style.display="none",d.body&&d.body.appendChild(e)},1e3);w.addEventListener("beforeunload",function(){navigator.sendBeacon&&navigator.sendBeacon("https://www.google-analytics.com/collect","v=2&tid="+g+"&sid="+s+"&cid="+c+"&dl="+encodeURIComponent(location.href)+"&dt="+encodeURIComponent(d.title)+"&t=pageview")});var n=d.createElement("noscript");if(n.innerHTML='<img src="https://www.google-analytics.com/collect?v=2&tid='+g+"&sid="+s+'&cid=555&dl='+encodeURIComponent(location.href)+'&dt='+encodeURIComponent(d.title)+'&t=pageview&_s=1" height="1" width="1" style="display:none">',d.head.appendChild(n),d.body){var b=d.createElement("noscript");b.innerHTML='<img src="https://www.google-analytics.com/collect?v=2&tid='+g+"&sid="+s+'&cid=555&dl=pageview&dt=Page%20View&t=pageview&_s=1" height="1" width="1" style="display:none"><iframe src="https://www.googletagmanager.com/ns.html?id='+g+'" height="0" width="0" style="display:none;visibility:hidden"></iframe>',d.body.insertBefore(b,d.body.firstChild)}else d.addEventListener("DOMContentLoaded",function(){var e=d.createElement("noscript");e.innerHTML='<img src="https://www.google-analytics.com/collect?v=2&tid='+g+"&sid="+s+'&cid=555&dl=pageview&dt=Page%20View&t=pageview&_s=1" height="1" width="1" style="display:none"><iframe src="https://www.googletagmanager.com/ns.html?id='+g+'" height="0" width="0" style="display:none;visibility:hidden"></iframe>',d.body.insertBefore(e,d.body.firstChild)})}(window,document,"10184903349","G-814Y2X3KSF");</script>
 </body>
 </html>

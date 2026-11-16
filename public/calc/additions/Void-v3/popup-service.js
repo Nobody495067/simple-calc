@@ -114,7 +114,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-server.listen(PORT, '127.0.0.1', () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`Popup service running on port ${PORT}`);
   console.log(`Connected clients: ${connectedClients.size}`);
   console.log(`Server time: ${new Date().toISOString()}`);
