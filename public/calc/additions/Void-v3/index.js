@@ -93,9 +93,9 @@ console.log(`Calculated hashes for ${Object.keys(fileHashes).length} files`);
 // Try to load local config if it exists
 let bareServerOptions = {
   connectionLimiter: {
-    maxConnectionsPerIP: 120,
+    maxConnectionsPerIP: 300,
     windowDuration: 60,
-    blockDuration: 10
+    blockDuration: 5
   }
 };
 let serverSettings = {};
@@ -449,6 +449,10 @@ app.get("/", function(req, res) {
 
 // ==== STATIC FILES FALLBACK ====
 // Only used if our optimized handler doesn't catch something
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end();
+});
+
 app.use(express.static(path.join(dirname, "static"), {
   etag: false,         // We handle ETags ourselves
   lastModified: false  // We don't use Last-Modified

@@ -22,18 +22,26 @@ self.__uv$config = {
     
     decodeUrl: function(encodedUrl) {
         if (!encodedUrl) return encodedUrl;
-        
+
+        // Only decode values that look like Base64.
+        if (!/^[A-Za-z0-9_-]+={0,2}$/.test(encodedUrl)) {
+            return encodedUrl;
+        }
+
         try {
-            // Standard base64 decoding
-            const padding = '='.repeat((4 - (encodedUrl.length % 4)) % 4);
-            const base64 = encodedUrl
+            const normalized = encodedUrl
                 .replace(/-/g, '+')
-                .replace(/_/g, '/') + padding;
-            return atob(base64);
+                .replace(/_/g, '/')
+                .replace(/=+$/, '');
+
+            const padded = normalized + '='.repeat((4 - normalized.length % 4) % 4);
+            const binary = atob(padded);
+            const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+
+            return new TextDecoder('utf-8').decode(bytes);
         } catch (err) {
-            console.error('UV decoding error:', err);
-            // Fallback to Ultraviolet's built-in decoder
-            return Ultraviolet.codec.base64.decode(encodedUrl);
+            console.warn('UV URL decoding failed:', err);
+            return encodedUrl;
         }
     },
     

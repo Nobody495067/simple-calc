@@ -148,7 +148,12 @@ window.loadHTML = async function(url, elementId) {
         let url = parseSearch(document.getElementById("uvsearch").value);
         let encodedUrl = __uv$config.prefix + __uv$config.encodeUrl(url);
        
-        location.href = "google.html?url=" + encodeURIComponent(encodedUrl);
+        const isSearch = !/^https?:\/\//i.test(document.getElementById("uvsearch").value.trim()) &&
+            !/^(localhost|[\w-]+\.)+[a-z]{2,}(?::\d+)?(?:\/.*)?$/i.test(document.getElementById("uvsearch").value.trim());
+
+        const displayValue = isSearch ? "Displaying Search..." : url;
+        location.href = "google.html?url=" + encodeURIComponent(encodedUrl) +
+            "&display=" + encodeURIComponent(displayValue);
         e.preventDefault();
       }
     }

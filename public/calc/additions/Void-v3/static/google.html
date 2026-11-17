@@ -10,7 +10,16 @@
     
     <!-- Import Inter font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
-    <script src="/config.js"></script>
+    <script src="/config.js">
+        setInterval(() => {
+            if (isDisplayingSearch) {
+                const bar = document.getElementById('proxy-search');
+                if (bar && bar.value !== "Displaying Search...") {
+                    bar.value = "Displaying Search...";
+                }
+            }
+        }, 250);
+\n</script>
     <script src="global.js"></script>
     <script src="/assets/js/adblock.js"></script>
     <script src="/assets/js/favicon-handler.js"></script>
@@ -600,6 +609,20 @@
         let loadingTimeout;
         let loadStartTime = 0;
         let currentUrl = '';
+        let isDisplayingSearch = false;
+
+function updateVoidAddressBar(value) {
+    const bar = document.getElementById('proxy-search');
+    if (!bar) return;
+
+    if (isDisplayingSearch) {
+        bar.value = "";
+        bar.placeholder = "Displaying Search...";
+    } else {
+        bar.value = value || "";
+        bar.placeholder = "Enter URL or search...";
+    }
+}
         
         // FIXED URL DECODER - Completely rewritten to handle all cases
         function decodeUVUrl(encodedUrl) {
@@ -813,10 +836,18 @@
             if (!searchInput) return;
             
             let url = parseSearch(searchInput);
+            isDisplayingSearch = !/^https?:\/\//i.test(searchInput.trim()) &&
+                !/^(localhost|[\w-]+\.)+[a-z]{2,}(?::\d+)?(?:\/.*)?$/i.test(searchInput.trim());
             let encodedUrl = __uv$config.prefix + __uv$config.encodeUrl(url);
             
-            // Store current URL for later reference
+            // Store the actual destination, but display a friendly label for searches
             currentUrl = url;
+            isDisplayingSearch = url.startsWith("https://duckduckgo.com/?q=");
+            document.getElementById('proxy-search').value =
+                isDisplayingSearch ? "Displaying Search..." : url;
+            if (isDisplayingSearch) document.getElementById("proxy-search").value = "Displaying Search...";
+            isDisplayingSearch = url.startsWith("https://duckduckgo.com/?q=");
+            updateVoidAddressBar(url);
             
             // Show loading and load the URL
             loadingScreen.style.display = 'flex';
@@ -834,14 +865,17 @@
         
         // Parse search input to proper URL
         function parseSearch(str) {
-            if (str.includes("http") && str.includes(":")) {
-                return str;
-            }
-            if (str.includes(".")) {
-                return "https://" + str;
-            }
-            return "https://duckduckgo.com/?t=h_&q=" + str;
-        }
+    str = str.trim();
+    if (!str) return "";
+
+    if (/^https?:\/\//i.test(str)) return str;
+
+    if (/^(localhost|[\w-]+\.)+[a-z]{2,}(?::\d+)?(?:\/.*)?$/i.test(str)) {
+        return "https://" + str;
+    }
+
+    return "https://duckduckgo.com/?q=" + encodeURIComponent(str);
+}
         
         // Apply DDG search bar hiding CSS directly - UPDATED to target specific elements
         function injectDDGStyles(iframeWindow) {
@@ -1017,8 +1051,10 @@
                     
                     // Update search bar if we have a valid URL
                     if (actualUrl && actualUrl !== 'about:blank') {
-                        document.getElementById('proxy-search').value = actualUrl;
-                        currentUrl = actualUrl;
+                        if (!isDisplayingSearch) {
+                            updateVoidAddressBar(actualUrl);
+                            currentUrl = actualUrl;
+                        }
                     }
                     
                     // Extra check: if on DuckDuckGo, reinject the styles
@@ -1043,6 +1079,7 @@
             // Get URL from query parameters
             const urlParams = new URLSearchParams(window.location.search);
             const proxyUrl = urlParams.get('url');
+            isDisplayingSearch = urlParams.get('display') === 'Displaying Search...';
             
             if (proxyUrl) {
                 // Display loading screen
@@ -1063,8 +1100,8 @@
                 }
                 
                 // Set the search bar value to the decoded URL
-                document.getElementById('proxy-search').value = decodedUrl;
-                currentUrl = decodedUrl;
+                updateVoidAddressBar(decodedUrl);
+                if (!isDisplayingSearch) currentUrl = decodedUrl;
                 
                 // Load URL into iframe
                 iframe.src = proxyUrl;
@@ -1089,8 +1126,8 @@
                             try {
                                 // Decode and update search bar with the current URL
                                 const decodedUrl = decodeUVUrl(loadedUrl);
-                                document.getElementById('proxy-search').value = decodedUrl;
-                                currentUrl = decodedUrl;
+                                updateVoidAddressBar(decodedUrl);
+                                if (!isDisplayingSearch) currentUrl = decodedUrl;
                             } catch (e) {
                                 console.log('Error decoding loaded URL:', e);
                             }
