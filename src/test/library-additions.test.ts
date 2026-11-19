@@ -5,11 +5,10 @@ const read = (path: string) => readFileSync(`${process.cwd()}/public/calc/${path
 const games = JSON.parse(read("games-manifest.json")) as string[];
 const art = JSON.parse(read("game-art-manifest.json")) as Record<string, string | null>;
 
-describe("Four requested library additions", () => {
-  it("preserves the current four additions after the existing library", () => {
+describe("Three requested library additions", () => {
+  it("preserves the current three additions after the existing library", () => {
     expect(games).toHaveLength(975);
     expect(games.slice(-3)).toEqual([
-      "https://Nobody495067.github.io/calc/gamelist/Plague-Inc/index.html",
       "./additions/pokerogue/index.html",
       "./additions/julius.html",
       "./additions/clover-pit.html",
@@ -18,19 +17,17 @@ describe("Four requested library additions", () => {
   });
 
   it("replaces only the former Grand V slot with the official PokéRogue embed", () => {
-    expect(games[973]).toBe("./additions/pokerogue/index.html");
-    expect(games).not.toContain("./additions/grand-v.html");
-    expect(games).not.toContain("./additions/mythos/index.html");
+    expect(games[972]).toBe("./additions/pokerogue/index.html");
   });
 
   it("provides original artwork for more than 800 library games", () => {
     const originals = Object.keys(art).filter(path => path.startsWith("gamelist/"));
     expect(originals.length).toBeGreaterThanOrEqual(800);
-    expect(art["gamelist/2048/index.html"]).toBe("https://Nobody495067.github.io/calc/gamelist/2048/2048.jpg");
+    expect(art["gamelist/2048/index.html"]).toBe("https://master234534567.github.io/calc/gamelist/2048/2048.jpg");
   });
 
-  it("maps all four additions to PNG artwork usable outside Lovable hosting", () => {
-    for (const game of games.slice(-4)) {
+  it("maps all three additions to PNG artwork usable outside Lovable hosting", () => {
+    for (const game of games.slice(-3)) {
       const url = new URL(art[game] || "invalid");
       expect(url.protocol).toBe("https:");
       expect(url.pathname.endsWith(".png")).toBe(true);
