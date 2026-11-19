@@ -6,7 +6,8 @@
 // Never set ssr.external or resolve.external: the Worker has no runtime module resolution, so
 // the build fails. Never add compression (compressPublicAssets, vite-plugin-compression):
 // hosting already compresses at the edge.
-// You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
+// You can pass additional config via defineConfig({
+  base: "/simple-calc/", vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 // GitHub Pages supplies its repository prefix; normal Lovable builds stay at /.
