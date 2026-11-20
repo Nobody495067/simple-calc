@@ -23,7 +23,7 @@ describe("Three requested library additions", () => {
   it("provides original artwork for more than 800 library games", () => {
     const originals = Object.keys(art).filter(path => path.startsWith("gamelist/"));
     expect(originals.length).toBeGreaterThanOrEqual(800);
-    expect(art["gamelist/2048/index.html"]).toBe("https://master234534567.github.io/calc/gamelist/2048/2048.jpg");
+    expect(art["gamelist/2048/index.html"]).toBe("https://Nobody495067.github.io/calc/gamelist/2048/2048.jpg");
   });
 
   it("maps all three additions to PNG artwork usable outside Lovable hosting", () => {
