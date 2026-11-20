@@ -3,8 +3,8 @@ import { getLibraryUrl } from "@/lib/library-location";
 
 describe("Library deployment paths", () => {
   it("loads the library within the GitHub repository rather than the domain root", () => {
-    expect(getLibraryUrl("/calc/", "https://Nobody495067.github.io"))
-      .toBe("https://Nobody495067.github.io/calc/calc/library.html");
+    expect(getLibraryUrl("/simple-calc/", "https://Nobody495067.github.io"))
+      .toBe("https://nobody495067.github.io/simple-calc/calc/library.html");
   });
 
   it("keeps the root-hosted preview library working", () => {
