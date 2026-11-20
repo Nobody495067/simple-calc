@@ -1,11 +1,6 @@
-/** Keep library files beside the exported app, including GitHub repository sites. */
+/** Build the library URL relative to the deployed application base. */
 
 export function getLibraryUrl(appBase: string, origin: string): string {
-  let base = appBase.replace(/\/+$/, "");
-
-  if (base.endsWith("/calc/calc")) {
-    base = base.slice(0, -5);
-  }
-
-  return `${origin.replace(/\/+$/, "")}${base}/calc/library.html`;
+  const base = appBase.endsWith("/") ? appBase : `${appBase}/`;
+  return new URL(`${base}calc/library.html`, `${origin.replace(/\/+$/, "")}/`).href;
 }
