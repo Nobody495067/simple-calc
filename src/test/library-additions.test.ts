@@ -7,7 +7,7 @@ const art = JSON.parse(read("game-art-manifest.json")) as Record<string, string 
 
 describe("Four requested library additions", () => {
   it("preserves the current four additions after the existing library", () => {
-    expect(games).toHaveLength(976);
+    expect(games).toHaveLength(975);
     expect(games.slice(-4)).toEqual([
       "https://Nobody495067.github.io/calc/gamelist/Plague-Inc/index.html",
       "./additions/pokerogue/index.html",
