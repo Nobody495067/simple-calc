@@ -12,7 +12,7 @@
 - [ ] Check whether All 22 through Ultraviolet can run on the existing static host; omit if unsupported.
 - [ ] Verify artwork, music, and unchanged calculator-to-library flow; report repository sync limits.
 
-- [x] Import http://master234534567.github.io/calc and confirm the build.
+- [x] Import http://Nobody495067.github.io/calc and confirm the build.
 - [x] Observe the source page and controls on desktop and phone; save evidence.
 - [x] Replay the same checks in the preview and record evidence.
 - [x] Repair confirmed mismatches, rerun checks, and report any limitations.
