@@ -23,11 +23,13 @@ describe("Four requested library additions", () => {
     expect(games).not.toContain("./additions/mythos/index.html");
   });
 
-  it("provides original artwork for more than 800 library games", () => {
-    const originals = Object.keys(art).filter(path => path.startsWith("gamelist/"));
-    expect(originals.length).toBeGreaterThanOrEqual(800);
-    expect(art["gamelist/2048/index.html"]).toBe("https://Nobody495067.github.io/calc/gamelist/2048/2048.jpg");
-  });
+it("provides original artwork for more than 800 library games", () => {
+  const originals = Object.keys(art).filter(path => path.startsWith("gamelist/"));
+  expect(originals.length).toBeGreaterThanOrEqual(800);
+  expect(art["gamelist/2048/index.html"]).toBe(
+    "https://Nobody495067.github.io/simple-calc/calc/gamelist/2048/2048.jpg"
+  );
+});
 
   it("maps all four additions to PNG artwork usable outside Lovable hosting", () => {
     for (const game of games.slice(-4)) {
