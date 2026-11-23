@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const read = (path: string) => readFileSync(`${process.cwd()}/public/calc/${path}`, "utf8");
+const read = (path: string) => readFileSync(`${process.cwd()}/simple-calc/
+${path}`, "utf8");
 const games = JSON.parse(read("games-manifest.json")) as string[];
 const art = JSON.parse(read("game-art-manifest.json")) as Record<string, string | null>;
 
