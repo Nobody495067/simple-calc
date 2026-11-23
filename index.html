@@ -335,7 +335,7 @@
           : /\.html?$/i.test(currentUrl.pathname)
             ? new URL('.', currentUrl)
             : new URL(`${currentUrl.pathname}/`, currentUrl.origin);
-        const gameUrl = new URL('public/calc/library.html', appBase);
+        const gameUrl = new URL('calc/library.html', appBase);
         fetch(gameUrl)
           .then((response) => {
             if (!response.ok) {
