@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 const read = (filePath: string) => readFileSync(resolve(process.cwd(), filePath), "utf8");
 const games = JSON.parse(read("games-manifest.json")) as string[];
-const art = JSON.parse(read("game-art-manifest.json")) as Record<string, string | null>;
+const art = JSON.parse(read("calc/game-art-manifest.json")) as Record<string, string | null>;
 
 describe("Four requested library additions", () => {
   it("preserves the current four additions after the existing library", () => {
