@@ -1,10 +1,24 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-const read = (filePath: string) => readFileSync(resolve(process.cwd(), filePath), "utf8");
-const games = JSON.parse(read("games-manifest.json")) as string[];
-const art = JSON.parse(read("calc/game-art-manifest.json")) as Record<string, string | null>;
+const readFirstExisting = (candidates: string[]) => {
+  for (const candidate of candidates) {
+    const fullPath = resolve(process.cwd(), candidate);
+    if (existsSync(fullPath)) {
+      return readFileSync(fullPath, "utf8");
+    }
+  }
+  throw new Error(`Could not find any of: ${candidates.join(", ")}`);
+};
+
+const games = JSON.parse(
+  readFirstExisting(["games-manifest.json", "public/games-manifest.json", "public/calc/games-manifest.json"])
+) as string[];
+
+const art = JSON.parse(
+  readFirstExisting(["public/calc/game-art-manifest.json", "public/game-art-manifest.json", "calc/game-art-manifest.json", "game-art-manifest.json"])
+) as Record<string, string | null>;
 
 describe("Four requested library additions", () => {
   it("preserves the current four additions after the existing library", () => {
