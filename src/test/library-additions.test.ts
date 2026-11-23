@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-const read = (path: string) => readFileSync(`${process.cwd()}/simple-calc/
-${path}`, "utf8");
+const read = (filePath: string) => readFileSync(resolve(process.cwd(), filePath), "utf8");
 const games = JSON.parse(read("games-manifest.json")) as string[];
 const art = JSON.parse(read("game-art-manifest.json")) as Record<string, string | null>;
 
@@ -10,7 +10,7 @@ describe("Four requested library additions", () => {
   it("preserves the current four additions after the existing library", () => {
     expect(games).toHaveLength(975);
     expect(games.slice(-4)).toEqual([
-     "https://Nobody495067.github.io/simple-calc/calc/gamelist/Plague-Inc/index.html",
+      "https://Nobody495067.github.io/simple-calc/calc/gamelist/Plague-Inc/index.html",
       "./additions/pokerogue/index.html",
       "./additions/julius.html",
       "./additions/clover-pit.html",
@@ -24,13 +24,13 @@ describe("Four requested library additions", () => {
     expect(games).not.toContain("./additions/mythos/index.html");
   });
 
-it("provides original artwork for more than 800 library games", () => {
-  const originals = Object.keys(art).filter(path => path.startsWith("gamelist/"));
-  expect(originals.length).toBeGreaterThanOrEqual(800);
-  expect(art["gamelist/2048/index.html"]).toBe(
-    "https://Nobody495067.github.io/simple-calc/calc/gamelist/2048/2048.jpg"
-  );
-});
+  it("provides original artwork for more than 800 library games", () => {
+    const originals = Object.keys(art).filter((path) => path.startsWith("gamelist/"));
+    expect(originals.length).toBeGreaterThanOrEqual(800);
+    expect(art["gamelist/2048/index.html"]).toBe(
+      "https://Nobody495067.github.io/simple-calc/calc/gamelist/2048/2048.jpg"
+    );
+  });
 
   it("maps all four additions to PNG artwork usable outside Lovable hosting", () => {
     for (const game of games.slice(-4)) {
