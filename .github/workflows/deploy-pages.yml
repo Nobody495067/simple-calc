@@ -43,9 +43,10 @@ jobs:
 
       - name: Check static export
         run: |
-          test -s dist/client/index.html
-          test -s dist/client/calc/library.html
-          test -s dist/client/games-manifest.json
+          cp -f games-manifest.json dist/client/games-manifest.json
+          test -s dist/client/index.html || (echo "Missing dist/client/index.html" && exit 1)
+          test -s dist/client/calc/library.html || (echo "Missing dist/client/calc/library.html" && exit 1)
+          test -s dist/client/games-manifest.json || (echo "Missing dist/client/games-manifest.json" && exit 1)
           touch dist/client/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3
