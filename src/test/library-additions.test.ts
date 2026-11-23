@@ -22,18 +22,18 @@ const art = JSON.parse(
 
 describe("Four requested library additions", () => {
   it("preserves the current four additions after the existing library", () => {
-    expect(games).toHaveLength(976);
+    expect(games).toHaveLength(975);
     expect(games.slice(-4)).toEqual([
       "https://Nobody495067.github.io/simple-calc/calc/gamelist/Plague-Inc/index.html",
       "./additions/pokerogue/index.html",
       "./additions/julius.html",
       "./additions/clover-pit.html",
     ]);
-    expect(games[971]).toBe("gamelist/60-Seconds/index.html");
+    expect(games[970]).toBe("gamelist/60-Seconds/index.html");
   });
 
   it("replaces only the former Grand V slot with the official PokéRogue embed", () => {
-    expect(games[973]).toBe("./additions/pokerogue/index.html");
+    expect(games[972]).toBe("./additions/pokerogue/index.html");
     expect(games).not.toContain("./additions/grand-v.html");
     expect(games).not.toContain("./additions/mythos/index.html");
   });
