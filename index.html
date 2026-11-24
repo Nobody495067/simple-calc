@@ -325,14 +325,33 @@
             : new URL(`${currentUrl.pathname}/`, currentUrl.origin);
         const gameUrl = new URL('calc/library.html', appBase);
 
-        // Navigate directly instead of creating an about:blank tab and fetching/
-        // rewriting the library HTML. Direct navigation also lets the browser load
-        // the library's scripts, styles, and relative assets normally.
-        const gameTab = window.open(gameUrl.href, '_blank');
+        // Keep the library displayed inside an about:blank tab. The explicit
+        // manifest base keeps its JSON, artwork, and game paths pointed at /calc/.
+        const gameTab = window.open('about:blank', '_blank');
         if (!gameTab) {
           display.textContent = 'Allow pop-ups';
           input = '';
+          return;
         }
+
+        fetch(gameUrl.href)
+          .then((response) => {
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return response.text();
+          })
+          .then((html) => {
+            if (gameTab.closed) return;
+            const manifestBase = new URL('./', gameUrl).href;
+            const baseTag = `<meta name="library-manifest-base" content="${manifestBase}">\\n`;
+            const updatedHtml = html.replace(/<\\/head>/i, `${baseTag}</head>`);
+            gameTab.document.open();
+            gameTab.document.write(updatedHtml);
+            gameTab.document.close();
+          })
+          .catch((error) => {
+            if (gameTab.closed) return;
+            gameTab.document.body.textContent = `Could not open the game library: ${error.message}`;
+          });
       }
     </script>
   </body>
