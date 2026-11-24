@@ -576,36 +576,9 @@
         }
       }
 
-      if (!/^https?:\/\//i.test(url)) {
-        try {
-          const response = await fetch(url, { method: "HEAD" });
-          if (response.status === 404) {
-            gameError.textContent = `${title} could not be found.`;
-            gameError.hidden = false;
-            return;
-          }
-
-          if (
-            url.startsWith("Offline-HTML-Games-Pack-master/offline/") &&
-            response.ok &&
-            response.headers.get("content-length") === "0"
-          ) {
-            const filename = url.split("/").pop().replace(/\.(html?|htm)$/i, "");
-            const key = normalizeGameName(filename);
-            const fallback = gameFallbacks.get(key) || gameFallbackAliases.get(key);
-            if (fallback && fallback !== url) {
-              url = fallback;
-              currentGameTitle.textContent = getTitle(fallback);
-            } else {
-              gameError.textContent = `${title} is an empty offline-pack placeholder, and no matching playable page was found in the game library.`;
-              gameError.hidden = false;
-              return;
-            }
-          }
-        } catch (error) {
-          console.warn(`Could not check ${url} before loading:`, error);
-        }
-      }
+      // Load the selected static game directly. Do not send a separate
+      // HEAD request first: that doubles requests to the Pages host and can
+      // trigger rate limits across a large library.
 
       gameFrame.src = url;
       gameFrame.hidden = false;
@@ -634,7 +607,7 @@
           const response = await fetch(url);
           if (!response.ok) {
             const error = new Error(`HTTP ${response.status} ${response.statusText}`);
-            error.retryable = response.status === 429 || response.status >= 500;
+            // A 429 means the host is already throttling us; retrying would add load.\n            error.retryable = response.status >= 500;
             const retryAfter = Number(response.headers.get("Retry-After"));
             error.retryDelay = Number.isFinite(retryAfter) && retryAfter > 0
               ? Math.min(retryAfter * 1000, 5000)
