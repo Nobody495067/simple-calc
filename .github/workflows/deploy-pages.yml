@@ -42,15 +42,29 @@ jobs:
       # The game HTML files live in the original calc repository. Keep the
       # customized simple-calc library and calculator here, and copy only the
       # game content directories into the Pages output.
-      - name: Restore original game files from calc repository
+      - name: Restore original game files from calc repository (6 processing parts)
         run: |
           git clone --depth 1 https://github.com/Nobody495067/calc.git /tmp/calc-source
           mkdir -p dist/client/calc
-          cp -a /tmp/calc-source/gamelist dist/client/calc/
-          cp -a /tmp/calc-source/Offline-HTML-Games-Pack-master dist/client/calc/
-          cp -a /tmp/calc-source/emulator dist/client/calc/
-          cp -a /tmp/calc-source/game.html dist/client/calc/
-          echo "Restored game directories from Nobody495067/calc."
+
+          # Build one ordered file list, then process it in six sequential batches.
+          cd /tmp/calc-source
+          find gamelist Offline-HTML-Games-Pack-master emulator -type f -printf '%P\\n' | sort > /tmp/game-files.txt
+          printf '%s\\n' game.html >> /tmp/game-files.txt
+          split -d -a 1 -n l/6 /tmp/game-files.txt /tmp/game-part-
+
+          cd -
+          for part in 0 1 2 3 4 5; do
+            chunk="/tmp/game-part-$part"
+            echo "========== Processing deployment part $((part + 1))/6 =========="
+            if [ -s "$chunk" ]; then
+              rsync -a --files-from="$chunk" /tmp/calc-source/ dist/client/calc/
+              echo "Part $((part + 1))/6 complete: $(wc -l < "$chunk") files processed."
+            else
+              echo "Part $((part + 1))/6 complete: no files in this batch."
+            fi
+          done
+          echo "All six game-file processing parts are complete."
 
       - name: Check static export
         run: |
