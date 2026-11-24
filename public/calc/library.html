@@ -709,8 +709,11 @@
             if (filename === "./additions/pokerogue/index.html") image.className = "game-logo";
             image.alt = "";
             // Begin every cover immediately; prioritize the first visible row.
-            image.loading = "eager";
-            image.fetchPriority = originalIndex < 12 ? "high" : "low";
+            // Only the first row should request artwork immediately. The other
+            // 960+ covers load as the visitor scrolls, avoiding a burst of
+            // hundreds of requests to GitHub Pages.
+            image.loading = originalIndex < 8 ? "eager" : "lazy";
+            image.fetchPriority = originalIndex < 8 ? "high" : "low";
             image.decoding = "async";
             image.onload = () => {
               fallback.hidden = true;
@@ -746,39 +749,21 @@
     }
 
     function getImageCandidates(filename) {
+      // The manifest is the source of truth for artwork. Resolve relative
+      // entries against the library directory (not the embedding page), and
+      // never probe a list of guessed filenames: those 404s create request
+      // storms and can throttle both covers and game pages.
       if (Object.prototype.hasOwnProperty.call(gameImageManifest, filename)) {
         const image = gameImageManifest[filename];
-        return image ? [image] : [];
+        return image ? [new URL(image, libraryDirectory).href] : [];
       }
-
-      if (filename.startsWith("Offline-HTML-Games-Pack-master/offline/")) {
-        const image = gameImageManifest[filename];
-        return image ? [image] : [];
-      }
-
-      if (/^https?:\/\//i.test(filename)) return [];
 
       const pathParts = filename.split("/");
       const gameDirectory = pathParts[0] === "gamelist" && pathParts.length > 2
         ? `gamelist/${pathParts[1]}`
         : pathParts.slice(0, -1).join("/");
-      const gameName = pathParts[0] === "gamelist" && pathParts.length > 2
-        ? pathParts[1]
-        : (pathParts[pathParts.length - 1] || "").replace(/\.(html?|htm)$/i, "");
-      if (!gameDirectory || !gameName) return [];
-
-      const names = [...new Set([
-        gameName,
-        gameName.toLowerCase(),
-        gameName.replace(/[^a-z0-9]/gi, ""),
-        gameName.replace(/[^a-z0-9]/gi, "").toLowerCase()
-      ])];
-      const extensions = ["png", "jpg", "jpeg", "webp", "gif"];
-      const candidates = names.flatMap((name) =>
-        extensions.map((extension) => `${gameDirectory}/${name}.${extension}`)
-      );
       const override = gameImageOverrides.get(gameDirectory);
-      return override ? [override, ...candidates] : candidates;
+      return override ? [new URL(override, libraryDirectory).href] : [];
     }
 
     function setGameFilter(filter) {
