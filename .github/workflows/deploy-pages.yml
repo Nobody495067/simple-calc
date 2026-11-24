@@ -69,10 +69,13 @@ jobs:
           import path from 'node:path';
           const root = path.resolve('dist/client/calc');
           const entries = JSON.parse(fs.readFileSync('games-manifest.json', 'utf8'));
-          const missing = entries.filter((entry) => /^https?:\\/\\//i.test(entry) ? false : !fs.existsSync(path.resolve(root, entry)));
+          const missing = entries.filter((entry) => {
+            if (entry.startsWith('https://') || entry.startsWith('http://')) return false;
+            return !fs.existsSync(path.resolve(root, entry));
+          });
           if (missing.length) {
             console.error('Missing local game files:', missing.length);
-            console.error(missing.slice(0, 40).join('\\n'));
+            for (const entry of missing.slice(0, 40)) console.error(entry);
             process.exit(1);
           }
           console.log(`Verified ${entries.length} manifest entries; all local game paths exist.`);
