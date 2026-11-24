@@ -7,19 +7,17 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: read
+      pages: read
     steps:
       - uses: actions/checkout@v4
 
@@ -52,11 +50,28 @@ jobs:
           test -s dist/client/calc/games-manifest.json || (echo "Missing dist/client/calc/games-manifest.json (required by library.html)" && exit 1)
           test -s dist/client/calc/game-art-manifest.json || (echo "Missing dist/client/calc/game-art-manifest.json" && exit 1)
           test -s dist/client/games-manifest.json || (echo "Missing dist/client/games-manifest.json" && exit 1)
+          echo "Largest exported directories:"
+          du -h -d 2 dist/client | sort -h | tail -20
+          echo "Total exported size:"
+          du -sh dist/client
           touch dist/client/.nojekyll
 
-      - uses: actions/upload-pages-artifact@v3
+      # Upload in the build job; deployment waits for this job to finish.
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist/client
+          retention-days: 1
 
-      - uses: actions/deploy-pages@v4
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
         id: deployment
+        uses: actions/deploy-pages@v5
