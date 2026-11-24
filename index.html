@@ -325,8 +325,7 @@
             : new URL(`${currentUrl.pathname}/`, currentUrl.origin);
         const gameUrl = new URL('calc/library.html', appBase);
 
-        // Keep the library displayed inside an about:blank tab. The explicit
-        // manifest base keeps its JSON, artwork, and game paths pointed at /calc/.
+        // The outer tab stays at about:blank; the library runs inside it.
         const gameTab = window.open('about:blank', '_blank');
         if (!gameTab) {
           display.textContent = 'Allow pop-ups';
@@ -334,24 +333,24 @@
           return;
         }
 
-        fetch(gameUrl.href)
-          .then((response) => {
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            return response.text();
-          })
-          .then((html) => {
-            if (gameTab.closed) return;
-            const manifestBase = new URL('./', gameUrl).href;
-            const baseTag = `<meta name="library-manifest-base" content="${manifestBase}">\\n`;
-            const updatedHtml = html.replace(/<\\/head>/i, `${baseTag}</head>`);
-            gameTab.document.open();
-            gameTab.document.write(updatedHtml);
-            gameTab.document.close();
-          })
-          .catch((error) => {
-            if (gameTab.closed) return;
-            gameTab.document.body.textContent = `Could not open the game library: ${error.message}`;
-          });
+        const doc = gameTab.document;
+        doc.open();
+        doc.write(`<!doctype html>
+          <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <title>Library</title>
+              <style>
+                html, body { width:100%; height:100%; margin:0; overflow:hidden; background:#121212; }
+                iframe { display:block; width:100%; height:100%; border:0; }
+              </style>
+            </head>
+            <body>
+              <iframe title="Game Library" src="${gameUrl.href}" allow="autoplay; fullscreen; gamepad; pointer-lock" allowfullscreen></iframe>
+            </body>
+          </html>`);
+        doc.close();
       }
     </script>
   </body>
