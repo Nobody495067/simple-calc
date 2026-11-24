@@ -624,19 +624,58 @@
       gameError.hidden = true;
     }
 
+    async function fetchJsonWithRetry(url, attempts = 4) {
+      let lastError;
+
+      for (let attempt = 0; attempt < attempts; attempt += 1) {
+        try {
+          // Use the browser's normal HTTP cache. Forcing no-cache on every
+          // library visit needlessly revalidates the same static JSON files.
+          const response = await fetch(url);
+          if (!response.ok) {
+            const error = new Error(`HTTP ${response.status} ${response.statusText}`);
+            error.retryable = response.status === 429 || response.status >= 500;
+            const retryAfter = Number(response.headers.get("Retry-After"));
+            error.retryDelay = Number.isFinite(retryAfter) && retryAfter > 0
+              ? Math.min(retryAfter * 1000, 5000)
+              : 500 * (2 ** attempt);
+            throw error;
+          }
+          return await response.json();
+        } catch (error) {
+          lastError = error;
+          const retryable = error?.retryable !== false;
+          if (!retryable || attempt === attempts - 1) break;
+          const delay = error?.retryDelay ?? 500 * (2 ** attempt);
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+      }
+
+      const detail = lastError instanceof Error ? lastError.message : String(lastError);
+      throw new Error(`Could not load games-manifest.json after ${attempts} attempts: ${detail}`);
+    }
+
     async function loadGames() {
       try {
         // about:blank receives this value from the calculator; direct visits use
         // the actual page URL, not the remote <base> used by existing games.
         const manifestBase = document.querySelector('meta[name="library-manifest-base"]')?.content
           || new URL("./", window.location.href).href;
-        const [response, imageResponse] = await Promise.all([
-          fetch(new URL("games-manifest.json", manifestBase).href, { cache: "no-cache" }),
-          fetch(new URL("game-art-manifest.json", manifestBase).href, { cache: "no-cache" })
+        const manifestUrl = new URL("games-manifest.json", manifestBase).href;
+        const artManifestUrl = new URL("game-art-manifest.json", manifestBase).href;
+
+        // Artwork is optional: a temporary art-manifest failure must never hide
+        // the actual game list.
+        const [filenames, imageManifest] = await Promise.all([
+          fetchJsonWithRetry(manifestUrl),
+          fetchJsonWithRetry(artManifestUrl).catch(() => ({}))
         ]);
-        if (!response.ok) throw new Error("Unable to load game manifest.");
-        const filenames = await response.json();
-        gameImageManifest = imageResponse.ok ? await imageResponse.json() : {};
+        if (!Array.isArray(filenames)) {
+          throw new Error("games-manifest.json did not contain a JSON array.");
+        }
+        gameImageManifest = imageManifest && typeof imageManifest === "object"
+          ? imageManifest
+          : {};
         gamePaths = new Set(filenames);
         gameFallbacks = new Map();
         filenames.forEach((filename) => {
