@@ -640,6 +640,16 @@
       } else if (settings.fullscreenKey && key === settings.fullscreenKey.toLowerCase() && gameContainer.style.display === "flex") {
         event.preventDefault();
         toggleFullScreen("game-frame");
+      } else if (settings.panicKey && key === settings.panicKey.toLowerCase() && settings.panicUrl) {
+        event.preventDefault();
+        let destination;
+        try {
+          destination = new URL(settings.panicUrl);
+          if (!["http:", "https:"].includes(destination.protocol)) return;
+        } catch {
+          return;
+        }
+        window.open(destination.href, "_blank", "noopener,noreferrer");
       }
     });
 
