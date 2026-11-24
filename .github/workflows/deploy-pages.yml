@@ -44,8 +44,14 @@ jobs:
       # game content directories into the Pages output.
       - name: Restore original game files from calc repository (6 processing parts)
         run: |
-          git clone --depth 1 https://github.com/Nobody495067/calc.git /tmp/calc-source
-          mkdir -p dist/client/calc
+          # Download the source snapshot as a compressed archive (no .git history),
+          # then extract once before processing the six copy batches.
+          curl --fail --location --retry 3 --retry-delay 2 \
+            https://codeload.github.com/Nobody495067/calc/tar.gz/refs/heads/main \
+            --output /tmp/calc-source.tar.gz
+          mkdir -p /tmp/calc-source dist/client/calc
+          tar -xzf /tmp/calc-source.tar.gz --strip-components=1 -C /tmp/calc-source
+          rm /tmp/calc-source.tar.gz
 
           # Copy with Python instead of rsync file lists. This safely handles
           # every filename and keeps each processing batch independent.
@@ -80,7 +86,7 @@ jobs:
                   relative = path.relative_to(source)
                   target = destination / relative
                   target.parent.mkdir(parents=True, exist_ok=True)
-                  shutil.copy2(path, target)
+                  shutil.copyfile(path, target)
               print(f"Part {part + 1}/6 complete.", flush=True)
 
           print(f"All six parts complete. Copied {total} files.", flush=True)
