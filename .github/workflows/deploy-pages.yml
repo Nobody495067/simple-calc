@@ -47,22 +47,37 @@ jobs:
           git clone --depth 1 https://github.com/Nobody495067/calc.git /tmp/calc-source
           mkdir -p dist/client/calc
 
-          # Build one ordered file list, then process it in six sequential batches.
-          cd /tmp/calc-source
-          find gamelist Offline-HTML-Games-Pack-master emulator -type f -printf '%P\\n' | sort > /tmp/game-files.txt
-          printf '%s\\n' game.html >> /tmp/game-files.txt
-          split -d -a 1 -n l/6 /tmp/game-files.txt /tmp/game-part-
+          # Build six balanced, NUL-delimited file batches. NUL delimiters
+          # safely preserve spaces and other special characters in filenames.
+          python3 <<'PY'
+          import os
+          from pathlib import Path
 
-          cd -
+          source = Path("/tmp/calc-source")
+          roots = ["gamelist", "Offline-HTML-Games-Pack-master", "emulator"]
+          files = []
+          for root in roots:
+              for current, _, names in os.walk(source / root):
+                  for name in names:
+                      full = Path(current) / name
+                      files.append(full.relative_to(source).as_posix())
+          files.append("game.html")
+          files.sort()
+
+          for part in range(6):
+              start = part * len(files) // 6
+              end = (part + 1) * len(files) // 6
+              batch = files[start:end]
+              target = Path(f"/tmp/game-part-{part}")
+              target.write_bytes(b"".join(os.fsencode(item) + b"\\0" for item in batch))
+              print(f"Prepared part {part + 1}/6: {len(batch)} files")
+          PY
+
           for part in 0 1 2 3 4 5; do
             chunk="/tmp/game-part-$part"
             echo "========== Processing deployment part $((part + 1))/6 =========="
-            if [ -s "$chunk" ]; then
-              rsync -a --files-from="$chunk" /tmp/calc-source/ dist/client/calc/
-              echo "Part $((part + 1))/6 complete: $(wc -l < "$chunk") files processed."
-            else
-              echo "Part $((part + 1))/6 complete: no files in this batch."
-            fi
+            rsync -a --from0 --files-from="$chunk" /tmp/calc-source/ dist/client/calc/
+            echo "Part $((part + 1))/6 complete."
           done
           echo "All six game-file processing parts are complete."
 
