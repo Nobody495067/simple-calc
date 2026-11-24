@@ -317,13 +317,10 @@
       });
 
       function launchGame() {
-        const currentUrl = new URL(window.location.href);
-        const appBase = currentUrl.pathname.endsWith('/')
-          ? currentUrl
-          : /\.html?$/i.test(currentUrl.pathname)
-            ? new URL('.', currentUrl)
-            : new URL(`${currentUrl.pathname}/`, currentUrl.origin);
-        const gameUrl = new URL('calc/library.html', appBase);
+        // This project is hosted from the /simple-calc/ GitHub Pages
+        // repository path. Resolve the library from that fixed base so the
+        // URL cannot accidentally become /calc/... or /simple-calc/simple-calc/...
+        const gameUrl = new URL('/simple-calc/calc/library.html', window.location.origin);
 
         // The outer tab stays at about:blank; the library runs inside it.
         const gameTab = window.open('about:blank', '_blank');
