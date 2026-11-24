@@ -47,39 +47,44 @@ jobs:
           git clone --depth 1 https://github.com/Nobody495067/calc.git /tmp/calc-source
           mkdir -p dist/client/calc
 
-          # Build six balanced, NUL-delimited file batches. NUL delimiters
-          # safely preserve spaces and other special characters in filenames.
+          # Copy with Python instead of rsync file lists. This safely handles
+          # every filename and keeps each processing batch independent.
           python3 <<'PY'
           import os
+          import shutil
           from pathlib import Path
 
           source = Path("/tmp/calc-source")
+          destination = Path("dist/client/calc")
           roots = ["gamelist", "Offline-HTML-Games-Pack-master", "emulator"]
           files = []
           for root in roots:
-              for current, _, names in os.walk(source / root):
-                  for name in names:
-                      full = Path(current) / name
-                      files.append(full.relative_to(source).as_posix())
-          files.append("game.html")
-          files.sort()
+              for current, dirs, names in os.walk(source / root):
+                  dirs.sort()
+                  for name in sorted(names):
+                      path = Path(current) / name
+                      if path.is_file():
+                          files.append(path)
+          game_html = source / "game.html"
+          if game_html.is_file():
+              files.append(game_html)
+          files.sort(key=lambda p: p.relative_to(source).as_posix())
 
+          total = len(files)
           for part in range(6):
-              start = part * len(files) // 6
-              end = (part + 1) * len(files) // 6
-              batch = files[start:end]
-              target = Path(f"/tmp/game-part-{part}")
-              target.write_bytes(b"".join(os.fsencode(item) + b"\\0" for item in batch))
-              print(f"Prepared part {part + 1}/6: {len(batch)} files")
-          PY
+              first = part * total // 6
+              last = (part + 1) * total // 6
+              batch = files[first:last]
+              print(f"========== Processing deployment part {part + 1}/6 ({len(batch)} files) ==========", flush=True)
+              for path in batch:
+                  relative = path.relative_to(source)
+                  target = destination / relative
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copy2(path, target)
+              print(f"Part {part + 1}/6 complete.", flush=True)
 
-          for part in 0 1 2 3 4 5; do
-            chunk="/tmp/game-part-$part"
-            echo "========== Processing deployment part $((part + 1))/6 =========="
-            rsync -a --from0 --files-from="$chunk" /tmp/calc-source/ dist/client/calc/
-            echo "Part $((part + 1))/6 complete."
-          done
-          echo "All six game-file processing parts are complete."
+          print(f"All six parts complete. Copied {total} files.", flush=True)
+          PY
 
       - name: Check static export
         run: |
