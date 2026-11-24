@@ -11,6 +11,9 @@
     body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(ellipse at 50% -18%, rgba(48,112,70,.22), transparent 52%), #0d1210; color: var(--library-text); margin: 0; padding: 28px clamp(12px, 2.5vw, 36px); }
     h1 { text-align: center; color: var(--library-accent); margin: 4px 0 8px; font-size: clamp(30px, 4vw, 42px); letter-spacing: -.045em; }
     .search-container { max-width: 680px; margin: 0 auto 22px; text-align: center; }
+    .settings-link { position: absolute; top: 20px; right: clamp(14px, 3vw, 38px); display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid var(--library-border); border-radius: 12px; background: var(--library-panel); color: var(--library-text); text-decoration: none; font-size: 23px; }
+    .settings-link:hover { color: var(--library-accent); border-color: var(--library-accent); }
+    @media (max-width: 600px) { .settings-link { top: 12px; right: 12px; width: 38px; height: 38px; } }
     .popular-controls { display: flex; align-items: center; justify-content: center; gap: 9px; flex-wrap: wrap; margin: 0 auto 24px; }
     .filter-btn { background: #234b32; color: #e9fff0; border: 1px solid rgba(85,216,121,.24); padding: 10px 16px; border-radius: 999px; cursor: pointer; font-weight: 700; transition: background .16s ease, border-color .16s ease, transform .16s ease; }
     .filter-btn.secondary { background: #18211c; border: 1px solid var(--library-border); color: #d7e1da; }
@@ -159,6 +162,7 @@
 <body>
 
   <div id="library-view">
+    <a class="settings-link" href="settings.html" aria-label="Open settings" title="Settings">⚙</a>
     <h1>Library</h1>
     <div id="game-count" style="text-align: center; color: #888; margin-bottom: 15px; font-weight: bold;">Total Games: 0</div>
     <div class="search-container">
@@ -212,7 +216,7 @@
       <span class="top-bar-title" id="current-game-title">Game</span>
       <div class="btn-group">
         <button class="top-btn reload-btn" onclick="reloadGame()">Reload</button>
-        <button class="top-btn" onclick="toggleFullScreen('game-container')">Fullscreen ⛶</button>
+        <button class="top-btn" onclick="toggleFullScreen('game-frame')">Fullscreen ⛶</button>
         <button class="top-btn" onclick="closeGame()">Back to Library</button>
       </div>
     </div>
@@ -592,11 +596,52 @@
       }
     }
 
-    function closeGame() {
+    async function closeGame() {
+      if (document.fullscreenElement) {
+        try {
+          if (document.exitFullscreen) await document.exitFullscreen();
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        } catch (error) {
+          console.warn("Could not exit fullscreen:", error);
+        }
+      }
       gameContainer.style.display = "none";
       gameFrame.src = "";
       gameError.hidden = true;
     }
+
+    function applySavedLibrarySettings() {
+      try {
+        const settings = JSON.parse(localStorage.getItem("librarySettings") || "{}");
+        const backgrounds = {
+          default: "radial-gradient(ellipse at 50% -18%, rgba(48,112,70,.22), transparent 52%), #0d1210",
+          midnight: "radial-gradient(ellipse at 50% -18%, rgba(55,75,145,.25), transparent 52%), #090d18",
+          purple: "radial-gradient(ellipse at 50% -18%, rgba(126,75,160,.25), transparent 52%), #120d18",
+          light: "radial-gradient(ellipse at 50% -18%, rgba(85,216,121,.12), transparent 52%), #edf2ee"
+        };
+        document.body.style.background = backgrounds[settings.background] || backgrounds.default;
+        if (settings.background === "light") {
+          document.body.style.color = "#17221b";
+        }
+      } catch (error) {
+        console.warn("Could not apply library settings:", error);
+      }
+    }
+
+    document.addEventListener("keydown", event => {
+      if (event.ctrlKey || event.altKey || event.metaKey || event.repeat) return;
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+      let settings = {};
+      try { settings = JSON.parse(localStorage.getItem("librarySettings") || "{}"); } catch {}
+      const key = event.key.toLowerCase();
+      if (settings.backKey && key === settings.backKey.toLowerCase() && gameContainer.style.display === "flex") {
+        event.preventDefault();
+        closeGame();
+      } else if (settings.fullscreenKey && key === settings.fullscreenKey.toLowerCase() && gameContainer.style.display === "flex") {
+        event.preventDefault();
+        toggleFullScreen("game-frame");
+      }
+    });
 
     async function fetchJsonWithRetry(url, attempts = 4) {
       let lastError;
@@ -900,6 +945,7 @@
       message.textContent = "Some videos cannot be played outside YouTube.";
     });
 
+    applySavedLibrarySettings();
     loadGames();
   </script>
 
