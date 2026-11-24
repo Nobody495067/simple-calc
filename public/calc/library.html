@@ -607,7 +607,8 @@
           const response = await fetch(url);
           if (!response.ok) {
             const error = new Error(`HTTP ${response.status} ${response.statusText}`);
-            // A 429 means the host is already throttling us; retrying would add load.\n            error.retryable = response.status >= 500;
+            // A 429 means the host is already throttling us; retrying would add load.
+            error.retryable = response.status >= 500;
             const retryAfter = Number(response.headers.get("Retry-After"));
             error.retryDelay = Number.isFinite(retryAfter) && retryAfter > 0
               ? Math.min(retryAfter * 1000, 5000)
