@@ -317,18 +317,6 @@
       });
 
       function launchGame() {
-        const gameTab = window.open('about:blank', '_blank');
-        if (!gameTab) {
-          display.textContent = 'Allow pop-ups';
-          input = '';
-          return;
-        }
-
-        const gameDocument = gameTab.document;
-        gameDocument.open();
-        gameDocument.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Loading...</title></head><body>Loading...</body></html>');
-        gameDocument.close();
-
         const currentUrl = new URL(window.location.href);
         const appBase = currentUrl.pathname.endsWith('/')
           ? currentUrl
@@ -336,32 +324,15 @@
             ? new URL('.', currentUrl)
             : new URL(`${currentUrl.pathname}/`, currentUrl.origin);
         const gameUrl = new URL('calc/library.html', appBase);
-        fetch(gameUrl)
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`Could not load the site (${response.status})`);
-            }
-            return response.text();
-          })
-          .then((html) => {
-            if (gameTab.closed) {
-              return;
-            }
 
-            const siteDocument = new DOMParser().parseFromString(html, 'text/html');
-            const base = siteDocument.createElement('base');
-            base.href = new URL('.', gameUrl).href;
-            siteDocument.head.prepend(base);
-
-            gameDocument.open();
-            gameDocument.write(`<!DOCTYPE html>${siteDocument.documentElement.outerHTML}`);
-            gameDocument.close();
-          })
-          .catch((error) => {
-            if (!gameTab.closed) {
-              gameDocument.body.textContent = `Could not load the site: ${error.message}`;
-            }
-          });
+        // Navigate directly instead of creating an about:blank tab and fetching/
+        // rewriting the library HTML. Direct navigation also lets the browser load
+        // the library's scripts, styles, and relative assets normally.
+        const gameTab = window.open(gameUrl.href, '_blank');
+        if (!gameTab) {
+          display.textContent = 'Allow pop-ups';
+          input = '';
+        }
       }
     </script>
   </body>
