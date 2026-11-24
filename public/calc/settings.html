@@ -44,12 +44,14 @@
       <p>Click a field and press the key you want to assign. Shortcuts are active while the library is open, except when typing in a text field.</p>
       <div class="key-row"><label for="back-key">Back to library (while a game is open)</label><input id="back-key" type="text" maxlength="1" placeholder="Not set" autocomplete="off"></div>
       <div class="key-row"><label for="fullscreen-key">Toggle game fullscreen</label><input id="fullscreen-key" type="text" maxlength="1" placeholder="Not set" autocomplete="off"></div>
+      <div class="key-row"><label for="panic-key">Panic shortcut key (opens your chosen site in a new tab)</label><input id="panic-key" type="text" maxlength="1" placeholder="Not set" autocomplete="off"></div>
+      <div class="key-row"><label for="panic-url">Panic destination website</label><input id="panic-url" type="url" placeholder="https://example.com" autocomplete="url" style="text-align:left"></div>
       <div class="choices"><button id="save" type="button">Save keybinds</button><button id="reset" type="button">Reset settings</button></div>
       <div id="status" role="status" aria-live="polite"></div>
     </section>
   </main>
   <script>
-    const defaults = { background: "default", backKey: "", fullscreenKey: "" };
+    const defaults = { background: "default", backKey: "", fullscreenKey: "", panicKey: "", panicUrl: "" };
     let settings = { ...defaults };
     try { settings = { ...defaults, ...JSON.parse(localStorage.getItem("librarySettings") || "{}") }; } catch {}
     const status = document.getElementById("status");
@@ -71,8 +73,12 @@
     });
     const backInput = document.getElementById("back-key");
     const fullscreenInput = document.getElementById("fullscreen-key");
+    const panicInput = document.getElementById("panic-key");
+    const panicUrlInput = document.getElementById("panic-url");
     backInput.value = settings.backKey;
     fullscreenInput.value = settings.fullscreenKey;
+    panicInput.value = settings.panicKey;
+    panicUrlInput.value = settings.panicUrl;
     function captureKey(input) {
       input.addEventListener("keydown", event => {
         event.preventDefault();
@@ -83,11 +89,29 @@
     }
     captureKey(backInput);
     captureKey(fullscreenInput);
+    captureKey(panicInput);
     document.getElementById("save").addEventListener("click", () => {
       settings.backKey = backInput.value.trim().toLowerCase();
       settings.fullscreenKey = fullscreenInput.value.trim().toLowerCase();
-      if (settings.backKey && settings.backKey === settings.fullscreenKey) {
-        status.textContent = "Choose two different keys for these shortcuts.";
+      settings.panicKey = panicInput.value.trim().toLowerCase();
+      settings.panicUrl = panicUrlInput.value.trim();
+      if (settings.panicUrl) {
+        try {
+          const parsed = new URL(settings.panicUrl);
+          if (!["http:", "https:"].includes(parsed.protocol)) throw new Error();
+          settings.panicUrl = parsed.href;
+        } catch {
+          status.textContent = "Enter a valid website address beginning with https:// or http://.";
+          return;
+        }
+      }
+      const assigned = [settings.backKey, settings.fullscreenKey, settings.panicKey].filter(Boolean);
+      if (new Set(assigned).size !== assigned.length) {
+        status.textContent = "Each shortcut needs a different key.";
+        return;
+      }
+      if (Boolean(settings.panicKey) !== Boolean(settings.panicUrl)) {
+        status.textContent = "Set both the panic shortcut key and its destination website.";
         return;
       }
       save();
@@ -96,6 +120,8 @@
       settings = { ...defaults };
       backInput.value = "";
       fullscreenInput.value = "";
+      panicInput.value = "";
+      panicUrlInput.value = "";
       save();
       status.textContent = "Settings reset.";
     });
