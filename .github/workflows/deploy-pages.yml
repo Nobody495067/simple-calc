@@ -43,9 +43,14 @@ jobs:
 
       - name: Check static export
         run: |
+          # library.html resolves both manifests relative to /calc/ on GitHub Pages.
+          cp -f games-manifest.json dist/client/calc/games-manifest.json
+          # Keep the root copy for any older links or consumers that still use it.
           cp -f games-manifest.json dist/client/games-manifest.json
           test -s dist/client/index.html || (echo "Missing dist/client/index.html" && exit 1)
           test -s dist/client/calc/library.html || (echo "Missing dist/client/calc/library.html" && exit 1)
+          test -s dist/client/calc/games-manifest.json || (echo "Missing dist/client/calc/games-manifest.json (required by library.html)" && exit 1)
+          test -s dist/client/calc/game-art-manifest.json || (echo "Missing dist/client/calc/game-art-manifest.json" && exit 1)
           test -s dist/client/games-manifest.json || (echo "Missing dist/client/games-manifest.json" && exit 1)
           touch dist/client/.nojekyll
 
