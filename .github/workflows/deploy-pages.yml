@@ -39,6 +39,19 @@ jobs:
         env:
           GITHUB_PAGES_BASE: ${{ steps.pages.outputs.base_path }}
 
+      # The game HTML files live in the original calc repository. Keep the
+      # customized simple-calc library and calculator here, and copy only the
+      # game content directories into the Pages output.
+      - name: Restore original game files from calc repository
+        run: |
+          git clone --depth 1 https://github.com/Nobody495067/calc.git /tmp/calc-source
+          mkdir -p dist/client/calc
+          cp -a /tmp/calc-source/gamelist dist/client/calc/
+          cp -a /tmp/calc-source/Offline-HTML-Games-Pack-master dist/client/calc/
+          cp -a /tmp/calc-source/emulator dist/client/calc/
+          cp -a /tmp/calc-source/game.html dist/client/calc/
+          echo "Restored game directories from Nobody495067/calc."
+
       - name: Check static export
         run: |
           # library.html resolves both manifests relative to /calc/ on GitHub Pages.
@@ -50,6 +63,20 @@ jobs:
           test -s dist/client/calc/games-manifest.json || (echo "Missing dist/client/calc/games-manifest.json (required by library.html)" && exit 1)
           test -s dist/client/calc/game-art-manifest.json || (echo "Missing dist/client/calc/game-art-manifest.json" && exit 1)
           test -s dist/client/games-manifest.json || (echo "Missing dist/client/games-manifest.json" && exit 1)
+          # Verify every local manifest entry exists in the deployed /calc/ tree.
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const root = path.resolve('dist/client/calc');
+          const entries = JSON.parse(fs.readFileSync('games-manifest.json', 'utf8'));
+          const missing = entries.filter((entry) => /^https?:\\/\\//i.test(entry) ? false : !fs.existsSync(path.resolve(root, entry)));
+          if (missing.length) {
+            console.error('Missing local game files:', missing.length);
+            console.error(missing.slice(0, 40).join('\\n'));
+            process.exit(1);
+          }
+          console.log(`Verified ${entries.length} manifest entries; all local game paths exist.`);
+          NODE
           echo "Largest exported directories:"
           du -h -d 2 dist/client | sort -h | tail -20
           echo "Total exported size:"
