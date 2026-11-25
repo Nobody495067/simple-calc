@@ -20,14 +20,15 @@ const art = JSON.parse(
   readFirstExisting(["public/calc/game-art-manifest.json", "public/game-art-manifest.json", "calc/game-art-manifest.json", "game-art-manifest.json"])
 ) as Record<string, string | null>;
 
-describe("Four requested library additions", () => {
+describe("Library additions", () => {
   it("preserves the current four additions after the existing library", () => {
-    expect(games).toHaveLength(975);
-    expect(games.slice(-4)).toEqual([
+    expect(games).toHaveLength(976);
+    expect(games.slice(-5)).toEqual([
       "https://Nobody495067.github.io/simple-calc/calc/gamelist/Plague-Inc/index.html",
       "./additions/pokerogue/index.html",
       "./additions/julius.html",
       "./additions/clover-pit.html",
+      "./additions/ambient-lab.html",
     ]);
     expect(games[970]).toBe("gamelist/60-Seconds/index.html");
   });
@@ -47,10 +48,11 @@ describe("Four requested library additions", () => {
   });
 
   it("maps all four additions to PNG artwork usable outside Lovable hosting", () => {
-    for (const game of games.slice(-4)) {
+    for (const game of games.slice(-5, -1)) {
       const url = new URL(art[game] || "invalid");
       expect(url.protocol).toBe("https:");
       expect(url.pathname.endsWith(".png")).toBe(true);
     }
+    expect(art["./additions/ambient-lab.html"]).toBe("./art/ambient-lab.svg");
   });
 });
