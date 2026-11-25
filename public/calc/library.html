@@ -4,6 +4,9 @@
     <base href="https://Nobody495067.github.io/simple-calc/calc/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d1210">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./app-icon.svg" type="image/svg+xml">
   <title>Library</title>
   <style>
     :root { --library-panel: #191f1d; --library-border: rgba(148,163,184,.16); --library-text: #f4f7f5; --library-muted: #9aa8a0; --library-accent: #55d879; --library-hover: #202a25; --library-cover: #173b4a; --library-shadow: 0 10px 28px rgba(0,0,0,.24); }
@@ -70,7 +73,10 @@
     .top-btn:hover { background: #444; }
     .top-btn.reload-btn { background: #4CAF50; border-color: #4CAF50; }
     .top-btn.reload-btn:hover { background: #45a049; }
-    iframe { flex: 1; width: 100%; border: none; }
+    iframe { flex: 1; width: 100%; border: none; overflow: hidden; }
+    body.no-ambient-motion::before { animation: none; opacity: .18; }
+    body.compact-cards ul { grid-template-columns: repeat(auto-fill,minmax(145px,1fr)); gap: 10px; }
+    body.compact-cards .game-art { aspect-ratio: 1 / .72; }
     #game-error { flex: 1; display: grid; place-items: center; padding: 24px; color: #ddd; text-align: center; }
     #game-error[hidden] { display: none; }
     .music-area { max-width: 1440px; margin: 0 auto 24px; border-top: 1px solid var(--library-border); border-bottom: 1px solid var(--library-border); padding: 14px 0; }
@@ -179,6 +185,7 @@
   <div id="library-view">
     <a class="settings-link" href="settings.html" aria-label="Open settings" title="Settings">⚙</a>
     <h1>Library</h1>
+    <div style="display:flex;justify-content:center;margin:0 auto 14px"><button type="button" id="install-app" class="filter-btn secondary" hidden>Install app</button></div>
     <div id="game-count" style="text-align: center; color: #888; margin-bottom: 15px; font-weight: bold;">Total Games: 0</div>
     <div class="search-container">
       <input type="text" id="search" placeholder="Search games..." oninput="filterItems()" style="">
@@ -238,7 +245,7 @@
       <div class="btn-group">
         <button class="top-btn reload-btn" onclick="reloadGame()">Reload</button>
         <button class="top-btn" onclick="toggleFullScreen('game-frame')">Fullscreen ⛶</button>
-        <button class="top-btn" onclick="closeGame()">Back to Library</button>
+        <button class="top-btn" onclick="closeGame()" aria-label="Close game">Close ✕</button>
       </div>
     </div>
     <div id="game-error" role="status" hidden=""></div>
@@ -646,6 +653,14 @@
       gameFrame.hidden = false;
     }
 
+    gameFrame.addEventListener("load", () => {
+      let prefs = {}; try { prefs = JSON.parse(localStorage.getItem("librarySettings") || "{}"); } catch {}
+      if (prefs.hideScroll !== false) {
+        gameFrame.setAttribute("scrolling", "no");
+        try { const doc = gameFrame.contentDocument; if (doc) { doc.documentElement.style.overflow = "hidden"; doc.body.style.overflow = "hidden"; } } catch {}
+      } else gameFrame.setAttribute("scrolling", "auto");
+    });
+
     function reloadGame() {
       if (gameFrame.src) {
         const currentUrl = gameFrame.src;
@@ -692,12 +707,11 @@
       let settings = {};
       try { settings = JSON.parse(localStorage.getItem("librarySettings") || "{}"); } catch {}
       const key = event.key.toLowerCase();
-      if (settings.backKey && key === settings.backKey.toLowerCase() && gameContainer.style.display === "flex") {
+      if (key === "escape" && gameContainer.style.display === "flex") {
         event.preventDefault();
+        let prefs = {}; try { prefs = JSON.parse(localStorage.getItem("librarySettings") || "{}"); } catch {}
+        if (prefs.confirmExit && !window.confirm("Close this game and return to the library?")) return;
         closeGame();
-      } else if (settings.fullscreenKey && key === settings.fullscreenKey.toLowerCase() && gameContainer.style.display === "flex") {
-        event.preventDefault();
-        toggleFullScreen("game-frame");
       } else if (settings.panicKey && key === settings.panicKey.toLowerCase() && settings.panicUrl) {
         event.preventDefault();
         let destination;
@@ -1028,9 +1042,18 @@
       message.textContent = "Some videos cannot be played outside YouTube.";
     });
 
+    let extraPrefs = {}; try { extraPrefs = JSON.parse(localStorage.getItem("librarySettings") || "{}"); } catch {}
+    if (extraPrefs.ambient === false || extraPrefs.reduced === true) document.body.classList.add("no-ambient-motion");
+    if (extraPrefs.compact) document.body.classList.add("compact-cards");
     applySavedLibrarySettings();
     renderRecentGames();
     loadGames();
+    let installPrompt = null;
+    const installButton = document.getElementById("install-app");
+    window.addEventListener("beforeinstallprompt", event => { event.preventDefault(); installPrompt = event; installButton.hidden = false; });
+    installButton.addEventListener("click", async () => { if (!installPrompt) return; installPrompt.prompt(); await installPrompt.userChoice; installPrompt = null; installButton.hidden = true; });
+    window.addEventListener("appinstalled", () => { installButton.hidden = true; });
+    if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("./sw.js").catch(error => console.warn("PWA registration failed:", error));
   </script>
 
 
