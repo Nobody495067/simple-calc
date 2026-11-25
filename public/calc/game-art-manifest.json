@@ -916,5 +916,6 @@
   "gamelist/qwop/index.html": "https://Nobody495067.github.io/simple-calc/calc/gamelist/qwop/qwop.jpg",
   "gamelist/sandspiel/index.html": "https://Nobody495067.github.io/simple-calc/calc/gamelist/sandspiel/sandspiel.png",
   "gamelist/shapez-Demo-Factory-Automation-Game/index.html": "https://Nobody495067.github.io/simple-calc/calc/gamelist/shapez-Demo-Factory-Automation-Game/shapez-Demo-Factory-Automation-Game.png",
-  "gamelist/slitherio/index.html": "https://Nobody495067.github.io/simple-calc/calc/gamelist/slitherio/slitherio.png"
+  "gamelist/slitherio/index.html": "https://Nobody495067.github.io/simple-calc/calc/gamelist/slitherio/slitherio.png",
+  "./additions/ambient-lab.html": "./art/ambient-lab.svg"
 }
