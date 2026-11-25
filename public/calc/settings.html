@@ -42,16 +42,20 @@
     <section>
       <h2>Keybinds</h2>
       <p>Click a field and press the key you want to assign. Shortcuts are active while the library is open, except when typing in a text field.</p>
-      <div class="key-row"><label for="back-key">Back to library (while a game is open)</label><input id="back-key" type="text" maxlength="1" placeholder="Not set" autocomplete="off"></div>
-      <div class="key-row"><label for="fullscreen-key">Toggle game fullscreen</label><input id="fullscreen-key" type="text" maxlength="1" placeholder="Not set" autocomplete="off"></div>
       <div class="key-row"><label for="panic-key">Panic shortcut key (opens your chosen site in a new tab)</label><input id="panic-key" type="text" maxlength="1" placeholder="Not set" autocomplete="off"></div>
       <div class="key-row"><label for="panic-url">Panic destination website</label><input id="panic-url" type="url" placeholder="https://example.com" autocomplete="url" style="text-align:left"></div>
+      <div class="key-row"><label for="hide-scroll">Hide game scrollbars</label><input id="hide-scroll" type="checkbox" checked></div>
+      <div class="key-row"><label for="ambient">Animated library background</label><input id="ambient" type="checkbox" checked></div>
+      <div class="key-row"><label for="reduced">Reduce motion</label><input id="reduced" type="checkbox"></div>
+      <div class="key-row"><label for="compact">Compact game cards</label><input id="compact" type="checkbox"></div>
+      <div class="key-row"><label for="confirm-exit">Confirm before closing a game</label><input id="confirm-exit" type="checkbox"></div>
+      <div class="key-row"><label for="intensity">Animation intensity</label><input id="intensity" type="range" min="1" max="10" value="5"></div>
       <div class="choices"><button id="save" type="button">Save keybinds</button><button id="reset" type="button">Reset settings</button></div>
       <div id="status" role="status" aria-live="polite"></div>
     </section>
   </main>
   <script>
-    const defaults = { background: "default", backKey: "", fullscreenKey: "", panicKey: "", panicUrl: "" };
+    const defaults = { background: "default", panicKey: "", panicUrl: "", hideScroll: true, ambient: true, reduced: false, compact: false, confirmExit: false, intensity: 5 };
     let settings = { ...defaults };
     try { settings = { ...defaults, ...JSON.parse(localStorage.getItem("librarySettings") || "{}") }; } catch {}
     const status = document.getElementById("status");
@@ -71,13 +75,11 @@
         save();
       });
     });
-    const backInput = document.getElementById("back-key");
-    const fullscreenInput = document.getElementById("fullscreen-key");
     const panicInput = document.getElementById("panic-key");
     const panicUrlInput = document.getElementById("panic-url");
-    backInput.value = settings.backKey;
-    fullscreenInput.value = settings.fullscreenKey;
     panicInput.value = settings.panicKey;
+    for (const [id,key] of [["hide-scroll","hideScroll"],["ambient","ambient"],["reduced","reduced"],["compact","compact"],["confirm-exit","confirmExit"]]) document.getElementById(id).checked = settings[key] !== false && settings[key] !== undefined ? !!settings[key] : (key === "hideScroll" || key === "ambient");
+    document.getElementById("intensity").value = settings.intensity || 5;
     panicUrlInput.value = settings.panicUrl;
     function captureKey(input) {
       input.addEventListener("keydown", event => {
@@ -87,13 +89,11 @@
         status.textContent = "Press Save keybinds to apply your changes.";
       });
     }
-    captureKey(backInput);
-    captureKey(fullscreenInput);
     captureKey(panicInput);
     document.getElementById("save").addEventListener("click", () => {
-      settings.backKey = backInput.value.trim().toLowerCase();
-      settings.fullscreenKey = fullscreenInput.value.trim().toLowerCase();
       settings.panicKey = panicInput.value.trim().toLowerCase();
+      for (const [id,key] of [["hide-scroll","hideScroll"],["ambient","ambient"],["reduced","reduced"],["compact","compact"],["confirm-exit","confirmExit"]]) settings[key] = document.getElementById(id).checked;
+      settings.intensity = Number(document.getElementById("intensity").value);
       settings.panicUrl = panicUrlInput.value.trim();
       if (settings.panicUrl) {
         try {
@@ -105,7 +105,7 @@
           return;
         }
       }
-      const assigned = [settings.backKey, settings.fullscreenKey, settings.panicKey].filter(Boolean);
+      const assigned = [settings.panicKey].filter(Boolean);
       if (new Set(assigned).size !== assigned.length) {
         status.textContent = "Each shortcut needs a different key.";
         return;
@@ -118,14 +118,16 @@
     });
     document.getElementById("reset").addEventListener("click", () => {
       settings = { ...defaults };
-      backInput.value = "";
-      fullscreenInput.value = "";
       panicInput.value = "";
       panicUrlInput.value = "";
       save();
       status.textContent = "Settings reset.";
     });
     updateBackgroundButtons();
+    const preview = document.createElement("canvas"); preview.id = "three-preview"; preview.style.cssText = "display:block;width:100%;height:180px;margin-top:16px;border-radius:12px;background:#08110e";
+    document.querySelector("main").append(preview);
+    const previewTitle = document.createElement("h2"); previewTitle.textContent = "Three.js animation preview"; previewTitle.style.marginTop = "22px"; document.querySelector("main").append(previewTitle);
+    import("https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js").then(THREE => { const renderer = new THREE.WebGLRenderer({canvas:preview,antialias:true}); const scene = new THREE.Scene(); const camera = new THREE.PerspectiveCamera(45,1,.1,100); camera.position.z=4; const mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1.1,2),new THREE.MeshStandardMaterial({color:0x55d879,wireframe:true})); scene.add(mesh); scene.add(new THREE.AmbientLight(0xffffff,1.5)); function resize(){const w=preview.clientWidth,h=preview.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()} resize(); new ResizeObserver(resize).observe(preview); function animate(t){mesh.rotation.x=t*.0002;mesh.rotation.y=t*.0003;renderer.render(scene,camera);requestAnimationFrame(animate)} requestAnimationFrame(animate); }).catch(()=>{preview.insertAdjacentHTML("afterend","<p>Three.js preview is unavailable in this browser.</p>")});
   </script>
 </body>
 </html>
