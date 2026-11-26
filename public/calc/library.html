@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <base href="https://Nobody495067.github.io/simple-calc/calc/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0d1210">
+  <meta name="library-manifest-base" content="https://Nobody495067.github.io/simple-calc/calc/">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./app-icon.svg" type="image/svg+xml">
   <title>Library</title>
@@ -1022,13 +1022,19 @@
     }
 
     function resolveGameUrl(value) {
-      // Older manifest entries may still point at the original calc Pages site.
-      // Re-home those paths under this repository's /simple-calc/calc/ directory.
-      const legacyPrefix = "https://Nobody495067.github.io/calc/";
-      if (value.startsWith(legacyPrefix)) {
-        return new URL(value.slice(legacyPrefix.length), libraryDirectory).href;
+      // Local files are always resolved against this site's published /calc/
+      // directory, even when the library itself is hosted inside about:blank.
+      const legacyPrefixes = [
+        "https://Nobody495067.github.io/calc/",
+        "https://Nobody495067.github.io/simple-calc/calc/"
+      ];
+      for (const prefix of legacyPrefixes) {
+        if (value.startsWith(prefix)) {
+          return new URL(value.slice(prefix.length), libraryDirectory).href;
+        }
       }
-      return new URL(value, libraryDirectory).href;
+      if (/^(https?:|data:|blob:|about:)/i.test(value)) return value;
+      return new URL(value.replace(/^\.\//, ""), libraryDirectory).href;
     }
 
     async function openGame(url, title) {
@@ -1333,7 +1339,7 @@
       // never probe guessed filenames: that can create 404 request storms.
       if (Object.prototype.hasOwnProperty.call(gameImageManifest, filename)) {
         const image = gameImageManifest[filename];
-        return image ? [new URL(image, libraryDirectory).href] : [];
+        return image ? [resolveGameUrl(image)] : [];
       }
 
       const pathParts = filename.split("/");
@@ -1434,7 +1440,7 @@
         return;
       }
       pokemonTitle.textContent = selected.textContent;
-      pokemonFrame.src = new URL(pokemonSelect.value, libraryDirectory).href;
+      pokemonFrame.src = resolveGameUrl(pokemonSelect.value);
       pokemonFrame.hidden = false;
     });
 
