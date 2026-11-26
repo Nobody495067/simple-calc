@@ -1326,19 +1326,6 @@
       const items = Array.from(list.getElementsByClassName("item"));
       const categoryRanks = gameCategoryRanks[activeGameFilter];
       const categoryTitleWinners = new Map();
-      const allTitleWinners = new Map();
-
-      // In All Games, keep one card per normalized title so the same game
-      // isn't repeated when it exists in both the main library and added packs.
-      for (const item of items) {
-        const titleKey = normalizeGameName(item.dataset.title);
-        const currentWinner = allTitleWinners.get(titleKey);
-        const isLibraryPage = /^gamelist\/[^/]+\/index\.html$/i.test(item.dataset.filename);
-        const winnerIsLibraryPage = currentWinner && /^gamelist\/[^/]+\/index\.html$/i.test(currentWinner.dataset.filename);
-        if (!currentWinner || (isLibraryPage && !winnerIsLibraryPage)) {
-          allTitleWinners.set(titleKey, item);
-        }
-      }
 
       if (categoryRanks) {
         for (const item of items) {
@@ -1358,7 +1345,7 @@
         const matchesQuery = !query || name.includes(query);
         const favoriteMatch = activeGameFilter === "favorites" && readStoredList(FAVORITES_KEY).some(entry=>entry.url===item.dataset.filename);
         const retroMatch = activeGameFilter === "retro" && retroGameKeys.has(normalizeGameName(item.dataset.title));
-        const matchesCategory = (activeGameFilter === "all" && allTitleWinners.get(normalizeGameName(item.dataset.title)) === item) || favoriteMatch || retroMatch || (
+        const matchesCategory = activeGameFilter === "all" || favoriteMatch || retroMatch || (
           item.dataset[activeGameFilter] === "true" &&
           (!categoryRanks || categoryTitleWinners.get(normalizeGameName(item.dataset.title)) === item)
         );
