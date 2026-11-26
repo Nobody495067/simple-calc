@@ -11,7 +11,7 @@
 main{max-width:900px;margin:auto}header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 h1{color:var(--green);font-size:clamp(26px,4vw,36px);margin:0}a{color:var(--green)}
 .panel{margin-top:20px;padding:20px;border:1px solid #2b3b30;border-radius:14px;background:#151d19}
-p,li{color:var(--muted);line-height:1.65}.archive-link{display:inline-flex;margin-top:8px;padding:12px 16px;border:1px solid #3b9c5b;border-radius:9px;background:#267a42;color:#fff;font-weight:800;text-decoration:none}
+p,li{color:var(--muted);line-height:1.65}.archive-link{display:inline-flex;margin-top:8px;padding:12px 16px;border:1px solid #3b9c5b;border-radius:9px;background:#267a42;color:#fff;font-weight:800;text-decoration:none}.rom-list{display:grid;gap:12px;margin-top:18px}.rom-item{padding:16px;border:1px solid #2b3b30;border-radius:12px;background:#101713}.rom-item h3{margin:0 0 8px;color:#55d879}.zip-slot{color:#9aa8a0;font-size:13px}.green-link{color:#55d879!important}
 .archive-link:hover{background:#319651}.note{font-size:13px}
 </style>
 </head>
@@ -19,10 +19,18 @@ p,li{color:var(--muted);line-height:1.65}.archive-link{display:inline-flex;margi
 <main>
 <header><h1>ROM Directory</h1><a href="library.html">← Game Library</a></header>
 <section class="panel">
-<h2>Internet Archive — Game Boy Advance TOSEC</h2>
-<p>Browse the collection directory and its available files. Choose only homebrew, public-domain, or other files you are authorized to use.</p>
-<a class="archive-link" href="https://archive.org/details/GameBoyAdvanceTOSEC" target="_blank" rel="noopener noreferrer">Browse Internet Archive collection ↗</a>
-<p class="note">To play a compatible ZIP, download it to your device, open the Retro tab in the library, choose Game Boy Advance, select the ZIP, and press Extract &amp; Play. ZIP extraction happens locally in your browser.</p>
+<h2>Game Boy Advance ROMs</h2>
+<div class="rom-list">
+  <article class="rom-item">
+    <h3>Pokémon Emerald</h3>
+    <div class="zip-slot">Internet Archive ZIP link: add your authorized link here</div>
+  </article>
+  <article class="rom-item">
+    <h3>Pokémon Red</h3>
+    <div class="zip-slot">Internet Archive ZIP link: add your authorized link here</div>
+  </article>
+</div>
+<p class="note">Add links to files you are authorized to distribute or download. Each ZIP link can be placed beside its game title.</p>
 </section>
 </main>
 </body>
