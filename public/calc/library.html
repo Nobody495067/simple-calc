@@ -121,19 +121,6 @@
     .emulatorjs-panel p { margin: 0 0 12px; color: var(--library-muted); font-size: 13px; line-height: 1.5; }
     #emulatorjs-frame { display: block; width: 100%; height: 780px; min-height: 620px; border: 1px solid var(--library-border); border-radius: 10px; background: #090d0b; }
     @media (max-width: 600px) { #emulatorjs-frame { height: 820px; min-height: 700px; } }
-    #pokemon-downloads-section[hidden] { display:none !important; }
-    .pokemon-downloads-section { max-width:1440px; margin:0 auto 24px; border:1px solid var(--library-border); border-radius:14px; padding:14px 16px; background:rgba(20,29,24,.72); }
-    .pokemon-downloads-section h2 { margin:0 0 8px; color:var(--library-accent); font-size:18px; }
-    .pokemon-downloads-section p { color:var(--library-muted); font-size:13px; line-height:1.5; }
-    .pokemon-card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:14px; margin-top:16px; }
-    .pokemon-cover-card { min-width:0; overflow:hidden; display:flex; flex-direction:column; gap:8px; padding:0 0 11px; border:1px solid var(--library-border); border-radius:12px; background:var(--library-panel); color:var(--library-text); box-shadow:var(--library-shadow); }
-    .pokemon-cover-card img { display:block; width:100%; aspect-ratio:3 / 4; object-fit:cover; background:#202820; }
-    .pokemon-cover-card span { padding:0 10px; font-size:14px; font-weight:750; }
-    .pokemon-download-directory { margin-top:16px; padding:14px; border:1px solid var(--library-border); border-radius:12px; background:rgba(10,16,12,.68); }
-    .pokemon-download-directory h3 { margin:0 0 6px; color:var(--library-text); font-size:16px; }
-    .pokemon-download-directory p { margin:0 0 12px; color:var(--library-muted); font-size:13px; line-height:1.5; }
-    .pokemon-archive-link { display:inline-flex; align-items:center; justify-content:center; min-height:40px; padding:9px 14px; border:1px solid rgba(85,216,121,.42); border-radius:9px; background:#234b32; color:#effff3; font-weight:750; text-decoration:none; }
-    .pokemon-archive-link:hover,.pokemon-archive-link:focus-visible { background:#2c7544; outline:2px solid rgba(85,216,121,.35); outline-offset:2px; }
     .music-area { max-width: 1440px; margin: 0 auto 24px; border-top: 1px solid var(--library-border); border-bottom: 1px solid var(--library-border); padding: 14px 0; }
     .music-area summary { cursor: pointer; color: var(--library-accent); font-size: 18px; font-weight: bold; }
     .music-content { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(280px, 1fr); gap: 20px; padding-top: 14px; align-items: center; }
@@ -267,23 +254,7 @@
       <p>Choose Game Boy Advance, NES, or SNES, then load a ROM file you own or a homebrew game. Your ROM stays in your browser session.</p>
       <iframe id="emulatorjs-frame" title="EmulatorJS retro game player" src="https://nobody495067.github.io/simple-calc/calc/emulatorjs-player.html" loading="eager" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe>
     </section>
-    <section class="pokemon-downloads-section" id="pokemon-downloads-section" aria-labelledby="pokemon-downloads-heading" hidden>
-      <h2 id="pokemon-downloads-heading">Pokémon Downloads</h2>
-      <p>Game cover images and the Internet Archive download directory are here. The emulator above remains separate; use a ROM file you have permission to use.</p>
-      <div class="pokemon-card-grid" aria-label="Pokémon game covers">
-        <div class="pokemon-cover-card"><img src="gamelist/PokemonRuby/pokemonruby.png" alt="Pokémon Ruby cover" loading="lazy"><span>Pokémon Ruby</span></div>
-        <div class="pokemon-cover-card"><img src="gamelist/PokemonSapphire/pokemonsapphire.png" alt="Pokémon Sapphire cover" loading="lazy"><span>Pokémon Sapphire</span></div>
-        <div class="pokemon-cover-card"><img src="gamelist/PokemonFireRed/pokemonfirered.png" alt="Pokémon FireRed cover" loading="lazy"><span>Pokémon FireRed</span></div>
-        <div class="pokemon-cover-card"><img src="gamelist/PokemonLeafGreen/pokemonleafgreen.png" alt="Pokémon LeafGreen cover" loading="lazy"><span>Pokémon LeafGreen</span></div>
-        <div class="pokemon-cover-card"><img src="gamelist/PokemonEmerald/pokemonemerald.png" alt="Pokémon Emerald cover" loading="lazy"><span>Pokémon Emerald</span></div>
-        <div class="pokemon-cover-card"><img src="gamelist/PokemonRed/pokemonred.png" alt="Pokémon Red cover" loading="lazy"><span>Pokémon Red</span></div>
-      </div>
-      <div class="pokemon-download-directory">
-        <h3>Internet Archive ZIP download directory</h3>
-        <p>Browse the Game Boy Advance TOSEC collection and download an individual ZIP to your Chromebook. Then select that ZIP in the emulator's extraction control.</p>
-        <a class="pokemon-archive-link" href="https://archive.org/details/GameBoyAdvanceTOSEC" target="_blank" rel="noopener noreferrer">Browse Internet Archive collection ↗</a>
-      </div>
-    </section>
+
     <details class="music-area" id="music-area">
       <summary>♫ Spotify music</summary>
       <div class="music-content">
@@ -298,22 +269,22 @@
           <p id="music-message" role="status"></p>
         </form>
       </div>
-      <section class="youtube-content" aria-labelledby="youtube-heading">
-        <h2 id="youtube-heading">YouTube</h2>
-        <div class="youtube-row">
-          <form class="music-form" id="youtube-form">
-            <label for="youtube-link">Video link</label>
-            <div class="music-form-row">
-              <input id="youtube-link" type="text" placeholder="https://www.youtube.com/watch?v=…" required>
-              <button type="submit" aria-label="Play YouTube video" title="Play YouTube video">▶</button>
-            </div>
-            <p id="youtube-message" role="status"></p>
-          </form>
-          <div class="youtube-preview">
-            <iframe id="youtube-player" title="YouTube video player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen hidden></iframe>
+    </details>
+    <details class="music-area" id="youtube-area">
+      <summary>▶ YouTube Player</summary>
+      <div class="music-content">
+        <form class="music-form" id="youtube-form">
+          <label for="youtube-link">Video link</label>
+          <div class="music-form-row">
+            <input id="youtube-link" type="text" placeholder="https://www.youtube.com/watch?v=…" required>
+            <button type="submit" aria-label="Play YouTube video" title="Play YouTube video">▶</button>
           </div>
+          <p id="youtube-message" role="status"></p>
+        </form>
+        <div class="youtube-preview">
+          <iframe id="youtube-player" title="YouTube video player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen hidden></iframe>
         </div>
-      </section>
+      </div>
     </details>
     <section id="recent-section" class="recent-section" hidden aria-label="Recently played">
       <div class="section-heading"><h2>Recently played</h2><button type="button" id="clear-recent" class="small-action">Clear</button></div>
@@ -1158,7 +1129,7 @@
 
     function applySavedLibrarySettings() {
       try {
-        const settings = JSON.parse(localStorage.getItem("librarySettings") || "{}");
+        const settings = JSON.parse(localStorage.getItem("librarySettings") || '{"background":"animated"}');
         const backgrounds = {
           animated: "transparent",
           default: "radial-gradient(ellipse at 50% -18%, rgba(48,112,70,.22), transparent 52%), #0d1210",
@@ -1166,9 +1137,10 @@
           purple: "radial-gradient(ellipse at 50% -18%, rgba(126,75,160,.25), transparent 52%), #120d18",
           light: "radial-gradient(ellipse at 50% -18%, rgba(85,216,121,.12), transparent 52%), #edf2ee"
         };
-        document.body.style.background = backgrounds[settings.background] || backgrounds.default;
-        document.body.classList.toggle("three-background-active", settings.background === "animated");
-        if(settings.background === "animated") { document.body.classList.add("three-background-active"); startThreeLibraryBackground(); } else { document.body.classList.remove("three-background-active"); stopThreeLibraryBackground(); }
+        const selectedBackground = settings.background || "animated";
+        document.body.style.background = backgrounds[selectedBackground] || backgrounds.animated;
+        document.body.classList.toggle("three-background-active", selectedBackground === "animated");
+        if(selectedBackground === "animated") { document.body.classList.add("three-background-active"); startThreeLibraryBackground(); } else { document.body.classList.remove("three-background-active"); stopThreeLibraryBackground(); }
         if (settings.background === "light") {
           document.body.style.color = "#17221b";
         }
@@ -1200,6 +1172,7 @@
           const bitmap = await createImageBitmap(await (await fetch(imageData)).blob());
           texture = new THREE.Texture(bitmap);
           texture.colorSpace = THREE.SRGBColorSpace;
+          texture.flipY = false;
           texture.needsUpdate = true;
         }
         const geometry = new THREE.PlaneGeometry(12, 8, 70, 45);
@@ -1468,9 +1441,9 @@
       activeGameFilter = filter;
       const isRetroView = filter === "retro";
       document.getElementById("emulatorjs-section").hidden = !isRetroView;
-      document.getElementById("pokemon-downloads-section").hidden = !isRetroView;
-      // Retro is a dedicated emulator + Pokémon area, not another game-card category.
+      // Retro is a dedicated emulator view; game cards remain in their normal categories.
       document.getElementById("music-area").hidden = isRetroView;
+      document.getElementById("youtube-area").hidden = isRetroView;
       document.getElementById("recent-section").hidden = isRetroView || readStoredList(RECENT_KEY).length === 0;
       document.getElementById("status").hidden = isRetroView;
       document.getElementById("list").hidden = isRetroView;
