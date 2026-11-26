@@ -13,12 +13,13 @@ h1{font-size:clamp(22px,4vw,32px);margin:0;color:var(--green)}a{color:var(--gree
 .panel{margin-top:16px;padding:16px;border:1px solid #2b3b30;border-radius:14px;background:#151d19}
 .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;align-items:end}
 label{display:grid;gap:7px;color:#cdd8d0;font-size:13px;font-weight:700}
-select,input,button,select{width:100%;min-height:42px;padding:9px 11px;border:1px solid #3b5142;border-radius:9px;background:#101813;color:#f4f7f5;font:inherit}
+select,input,button{width:100%;min-height:42px;padding:9px 11px;border:1px solid #3b5142;border-radius:9px;background:#101813;color:#f4f7f5;font:inherit}
 button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}button:hover{background:#319651}
 .note{color:var(--muted);font-size:13px;line-height:1.5}
 #game{width:100%;min-height:460px;margin-top:14px;background:#000;border-radius:10px;overflow:hidden}
 #game canvas{max-width:100%}
-#status{color:var(--green);min-height:1.5em;font-size:13px}\n#archive-entry-wrap[hidden]{display:none}
+#status{color:var(--green);min-height:1.5em;font-size:13px}
+#archive-entry-wrap[hidden]{display:none}
 @media(max-width:600px){body{padding:12px}#game{min-height:360px}}
 </style>
 </head>
@@ -26,7 +27,7 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
 <main>
   <header class="head">
     <h1>EmulatorJS Retro Player</h1>
-    <a href="library.html">← Back to library</a>
+    
   </header>
   <section class="panel">
     <div class="controls">
