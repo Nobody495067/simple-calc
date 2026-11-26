@@ -1484,8 +1484,8 @@
       for (const item of items) {
         const titleKey = normalizeGameName(item.dataset.title);
         const currentWinner = allTitleWinners.get(titleKey);
-        const isLibraryPage = /^gamelist\\/[^/]+\\/index\\.html$/i.test(item.dataset.filename);
-        const winnerIsLibraryPage = currentWinner && /^gamelist\\/[^/]+\\/index\\.html$/i.test(currentWinner.dataset.filename);
+        const isLibraryPage = /^gamelist\/[^/]+\/index\.html$/i.test(item.dataset.filename);
+        const winnerIsLibraryPage = currentWinner && /^gamelist\/[^/]+\/index\.html$/i.test(currentWinner.dataset.filename);
         if (!currentWinner || (isLibraryPage && !winnerIsLibraryPage)) {
           allTitleWinners.set(titleKey, item);
         }
