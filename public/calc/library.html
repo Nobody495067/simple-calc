@@ -136,6 +136,7 @@
     #library-view { position: relative; z-index: 2; min-height: 100vh; height: auto; overflow: visible; pointer-events: auto; }
     #three-background { pointer-events: none !important; }
     #list, #list .item, .game-card, .favorite-toggle, .popular-controls, .filter-btn { pointer-events: auto; }
+    #emulatorjs-section[hidden] { display: none !important; }
     .emulatorjs-panel { margin-top: 20px; padding: 15px; border: 1px solid var(--library-border); border-radius: 13px; background: rgba(12,18,15,.9); }
     .emulatorjs-panel h2 { margin: 0 0 7px; font-size: 18px; color: var(--library-accent); }
     .emulatorjs-panel p { margin: 0 0 12px; color: var(--library-muted); font-size: 13px; line-height: 1.5; }
@@ -269,13 +270,13 @@
       <button type="button" id="retro-button" class="filter-btn" aria-pressed="false">Retro</button>
       <button type="button" id="favorites-button" class="filter-btn" aria-pressed="false">★ Favorites</button>
     </div>
+    <section class="emulatorjs-panel" id="emulatorjs-section" aria-label="EmulatorJS retro player" hidden>
+      <h2>EmulatorJS Retro Player</h2>
+      <p>Choose Game Boy Advance, NES, or SNES, then load a ROM file you own or a homebrew game. Your ROM stays in your browser session.</p>
+      <iframe id="emulatorjs-frame" title="EmulatorJS retro game player" src="https://nobody495067.github.io/simple-calc/calc/emulatorjs-player.html" loading="eager" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe>
+    </section>
     <details class="pokemon-embed-area" id="pokemon-embed-area" hidden>
       <summary>Pokémon Games</summary>
-      <section class="emulatorjs-panel" aria-label="EmulatorJS retro player">
-        <h2>EmulatorJS Retro Player</h2>
-        <p>Choose Game Boy Advance, NES, or SNES, then load a ROM file you own or a homebrew game. Your ROM stays in your browser session.</p>
-        <iframe id="emulatorjs-frame" title="EmulatorJS retro game player" src="https://nobody495067.github.io/simple-calc/calc/emulatorjs-player.html" loading="eager" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe>
-      </section>
       <div class="pokemon-card-grid" id="pokemon-card-grid">
         <button type="button" class="pokemon-game-card" data-game="gamelist/PokemonRuby/index.html" disabled aria-disabled="true">
           <img src="gamelist/PokemonRuby/pokemonruby.png" alt="Pokémon Ruby cover" loading="lazy">
@@ -1496,6 +1497,7 @@
     function setGameFilter(filter) {
       activeGameFilter = filter;
       document.getElementById("pokemon-embed-area").hidden = filter !== "retro";
+      document.getElementById("emulatorjs-section").hidden = filter !== "retro";
       search.value = "";
       const buttons = {
         all: allGamesButton,
