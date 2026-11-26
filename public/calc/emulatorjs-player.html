@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0d1210">
+<title>EmulatorJS Retro Player</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#0d1210;color:#f4f7f5;--green:#55d879;--muted:#9aa8a0}
+*{box-sizing:border-box}body{margin:0;padding:20px;background:radial-gradient(ellipse at 50% 0%,rgba(48,112,70,.2),transparent 55%),#0d1210}
+main{max-width:1100px;margin:auto}.head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-size:clamp(22px,4vw,32px);margin:0;color:var(--green)}a{color:var(--green)}
+.panel{margin-top:16px;padding:16px;border:1px solid #2b3b30;border-radius:14px;background:#151d19}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;align-items:end}
+label{display:grid;gap:7px;color:#cdd8d0;font-size:13px;font-weight:700}
+select,input,button{width:100%;min-height:42px;padding:9px 11px;border:1px solid #3b5142;border-radius:9px;background:#101813;color:#f4f7f5;font:inherit}
+button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}button:hover{background:#319651}
+.note{color:var(--muted);font-size:13px;line-height:1.5}
+#game{width:100%;min-height:460px;margin-top:14px;background:#000;border-radius:10px;overflow:hidden}
+#game canvas{max-width:100%}
+#status{color:var(--green);min-height:1.5em;font-size:13px}
+@media(max-width:600px){body{padding:12px}#game{min-height:360px}}
+</style>
+</head>
+<body>
+<main>
+  <header class="head">
+    <h1>EmulatorJS Retro Player</h1>
+    <a href="library.html">← Back to library</a>
+  </header>
+  <section class="panel">
+    <div class="controls">
+      <label>Console
+        <select id="core">
+          <option value="gba">Game Boy Advance</option>
+          <option value="nes">Nintendo Entertainment System</option>
+          <option value="snes">Super Nintendo</option>
+        </select>
+      </label>
+      <label>Choose a ROM file
+        <input id="rom" type="file" accept=".gba,.gb,.gbc,.nes,.sfc,.smc,application/octet-stream">
+      </label>
+      <button id="start" type="button">Load / Switch Game</button>
+    </div>
+    <p class="note">Use a game file you own or a homebrew ROM. This page does not download ROMs. The selected file is loaded locally in your browser session.</p>
+    <p id="status" role="status" aria-live="polite">Choose a console and a compatible ROM file.</p>
+    <div id="game"></div>
+  </section>
+  <section class="panel">
+    <strong>For your own hosted ROM files</strong>
+    <p class="note">In the JavaScript below, replace the local file selection with your own hosted file URL. Keep the matching console core. EmulatorJS data assets are loaded from the official CDN by default; you can point EJS_pathtodata to your own hosted data folder.</p>
+  </section>
+</main>
+<script>
+(() => {
+  const coreSelect=document.getElementById('core');
+  const romInput=document.getElementById('rom');
+  const startButton=document.getElementById('start');
+  const status=document.getElementById('status');
+  const game=document.getElementById('game');
+  let currentRomUrl=null;
+  let loaderPromise=null;
+  const DATA_PATH='https://cdn.emulatorjs.org/stable/data/'; // Replace with your hosted EmulatorJS data folder if desired.
+  const HOSTED_ROMS={
+    gba:'./roms/your-game.gba', // Put your own hosted .gba file here.
+    nes:'./roms/your-game.nes', // Put your own hosted .nes file here.
+    snes:'./roms/your-game.sfc' // Put your own hosted .sfc file here.
+  };
+  function loadLoader(){
+    if(loaderPromise)return loaderPromise;
+    loaderPromise=new Promise((resolve,reject)=>{
+      const script=document.createElement('script');
+      script.src=DATA_PATH+'loader.js';
+      script.onload=resolve;
+      script.onerror=()=>reject(new Error('Could not load EmulatorJS loader.js. Check the data folder URL or network connection.'));
+      document.head.append(script);
+    });
+    return loaderPromise;
+  }
+  async function launch(){
+    const core=coreSelect.value;
+    const file=romInput.files&&romInput.files[0];
+    if(!file){status.textContent='Choose a compatible ROM file first.';return;}
+    const extensions={gba:['.gba'],nes:['.nes'],snes:['.sfc','.smc']};
+    const lower=file.name.toLowerCase();
+    if(!extensions[core].some(ext=>lower.endsWith(ext))){status.textContent='That file extension does not match the selected console.';return;}
+    startButton.disabled=true;
+    status.textContent='Loading EmulatorJS…';
+    try{
+      await loadLoader();
+      if(currentRomUrl)URL.revokeObjectURL(currentRomUrl);
+      currentRomUrl=URL.createObjectURL(file);
+      // EmulatorJS reads these globals when loader.js initializes the player.
+      window.EJS_player='#game';
+      window.EJS_core=core;
+      window.EJS_gameUrl=currentRomUrl;
+      window.EJS_pathtodata=DATA_PATH;
+      window.EJS_startOnLoaded=true;
+      window.EJS_biosUrl='';
+      // Recreate the player mount and reload the loader to apply the selected core + ROM.
+      game.replaceChildren();
+      const old=document.getElementById('emulatorjs-runtime');
+      if(old)old.remove();
+      const runtime=document.createElement('script');
+      runtime.id='emulatorjs-runtime';
+      runtime.src=DATA_PATH+'loader.js?session='+Date.now();
+      runtime.onload=()=>{status.textContent='EmulatorJS loaded. If the game does not start, confirm the ROM matches the selected console.';};
+      runtime.onerror=()=>{status.textContent='EmulatorJS failed to initialize. Check the data folder and ROM file.';};
+      document.head.append(runtime);
+    }catch(error){status.textContent=error.message;}
+    finally{startButton.disabled=false;}
+  }
+  startButton.addEventListener('click',launch);
+  window.addEventListener('beforeunload',()=>{if(currentRomUrl)URL.revokeObjectURL(currentRomUrl);});
+  // To use a hosted ROM instead, set window.EJS_gameUrl to HOSTED_ROMS[core]
+  // and keep EJS_core set to 'gba', 'nes', or 'snes' before initializing loader.js.
+})();
+</script>
+</body>
+</html>
