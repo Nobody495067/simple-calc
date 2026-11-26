@@ -164,7 +164,7 @@ jobs:
               if page.exists():
                   content = page.read_text(encoding="utf-8")
                   notice = '<meta name="copyright" content="Copyright 2026 Nobody495067. All rights reserved.">'
-                  if "name=\\"copyright\\"" not in content and 'name="copyright"' not in content:
+                  if 'name="copyright"' not in content:
                       content = content.replace("<head>", "<head>" + notice, 1)
                       page.write_text(content, encoding="utf-8")
           Path("dist/client/COPYRIGHT.txt").write_text(
