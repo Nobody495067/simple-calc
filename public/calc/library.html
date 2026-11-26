@@ -16,7 +16,9 @@
     .search-container { max-width: 680px; margin: 0 auto 22px; text-align: center; }
     /* Soft animated ambient background; game content stays above it. */
     body::before { content: ""; position: fixed; inset: -35%; z-index: 0; pointer-events: none; opacity: .42; background: radial-gradient(ellipse at 22% 30%, rgba(42,150,91,.24), transparent 38%), radial-gradient(ellipse at 78% 68%, rgba(42,110,170,.18), transparent 42%), radial-gradient(ellipse at 55% 8%, rgba(120,75,160,.14), transparent 36%); background-size: 140% 140%; animation: libraryAmbient 22s ease-in-out infinite alternate; }
-    body > *:not(#three-background) { position: relative; z-index: 1; }
+    body > *:not(#three-background):not(#game-container) { position: relative; z-index: 1; }
+    /* The game player must stay fixed above the library, not flow after the game cards. */
+    body > #game-container { position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100vh !important; height: 100dvh !important; z-index: 999999 !important; }
     body > #three-background { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
     @keyframes libraryAmbient { 0% { transform: translate3d(-2%, -1%, 0) scale(1); background-position: 0% 50%; } 50% { transform: translate3d(2%, 1%, 0) scale(1.035); background-position: 100% 30%; } 100% { transform: translate3d(-1%, 2%, 0) scale(1.015); background-position: 35% 100%; } }
     body.game-open .top-actions { display: none; }
