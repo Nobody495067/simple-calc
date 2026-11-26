@@ -140,11 +140,17 @@ jobs:
           # Obfuscate generated application bundles without changing the readable source repo.
           if [ -d dist/client/assets ]; then
             while IFS= read -r -d '' file; do
-              temp="$file.protected"
-              npx --yes javascript-obfuscator@4.1.1 "$file" --output "$temp" \
-                --compact true --source-map false --string-array true \
+              temp_dir="$(mktemp -d)"
+              npx --yes javascript-obfuscator@4.1.1 "$file" --output "$temp_dir" \
+                --compact true --string-array true \
                 --string-array-threshold 0.5
-              mv "$temp" "$file"
+              generated="$temp_dir/$(basename "$file")"
+              if [ ! -s "$generated" ]; then
+                echo "Obfuscator did not create expected output for $file"
+                exit 1
+              fi
+              mv -f "$generated" "$file"
+              rm -rf "$temp_dir"
             done < <(find dist/client/assets -maxdepth 1 -type f -name '*.js' -print0)
           fi
 
