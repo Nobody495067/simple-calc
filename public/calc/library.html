@@ -1094,7 +1094,7 @@
         try {
           // Use the browser's normal HTTP cache. Forcing no-cache on every
           // library visit needlessly revalidates the same static JSON files.
-          const response = await fetch(url);
+          const response = await fetch(url, { cache: "no-store" });
           if (!response.ok) {
             const error = new Error(`HTTP ${response.status} ${response.statusText}`);
             // A 429 means the host is already throttling us; retrying would add load.
