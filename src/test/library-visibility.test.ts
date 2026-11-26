@@ -25,5 +25,9 @@ describe("New Games visibility", () => {
   });
   it("does not mark unrelated games as new", () => {
     expect(isNewGame("2048", "gamelist/2048/index.html")).toBe(false);
+    expect(isNewGame("Snake", "gamelist/snake/index.html")).toBe(false);
+  });
+  it("marks the newly added external games as new by their exact URL", () => {
+    expect(isNewGame("Flappy Bird", "https://nnoppons.github.io/100-games/01-flappy-bird/")).toBe(true);
   });
 });
