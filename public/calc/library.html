@@ -89,6 +89,15 @@
     body.compact-cards .game-art { aspect-ratio: 1 / .72; }
     #game-error { flex: 1; display: grid; place-items: center; padding: 24px; color: #ddd; text-align: center; }
     #game-error[hidden] { display: none; }
+    .pokemon-embed-area { max-width: 1440px; margin: 0 auto 24px; border: 1px solid var(--library-border); border-radius: 14px; padding: 14px 16px; background: rgba(20,29,24,.72); }
+    .pokemon-embed-area summary { cursor: pointer; color: var(--library-accent); font-size: 18px; font-weight: 800; }
+    .pokemon-player { display: grid; gap: 12px; margin-top: 14px; }
+    .pokemon-player label { color: var(--library-muted); font-weight: 700; }
+    .pokemon-player select { width: 100%; max-width: 420px; padding: 12px 14px; color: var(--library-text); background: #18211c; border: 1px solid var(--library-border); border-radius: 10px; font: inherit; }
+    .pokemon-player h2 { margin: 0; font-size: 17px; }
+    #pokemon-game-frame { display: block; width: 100%; height: min(72vh, 760px); min-height: 420px; border: 1px solid var(--library-border); border-radius: 12px; background: #000; }
+    #pokemon-game-frame[hidden] { display: none; }
+    html, body { min-height: 100%; overflow-x: hidden; overflow-y: auto; }
     .music-area { max-width: 1440px; margin: 0 auto 24px; border-top: 1px solid var(--library-border); border-bottom: 1px solid var(--library-border); padding: 14px 0; }
     .music-area summary { cursor: pointer; color: var(--library-accent); font-size: 18px; font-weight: bold; }
     .music-content { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(280px, 1fr); gap: 20px; padding-top: 14px; align-items: center; }
@@ -212,17 +221,17 @@
       <button type="button" id="favorites-button" class="filter-btn" aria-pressed="false">★ Favorites</button>
     </div>
     <details class="pokemon-embed-area" id="pokemon-embed-area">
-      <summary>Pokémon Games — embedded collection</summary>
-      <div style="width:100%; margin-top:12px;">
-        <iframe
-          title="Pokémon games collection"
-          src="https://classicgamezone.com/game-series/pok%C3%A9mon-games"
-          loading="lazy"
-          referrerpolicy="strict-origin-when-cross-origin"
-          style="display:block; width:100%; height:760px; border:1px solid var(--border-color, #444); border-radius:12px; background:#111;"
-          allowfullscreen>
-        </iframe>
-        <p style="margin:10px 2px;">If the collection doesn't load here, <a href="https://classicgamezone.com/game-series/pok%C3%A9mon-games" target="_blank" rel="noopener noreferrer">open Pokémon Games in a new tab</a>.</p>
+      <summary>Pokémon Emulator</summary>
+      <div class="pokemon-player">
+        <label for="pokemon-game-select">Choose a Pokémon game</label>
+        <select id="pokemon-game-select">
+          <option value="">Select a game…</option>
+          <option value="gamelist/PokemonEmerald/index.html">Pokémon Emerald</option>
+          <option value="gamelist/PokemonRed/index.html">Pokémon Red</option>
+        </select>
+        <h2 id="pokemon-game-title" aria-live="polite">Choose a game to start</h2>
+        <iframe id="pokemon-game-frame" title="Pokémon emulator" src="about:blank"
+          loading="lazy" allow="autoplay; fullscreen; gamepad" allowfullscreen hidden></iframe>
       </div>
     </details>
     <details class="music-area" id="music-area">
@@ -1036,7 +1045,10 @@
       // HEAD request first: that doubles requests to the Pages host and can
       // trigger rate limits across a large library.
 
-      gameFrame.src = url;
+      // Resolve every local game from the deployed /calc/ library directory.
+      // Do not depend on the document <base> tag: the library is also hosted
+      // inside an about:blank wrapper when launched from the calculator.
+      gameFrame.src = new URL(url, libraryDirectory).href;
       gameFrame.hidden = false;
     }
 
@@ -1401,6 +1413,22 @@
     retroButton.addEventListener("click", () => setGameFilter("retro"));
     favoritesButton.addEventListener("click", () => setGameFilter("favorites"));
     document.getElementById("clear-recent").addEventListener("click",()=>{saveStoredList(RECENT_KEY,[]);renderRecentGames();});
+    const pokemonSelect = document.getElementById("pokemon-game-select");
+    const pokemonFrame = document.getElementById("pokemon-game-frame");
+    const pokemonTitle = document.getElementById("pokemon-game-title");
+    pokemonSelect.addEventListener("change", () => {
+      const selected = pokemonSelect.selectedOptions[0];
+      if (!pokemonSelect.value) {
+        pokemonFrame.src = "about:blank";
+        pokemonFrame.hidden = true;
+        pokemonTitle.textContent = "Choose a game to start";
+        return;
+      }
+      pokemonTitle.textContent = selected.textContent;
+      pokemonFrame.src = new URL(pokemonSelect.value, libraryDirectory).href;
+      pokemonFrame.hidden = false;
+    });
+
 
     function getSpotifyEmbedUrl(value) {
       try {
