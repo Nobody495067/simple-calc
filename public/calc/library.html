@@ -1466,8 +1466,14 @@
 
     function setGameFilter(filter) {
       activeGameFilter = filter;
-      document.getElementById("emulatorjs-section").hidden = filter !== "retro";
-      document.getElementById("pokemon-downloads-section").hidden = filter !== "retro";
+      const isRetroView = filter === "retro";
+      document.getElementById("emulatorjs-section").hidden = !isRetroView;
+      document.getElementById("pokemon-downloads-section").hidden = !isRetroView;
+      // Retro is a dedicated emulator + Pokémon area, not another game-card category.
+      document.getElementById("music-area").hidden = isRetroView;
+      document.getElementById("recent-section").hidden = isRetroView;
+      document.getElementById("status").hidden = isRetroView;
+      document.getElementById("list").hidden = isRetroView;
       search.value = "";
       const buttons = {
         all: allGamesButton,
@@ -1624,6 +1630,7 @@
     if (extraPrefs.compact) document.body.classList.add("compact-cards");
     applySavedLibrarySettings();
     renderRecentGames();
+    setGameFilter("all");
     loadGames();
     let installPrompt = null;
     const installButton = document.getElementById("install-app");
