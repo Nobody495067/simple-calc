@@ -55,10 +55,11 @@
     #status { text-align: center; color: var(--library-muted); margin: 24px auto; } .item button:focus-visible, .filter-btn:focus-visible { outline: 2px solid var(--library-accent); outline-offset: 3px; }
 
     /* Fullscreen Game Player View */
+    html.game-open, body.game-open { width:100%; height:100%; overflow:hidden !important; overscroll-behavior:none; }
     #game-container {
       display: none;
       position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
+      inset: 0; width: 100vw; height: 100vh; height:100dvh; overflow:hidden; overscroll-behavior:none;
       background: #000; z-index: 9999;
       flex-direction: column;
     }
@@ -73,7 +74,12 @@
     .top-btn:hover { background: #444; }
     .top-btn.reload-btn { background: #4CAF50; border-color: #4CAF50; }
     .top-btn.reload-btn:hover { background: #45a049; }
-    iframe { flex: 1; width: 100%; border: none; overflow: hidden; }
+    #game-container .top-bar { flex:0 0 48px; min-height:48px; }
+    #game-frame { display:block; flex:1 1 auto; width:100%; height:calc(100% - 48px); min-height:0; border:0; overflow:hidden; scrollbar-width:none; overscroll-behavior:none; }
+    #game-frame::-webkit-scrollbar { display:none !important; width:0 !important; height:0 !important; }
+    #three-background { position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; opacity:.92; }
+    body.three-background-active { background:transparent !important; }
+    body.three-background-active::before { opacity:.14; }
     body.no-ambient-motion::before { animation: none; opacity: .18; }
     body.compact-cards ul { grid-template-columns: repeat(auto-fill,minmax(145px,1fr)); gap: 10px; }
     body.compact-cards .game-art { aspect-ratio: 1 / .72; }
@@ -181,7 +187,7 @@
 
 </head>
 <body>
-
+  <canvas id="three-background" aria-hidden="true"></canvas>
   <div id="library-view">
     <a class="settings-link" href="settings.html" aria-label="Open settings" title="Settings">⚙</a>
     <h1>Library</h1>
@@ -635,7 +641,9 @@
       gameFrame.hidden = true;
       gameError.hidden = true;
       document.body.classList.add("game-open");
+      document.documentElement.classList.add("game-open");
       gameContainer.style.display = "flex";
+      gameFrame.setAttribute("scrolling", "no");
 
       const nestedGame = url.match(/^gamelist\/([^/]+)\//i);
       if (nestedGame) {
@@ -655,10 +663,10 @@
 
     gameFrame.addEventListener("load", () => {
       let prefs = {}; try { prefs = JSON.parse(localStorage.getItem("librarySettings") || "{}"); } catch {}
+      gameFrame.setAttribute("scrolling", prefs.hideScroll === false ? "auto" : "no");
       if (prefs.hideScroll !== false) {
-        gameFrame.setAttribute("scrolling", "no");
-        try { const doc = gameFrame.contentDocument; if (doc) { doc.documentElement.style.overflow = "hidden"; doc.body.style.overflow = "hidden"; } } catch {}
-      } else gameFrame.setAttribute("scrolling", "auto");
+        try { const doc = gameFrame.contentDocument; if (doc) { const style = doc.createElement("style"); style.textContent = "html,body{overflow:hidden!important;scrollbar-width:none!important;overscroll-behavior:none!important}*{scrollbar-width:none!important}*::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}"; (doc.head || doc.documentElement).appendChild(style); doc.documentElement.style.setProperty("overflow","hidden","important"); if(doc.body) doc.body.style.setProperty("overflow","hidden","important"); } } catch {}
+      }
     });
 
     function reloadGame() {
@@ -679,6 +687,7 @@
       }
       gameContainer.style.display = "none";
       document.body.classList.remove("game-open");
+      document.documentElement.classList.remove("game-open");
       gameFrame.src = "";
       gameError.hidden = true;
     }
@@ -687,18 +696,39 @@
       try {
         const settings = JSON.parse(localStorage.getItem("librarySettings") || "{}");
         const backgrounds = {
+          animated: "transparent",
           default: "radial-gradient(ellipse at 50% -18%, rgba(48,112,70,.22), transparent 52%), #0d1210",
           midnight: "radial-gradient(ellipse at 50% -18%, rgba(55,75,145,.25), transparent 52%), #090d18",
           purple: "radial-gradient(ellipse at 50% -18%, rgba(126,75,160,.25), transparent 52%), #120d18",
           light: "radial-gradient(ellipse at 50% -18%, rgba(85,216,121,.12), transparent 52%), #edf2ee"
         };
         document.body.style.background = backgrounds[settings.background] || backgrounds.default;
+        if(settings.background === "animated") { document.body.classList.add("three-background-active"); startThreeLibraryBackground(); } else { document.body.classList.remove("three-background-active"); stopThreeLibraryBackground(); }
         if (settings.background === "light") {
           document.body.style.color = "#17221b";
         }
       } catch (error) {
         console.warn("Could not apply library settings:", error);
       }
+    }
+
+    let libraryThreeRenderer = null, libraryThreeFrame = 0;
+    function openLibraryImageDB() { return new Promise((resolve,reject)=>{ const req=indexedDB.open("library-visual-settings",1); req.onupgradeneeded=()=>req.result.createObjectStore("assets"); req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error); }); }
+    async function getLibraryImage() { const db=await openLibraryImageDB(); return new Promise((resolve,reject)=>{const req=db.transaction("assets","readonly").objectStore("assets").get("background-image");req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error)}); }
+    function stopThreeLibraryBackground() { if(libraryThreeFrame)cancelAnimationFrame(libraryThreeFrame);libraryThreeFrame=0;if(libraryThreeRenderer){libraryThreeRenderer.dispose();libraryThreeRenderer=null;} }
+    async function startThreeLibraryBackground() {
+      stopThreeLibraryBackground();const canvas=document.getElementById("three-background");
+      try { const THREE=await import("https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js");const imageData=await getLibraryImage();if(!document.body.classList.contains("three-background-active"))return;
+        const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});libraryThreeRenderer=renderer;renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));
+        const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(45,1,.1,100);camera.position.z=6;
+        let texture=null;if(imageData){const blob=await(await fetch(imageData)).blob();const bitmap=await createImageBitmap(blob);texture=new THREE.Texture(bitmap);texture.colorSpace=THREE.SRGBColorSpace;texture.needsUpdate=true;}
+        const geometry=new THREE.PlaneGeometry(12,8,70,45);
+        const material=new THREE.ShaderMaterial({transparent:true,uniforms:{uTime:{value:0},uTexture:{value:texture},uHasTexture:{value:texture?1:0}},vertexShader:`varying vec2 vUv;uniform float uTime;void main(){vUv=uv;vec3 p=position;p.z+=sin(p.x*1.1+uTime*.55)*.13+cos(p.y*1.4+uTime*.38)*.12;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0);}`,fragmentShader:`varying vec2 vUv;uniform float uTime;uniform sampler2D uTexture;uniform float uHasTexture;void main(){vec2 uv=vUv;uv.x+=sin(uv.y*9.0+uTime*.4)*.012;uv.y+=cos(uv.x*8.0+uTime*.3)*.01;vec3 base=vec3(.025,.11,.065)+.04*sin(vec3(uv.x*5.0,uv.y*6.0,uTime*.25));vec3 color=mix(base,texture2D(uTexture,uv).rgb,uHasTexture*.9);float glow=sin(uv.x*18.0+uTime)*sin(uv.y*14.0-uTime*.6)*.035;color+=glow;gl_FragColor=vec4(color,.96);}`});
+        const plane=new THREE.Mesh(geometry,material);scene.add(plane);const count=220,positions=new Float32Array(count*3);for(let i=0;i<count;i++){positions[i*3]=(Math.random()-.5)*12;positions[i*3+1]=(Math.random()-.5)*8;positions[i*3+2]=(Math.random()-.5)*2;}
+        const pg=new THREE.BufferGeometry();pg.setAttribute("position",new THREE.BufferAttribute(positions,3));const points=new THREE.Points(pg,new THREE.PointsMaterial({color:0x9affb6,size:.035,transparent:true,opacity:.65}));scene.add(points);
+        function resize(){renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();}resize();window.addEventListener("resize",resize);
+        function animate(t){if(!document.body.classList.contains("three-background-active"))return;material.uniforms.uTime.value=t*.001;plane.rotation.z=Math.sin(t*.00012)*.025;points.rotation.z=t*.000025;renderer.render(scene,camera);libraryThreeFrame=requestAnimationFrame(animate);}libraryThreeFrame=requestAnimationFrame(animate);
+      }catch(error){console.warn("Three.js background could not start:",error);}
     }
 
     document.addEventListener("keydown", event => {
