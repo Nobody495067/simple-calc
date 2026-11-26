@@ -1204,6 +1204,7 @@
     async function startThreeLibraryBackground() {
       stopThreeLibraryBackground();
       const canvas = document.getElementById("three-background");
+      if (canvas) canvas.style.display = "block";
       try {
         const THREE = await import("https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js");
         const imageData = await getLibraryImage();
@@ -1269,7 +1270,7 @@
       }
     }
 
-    document.addEventListener("keydown", event => {    document.addEventListener("keydown", event => {
+    document.addEventListener("keydown", event => {
       if (event.ctrlKey || event.altKey || event.metaKey || event.repeat) return;
       if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
       let settings = {};
