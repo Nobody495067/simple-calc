@@ -247,7 +247,7 @@
       </section>
     </div>
     <h1>Library</h1>
-    <div style="display:flex;justify-content:center;margin:0 auto 14px"><button type="button" id="install-app" class="filter-btn secondary" hidden>Install app</button></div>
+    <div style="display:flex;justify-content:center;margin:0 auto 14px"><button type="button" id="install-app" class="filter-btn secondary">Install app</button></div>
     <div id="game-count" style="text-align: center; color: #888; margin-bottom: 15px; font-weight: bold;">Total Games: 0</div>
     <div class="search-container">
       <input type="text" id="search" placeholder="Search games..." oninput="filterItems()" style="">
@@ -1634,10 +1634,34 @@
     loadGames();
     let installPrompt = null;
     const installButton = document.getElementById("install-app");
-    window.addEventListener("beforeinstallprompt", event => { event.preventDefault(); installPrompt = event; installButton.hidden = false; });
-    installButton.addEventListener("click", async () => { if (!installPrompt) return; installPrompt.prompt(); await installPrompt.userChoice; installPrompt = null; installButton.hidden = true; });
-    window.addEventListener("appinstalled", () => { installButton.hidden = true; });
-    if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("./sw.js").catch(error => console.warn("PWA registration failed:", error));
+    const isAppleMobile = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    window.addEventListener("beforeinstallprompt", event => {
+      event.preventDefault();
+      installPrompt = event;
+      installButton.textContent = "Install app";
+      installButton.hidden = false;
+    });
+    installButton.addEventListener("click", async () => {
+      if (installPrompt) {
+        installPrompt.prompt();
+        await installPrompt.userChoice;
+        installPrompt = null;
+        return;
+      }
+      const instructions = isAppleMobile
+        ? "To install on iPhone or iPad:\\n1. Open this page in Safari.\\n2. Tap the Share button.\\n3. Choose Add to Home Screen.\\n4. Tap Add."
+        : /android/i.test(navigator.userAgent)
+          ? "To install on Android:\\n1. Open this site in Chrome.\\n2. Tap the three-dot menu.\\n3. Choose Install app or Add to Home screen."
+          : "To install this site:\\n1. Open it in Chrome or Edge.\\n2. Open the browser menu.\\n3. Choose Install page as app, Install app, or Create shortcut (wording varies).\\n\\nIf the option is missing, check that the site is online and that your browser supports PWA installation.";
+      window.alert(instructions);
+    });
+    window.addEventListener("appinstalled", () => {
+      installButton.textContent = "App installed";
+      installButton.disabled = true;
+    });
+    if ("serviceWorker" in navigator && location.protocol === "https:") {
+      navigator.serviceWorker.register("./sw.js").catch(error => console.warn("PWA registration failed:", error));
+    }
   </script>
 
 
