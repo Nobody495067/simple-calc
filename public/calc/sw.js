@@ -1,4 +1,4 @@
-const CACHE = "game-library-shell-v7";
+const CACHE = "game-library-shell-v8";;
 const FILES = ["./library.html", "./settings.html", "./manifest.webmanifest", "./directory.html", "./app-icon.svg", "./additions/ambient-lab.html", "./games-manifest.json", "./game-art-manifest.json"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(() => self.skipWaiting()));
