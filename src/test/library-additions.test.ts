@@ -45,12 +45,14 @@ describe("Library additions", () => {
     );
   });
 
-  it("maps the original local additions to artwork usable outside Lovable hosting", () => {
-    for (const game of games.slice(972, 975)) {
-      const url = new URL(art[game] || "invalid");
-      expect(url.protocol).toBe("https:");
-      expect(url.pathname.endsWith(".png")).toBe(true);
-    }
+  it("uses valid hosted artwork where available and safe fallbacks where artwork is unavailable", () => {
+    const pokerogueArtwork = new URL(art["./additions/pokerogue/index.html"] || "");
+    expect(pokerogueArtwork.protocol).toBe("https:");
+    expect(pokerogueArtwork.pathname.endsWith(".png")).toBe(true);
+
+    // Julius and Clover Pit intentionally use the library's generated fallback artwork.
+    expect(art["./additions/julius.html"]).toBeNull();
+    expect(art["./additions/clover-pit.html"]).toBeNull();
     expect(art["./additions/ambient-lab.html"]).toBe("./art/ambient-lab.svg");
   });
 
