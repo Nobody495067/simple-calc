@@ -105,6 +105,15 @@
     .pokemon-player h2 { margin: 0; font-size: 17px; }
     #pokemon-game-frame { display: block; width: 100%; height: min(72vh, 760px); min-height: 420px; border: 1px solid var(--library-border); border-radius: 12px; background: #000; }
     #pokemon-game-frame[hidden] { display: none; }
+    .pokemon-card-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap: 14px; margin-top: 16px; }
+    .pokemon-game-card { min-width: 0; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 0 0 11px; border: 1px solid var(--library-border); border-radius: 12px; background: var(--library-panel); color: var(--library-text); text-align: left; cursor: pointer; box-shadow: var(--library-shadow); }
+    .pokemon-game-card img { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; background: #202820; }
+    .pokemon-game-card span { padding: 0 10px; font-size: 14px; font-weight: 750; }
+    .pokemon-game-card small { padding: 0 10px; color: var(--library-muted); font-size: 11px; }
+    .pokemon-game-card:hover:not(:disabled), .pokemon-game-card:focus-visible { outline: 2px solid var(--library-accent); outline-offset: 2px; transform: translateY(-2px); }
+    .pokemon-game-card:disabled { cursor: not-allowed; opacity: .65; }
+    .pokemon-player { margin-top: 18px; }
+
     html, body { min-height: 100%; overflow-x: hidden; overflow-y: auto; }
     .music-area { max-width: 1440px; margin: 0 auto 24px; border-top: 1px solid var(--library-border); border-bottom: 1px solid var(--library-border); padding: 14px 0; }
     .music-area summary { cursor: pointer; color: var(--library-accent); font-size: 18px; font-weight: bold; }
@@ -232,20 +241,39 @@
       <button type="button" id="shooting-button" class="filter-btn" aria-pressed="false">Shooting</button>
       <button type="button" id="fnaf-button" class="filter-btn" aria-pressed="false">FNAF</button>
       <button type="button" id="retro-button" class="filter-btn" aria-pressed="false">Retro</button>
-      <a class="filter-btn" href="https://classicgamezone.com/game-series/pok%C3%A9mon-games" target="_blank" rel="noopener noreferrer">Pokémon Games ↗</a>
       <button type="button" id="favorites-button" class="filter-btn" aria-pressed="false">★ Favorites</button>
     </div>
     <details class="pokemon-embed-area" id="pokemon-embed-area" hidden>
-      <summary>Pokémon Games — embedded collection</summary>
+      <summary>Pokémon Games</summary>
+      <div class="pokemon-card-grid" id="pokemon-card-grid">
+        <button type="button" class="pokemon-game-card" data-game="gamelist/PokemonRuby/index.html" disabled aria-disabled="true">
+          <img src="gamelist/PokemonRuby/pokemonruby.png" alt="Pokémon Ruby cover" loading="lazy">
+          <span>Pokémon Ruby</span><small>Game file not added yet</small>
+        </button>
+        <button type="button" class="pokemon-game-card" data-game="gamelist/PokemonSapphire/index.html" disabled aria-disabled="true">
+          <img src="gamelist/PokemonSapphire/pokemonsapphire.png" alt="Pokémon Sapphire cover" loading="lazy">
+          <span>Pokémon Sapphire</span><small>Game file not added yet</small>
+        </button>
+        <button type="button" class="pokemon-game-card" data-game="gamelist/PokemonFireRed/index.html" disabled aria-disabled="true">
+          <img src="gamelist/PokemonFireRed/pokemonfirered.png" alt="Pokémon FireRed cover" loading="lazy">
+          <span>Pokémon FireRed</span><small>Game file not added yet</small>
+        </button>
+        <button type="button" class="pokemon-game-card" data-game="gamelist/PokemonLeafGreen/index.html" disabled aria-disabled="true">
+          <img src="gamelist/PokemonLeafGreen/pokemonleafgreen.png" alt="Pokémon LeafGreen cover" loading="lazy">
+          <span>Pokémon LeafGreen</span><small>Game file not added yet</small>
+        </button>
+        <button type="button" class="pokemon-game-card" data-game="gamelist/PokemonEmerald/index.html">
+          <img src="gamelist/PokemonEmerald/pokemonemerald.png" alt="Pokémon Emerald cover" loading="lazy">
+          <span>Pokémon Emerald</span>
+        </button>
+        <button type="button" class="pokemon-game-card" data-game="gamelist/PokemonRed/index.html">
+          <img src="gamelist/PokemonRed/pokemonred.png" alt="Pokémon Red cover" loading="lazy">
+          <span>Pokémon Red</span>
+        </button>
+      </div>
       <div class="pokemon-player">
-        <label for="pokemon-game-select">Choose a Pokémon game</label>
-        <select id="pokemon-game-select">
-          <option value="">Select a game…</option>
-          <option value="gamelist/PokemonEmerald/index.html">Pokémon Emerald</option>
-          <option value="gamelist/PokemonRed/index.html">Pokémon Red</option>
-        </select>
-        <h2 id="pokemon-game-title" aria-live="polite">Choose a game to start</h2>
-        <iframe id="pokemon-game-frame" title="Pokémon emulator" src="about:blank"
+        <h2 id="pokemon-game-title" aria-live="polite">Choose a Pokémon game above</h2>
+        <iframe id="pokemon-game-frame" title="Pokémon game" src="about:blank"
           loading="lazy" allow="autoplay; fullscreen; gamepad" allowfullscreen hidden></iframe>
       </div>
     </details>
@@ -1472,20 +1500,17 @@
         notificationToggle.setAttribute("aria-expanded", "false");
       }
     });
-    const pokemonSelect = document.getElementById("pokemon-game-select");
     const pokemonFrame = document.getElementById("pokemon-game-frame");
     const pokemonTitle = document.getElementById("pokemon-game-title");
-    pokemonSelect.addEventListener("change", () => {
-      const selected = pokemonSelect.selectedOptions[0];
-      if (!pokemonSelect.value) {
-        pokemonFrame.src = "about:blank";
-        pokemonFrame.hidden = true;
-        pokemonTitle.textContent = "Choose a game to start";
-        return;
-      }
-      pokemonTitle.textContent = selected.textContent;
-      pokemonFrame.src = resolveGameUrl(pokemonSelect.value);
-      pokemonFrame.hidden = false;
+    document.querySelectorAll(".pokemon-game-card:not(:disabled)").forEach(card => {
+      card.addEventListener("click", () => {
+        const gamePath = card.dataset.game;
+        const gameName = card.querySelector("span")?.textContent || "Pokémon";
+        pokemonTitle.textContent = gameName;
+        pokemonFrame.src = resolveGameUrl(gamePath);
+        pokemonFrame.hidden = false;
+        pokemonFrame.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
     });
 
 
