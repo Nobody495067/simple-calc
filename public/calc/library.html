@@ -1471,7 +1471,7 @@
       document.getElementById("pokemon-downloads-section").hidden = !isRetroView;
       // Retro is a dedicated emulator + Pokémon area, not another game-card category.
       document.getElementById("music-area").hidden = isRetroView;
-      document.getElementById("recent-section").hidden = isRetroView;
+      document.getElementById("recent-section").hidden = isRetroView || readStoredList(RECENT_KEY).length === 0;
       document.getElementById("status").hidden = isRetroView;
       document.getElementById("list").hidden = isRetroView;
       search.value = "";
