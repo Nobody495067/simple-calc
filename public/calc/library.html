@@ -254,6 +254,11 @@
       <p>Choose Game Boy Advance, NES, or SNES, then load a ROM file you own or a homebrew game. Your ROM stays in your browser session.</p>
       <iframe id="emulatorjs-frame" title="EmulatorJS retro game player" src="https://nobody495067.github.io/simple-calc/calc/emulatorjs-player.html" loading="eager" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe>
     </section>
+    <section class="emulatorjs-panel archive-directory-panel" id="archive-directory-section" hidden aria-label="ROM directory">
+      <h2>ROM Directory</h2>
+      <p>Open the separate directory page to browse the Internet Archive collection.</p>
+      <a class="pokemon-archive-link" href="directory.html">Open ROM Directory ↗</a>
+    </section>
 
     <details class="music-area" id="music-area">
       <summary>♫ Spotify music</summary>
@@ -1180,7 +1185,7 @@
           transparent: true,
           uniforms: { uTime: { value: 0 }, uTexture: { value: texture }, uHasTexture: { value: texture ? 1 : 0 } },
           vertexShader: `varying vec2 vUv; uniform float uTime; void main(){vUv=uv;vec3 p=position;p.z+=sin(p.x*1.1+uTime*.55)*.13+cos(p.y*1.4+uTime*.38)*.12;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0);}`,
-          fragmentShader: `varying vec2 vUv; uniform float uTime; uniform sampler2D uTexture; uniform float uHasTexture; void main(){vec2 uv=vUv;uv.x+=sin(uv.y*9.0+uTime*.4)*.012;uv.y+=cos(uv.x*8.0+uTime*.3)*.01;vec3 base=vec3(.025,.11,.065)+.04*sin(vec3(uv.x*5.0,uv.y*6.0,uTime*.25));vec3 color=mix(base,texture2D(uTexture,uv).rgb,uHasTexture*.9);float glow=sin(uv.x*18.0+uTime)*sin(uv.y*14.0-uTime*.6)*.035;color+=glow;gl_FragColor=vec4(color,.96);}`
+          fragmentShader: `varying vec2 vUv; uniform float uTime; uniform sampler2D uTexture; uniform float uHasTexture; void main(){vec2 uv=vec2(vUv.x,1.0-vUv.y);uv.x+=sin(uv.y*9.0+uTime*.4)*.012;uv.y+=cos(uv.x*8.0+uTime*.3)*.01;vec3 base=vec3(.025,.11,.065)+.04*sin(vec3(uv.x*5.0,uv.y*6.0,uTime*.25));vec3 color=mix(base,texture2D(uTexture,uv).rgb,uHasTexture*.9);float glow=sin(uv.x*18.0+uTime)*sin(uv.y*14.0-uTime*.6)*.035;color+=glow;gl_FragColor=vec4(color,.96);}`
         });
         const plane = new THREE.Mesh(geometry, material);
         scene.add(plane);
@@ -1441,6 +1446,7 @@
       activeGameFilter = filter;
       const isRetroView = filter === "retro";
       document.getElementById("emulatorjs-section").hidden = !isRetroView;
+      document.getElementById("archive-directory-section").hidden = !isRetroView;
       // Retro is a dedicated emulator view; game cards remain in their normal categories.
       document.getElementById("music-area").hidden = isRetroView;
       document.getElementById("youtube-area").hidden = isRetroView;
