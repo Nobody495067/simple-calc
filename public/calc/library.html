@@ -87,7 +87,7 @@
     .top-btn.reload-btn:hover { background: #45a049; }
     #game-container .top-bar { flex:0 0 48px; min-height:48px; }
     #game-frame-clip { display:block; flex:1 1 auto; min-height:0; width:100%; overflow:hidden; position:relative; overscroll-behavior:none; }
-    #game-frame { display:block; flex:none; width:calc(100% + 20px); height:100%; min-height:0; margin:0 -20px 0 0; border:0; overflow:hidden; scrollbar-width:none; overscroll-behavior:none; }
+    #game-frame { display:block; flex:1 1 auto; width:100%; height:100%; min-height:0; margin:0; border:0; overflow:auto; scrollbar-width:auto; overscroll-behavior:auto; }
     #game-frame-clip:fullscreen { width:100vw; height:100vh; background:#000; }
     #game-frame-clip:fullscreen #game-frame { width:calc(100% + 20px); height:100%; }
     #game-frame::-webkit-scrollbar { display:none !important; width:0 !important; height:0 !important; }
@@ -1116,6 +1116,10 @@
       return new URL(value.replace(/^\.\//, ""), libraryDirectory).href;
     }
 
+    // Keep the player as a direct body child so library layout/stacking rules
+    // cannot turn the fixed game overlay into an element at the bottom of the page.
+    if (gameContainer.parentElement !== document.body) document.body.appendChild(gameContainer);
+
     async function openGame(url, title) {
       currentGameTitle.textContent = title;
       rememberRecentGame(url,title);
@@ -1123,7 +1127,10 @@
       gameError.hidden = true;
       document.body.classList.add("game-open");
       document.documentElement.classList.add("game-open");
-      gameContainer.style.display = "flex";
+      Object.assign(gameContainer.style, {
+        display: "flex", position: "fixed", inset: "0", width: "100vw",
+        height: "100vh", zIndex: "2147483647", flexDirection: "column"
+      });
       gameFrame.setAttribute("scrolling", "no");
       gameFrame.style.overflow = "hidden";
 
@@ -1146,13 +1153,11 @@
       gameFrame.hidden = false;
     }
 
+    // Do not inject global CSS into games: it breaks games that need their
+    // own scrolling, canvas sizing, or page layout. Keep their styles intact.
     gameFrame.addEventListener("load", () => {
-      let prefs = {}; try { prefs = JSON.parse(localStorage.getItem("librarySettings") || "{}"); } catch {}
-      gameFrame.setAttribute("scrolling", "no");
-      gameFrame.style.overflow = "hidden";
-      if (prefs.hideScroll !== false) {
-        try { const doc = gameFrame.contentDocument; if (doc) { const style = doc.createElement("style"); style.textContent = "html,body{overflow:hidden!important;scrollbar-width:none!important;overscroll-behavior:none!important}*{scrollbar-width:none!important}*::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}"; (doc.head || doc.documentElement).appendChild(style); doc.documentElement.style.setProperty("overflow","hidden","important"); if(doc.body) doc.body.style.setProperty("overflow","hidden","important"); } } catch {}
-      }
+      gameFrame.setAttribute("scrolling", "auto");
+      gameFrame.style.overflow = "auto";
     });
 
     function reloadGame() {
@@ -1172,6 +1177,8 @@
         }
       }
       gameContainer.style.display = "none";
+      gameContainer.style.position = "fixed";
+      gameContainer.style.inset = "0";
       document.body.classList.remove("game-open");
       document.documentElement.classList.remove("game-open");
       gameFrame.src = "";
