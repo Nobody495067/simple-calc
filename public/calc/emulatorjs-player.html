@@ -59,24 +59,12 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
   const status=document.getElementById('status');
   const game=document.getElementById('game');
   let currentRomUrl=null;
-  let loaderPromise=null;
   const DATA_PATH='https://cdn.emulatorjs.org/stable/data/'; // Replace with your hosted EmulatorJS data folder if desired.
   const HOSTED_ROMS={
     gba:'./roms/your-game.gba', // Put your own hosted .gba file here.
     nes:'./roms/your-game.nes', // Put your own hosted .nes file here.
     snes:'./roms/your-game.sfc' // Put your own hosted .sfc file here.
   };
-  function loadLoader(){
-    if(loaderPromise)return loaderPromise;
-    loaderPromise=new Promise((resolve,reject)=>{
-      const script=document.createElement('script');
-      script.src=DATA_PATH+'loader.js';
-      script.onload=resolve;
-      script.onerror=()=>reject(new Error('Could not load EmulatorJS loader.js. Check the data folder URL or network connection.'));
-      document.head.append(script);
-    });
-    return loaderPromise;
-  }
   async function launch(){
     const core=coreSelect.value;
     const file=romInput.files&&romInput.files[0];
@@ -87,7 +75,6 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
     startButton.disabled=true;
     status.textContent='Loading EmulatorJS…';
     try{
-      await loadLoader();
       if(currentRomUrl)URL.revokeObjectURL(currentRomUrl);
       currentRomUrl=URL.createObjectURL(file);
       // EmulatorJS reads these globals when loader.js initializes the player.
