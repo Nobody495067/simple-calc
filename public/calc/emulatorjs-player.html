@@ -13,7 +13,7 @@ h1{font-size:clamp(22px,4vw,32px);margin:0;color:var(--green)}a{color:var(--gree
 .panel{margin-top:16px;padding:16px;border:1px solid #2b3b30;border-radius:14px;background:#151d19}
 .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;align-items:end}
 label{display:grid;gap:7px;color:#cdd8d0;font-size:13px;font-weight:700}
-select,input,button{width:100%;min-height:42px;padding:9px 11px;border:1px solid #3b5142;border-radius:9px;background:#101813;color:#f4f7f5;font:inherit}
+select,input,button,select{width:100%;min-height:42px;padding:9px 11px;border:1px solid #3b5142;border-radius:9px;background:#101813;color:#f4f7f5;font:inherit}
 button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}button:hover{background:#319651}
 .note{color:var(--muted);font-size:13px;line-height:1.5}
 #game{width:100%;min-height:460px;margin-top:14px;background:#000;border-radius:10px;overflow:hidden}
@@ -37,12 +37,15 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
           <option value="snes">Super Nintendo</option>
         </select>
       </label>
-      <label>Choose a ROM file
-        <input id="rom" type="file" accept=".gba,.gb,.gbc,.nes,.sfc,.smc,application/octet-stream">
+      <label>Choose a ROM or ZIP file
+        <input id="rom" type="file" accept=".zip,.gba,.gb,.gbc,.nes,.sfc,.smc,application/zip,application/octet-stream">
       </label>
-      <button id="start" type="button">Load / Switch Game</button>
+      <label id="archive-entry-wrap" hidden>ROM inside ZIP
+        <select id="archive-entry"></select>
+      </label>
+      <button id="start" type="button">Extract &amp; Play</button>
     </div>
-    <p class="note">Use a game file you own or a homebrew ROM. This page does not download ROMs. The selected file is loaded locally in your browser session.</p>
+    <p class="note">Choose a ROM you are authorized to use, or a ZIP containing one. ZIP files are extracted in your browser; nothing is uploaded. On a Chromebook, download your file first, then use the file picker above.</p>
     <p id="status" role="status" aria-live="polite">Choose a console and a compatible ROM file.</p>
     <div id="game"></div>
   </section>
@@ -51,57 +54,106 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
     <p class="note">In the JavaScript below, replace the local file selection with your own hosted file URL. Keep the matching console core. EmulatorJS data assets are loaded from the official CDN by default; you can point EJS_pathtodata to your own hosted data folder.</p>
   </section>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script>
 (() => {
   const coreSelect=document.getElementById('core');
   const romInput=document.getElementById('rom');
+  const entryWrap=document.getElementById('archive-entry-wrap');
+  const entrySelect=document.getElementById('archive-entry');
   const startButton=document.getElementById('start');
   const status=document.getElementById('status');
   const game=document.getElementById('game');
   let currentRomUrl=null;
-  const DATA_PATH='https://cdn.emulatorjs.org/stable/data/'; // Replace with your hosted EmulatorJS data folder if desired.
-  const HOSTED_ROMS={
-    gba:'./roms/your-game.gba', // Put your own hosted .gba file here.
-    nes:'./roms/your-game.nes', // Put your own hosted .nes file here.
-    snes:'./roms/your-game.sfc' // Put your own hosted .sfc file here.
-  };
+  let archiveEntries=[];
+  const DATA_PATH='https://cdn.emulatorjs.org/stable/data/';
+  const extensions={gba:['.gba'],nes:['.nes'],snes:['.sfc','.smc']};
+
+  function matchingEntries(core){
+    return archiveEntries.filter(entry=>extensions[core].some(ext=>entry.name.toLowerCase().endsWith(ext)));
+  }
+  function refreshArchiveChoices(){
+    const matches=matchingEntries(coreSelect.value);
+    entrySelect.replaceChildren();
+    for(const entry of matches){
+      const option=document.createElement('option');
+      option.value=entry.name;
+      option.textContent=entry.name;
+      entrySelect.append(option);
+    }
+    entryWrap.hidden=matches.length===0;
+    if(archiveEntries.length && !matches.length){
+      status.textContent='This ZIP does not contain a ROM for the selected console.';
+    }
+  }
+
+  romInput.addEventListener('change',async()=>{
+    archiveEntries=[];
+    entryWrap.hidden=true;
+    const file=romInput.files&&romInput.files[0];
+    if(!file)return;
+    if(!file.name.toLowerCase().endsWith('.zip'))return;
+    status.textContent='Reading ZIP contents…';
+    try{
+      if(!window.JSZip)throw new Error('The ZIP extractor could not load. Check your connection and try again.');
+      const zip=await JSZip.loadAsync(file);
+      archiveEntries=Object.values(zip.files).filter(entry=>!entry.dir && /\.(gba|nes|sfc|smc)$/i.test(entry.name));
+      refreshArchiveChoices();
+      status.textContent=archiveEntries.length
+        ? 'Found '+archiveEntries.length+' supported ROM file(s). Choose the one to play.'
+        : 'No supported GBA, NES, or SNES ROM was found in this ZIP.';
+    }catch(error){status.textContent='Could not read this ZIP: '+error.message;}
+  });
+
+  coreSelect.addEventListener('change',refreshArchiveChoices);
+
   async function launch(){
     const core=coreSelect.value;
     const file=romInput.files&&romInput.files[0];
-    if(!file){status.textContent='Choose a compatible ROM file first.';return;}
-    const extensions={gba:['.gba'],nes:['.nes'],snes:['.sfc','.smc']};
-    const lower=file.name.toLowerCase();
-    if(!extensions[core].some(ext=>lower.endsWith(ext))){status.textContent='That file extension does not match the selected console.';return;}
+    if(!file){status.textContent='Choose a compatible ROM or ZIP file first.';return;}
     startButton.disabled=true;
-    status.textContent='Loading EmulatorJS…';
+    status.textContent='Preparing game…';
     try{
+      let romBlob=file;
+      if(file.name.toLowerCase().endsWith('.zip')){
+        if(!window.JSZip)throw new Error('The ZIP extractor could not load. Refresh the page and try again.');
+        const zip=await JSZip.loadAsync(file);
+        const matches=matchingEntries(core);
+        const selectedName=entrySelect.value || (matches[0]&&matches[0].name);
+        const selected=matches.find(entry=>entry.name===selectedName);
+        if(!selected)throw new Error('No matching ROM was found in this ZIP for the selected console.');
+        romBlob=await selected.async('blob');
+        status.textContent='ZIP extracted. Loading EmulatorJS…';
+      }else{
+        const lower=file.name.toLowerCase();
+        if(!extensions[core].some(ext=>lower.endsWith(ext))){
+          throw new Error('That file extension does not match the selected console.');
+        }
+      }
+
       if(currentRomUrl)URL.revokeObjectURL(currentRomUrl);
-      currentRomUrl=URL.createObjectURL(file);
-      // EmulatorJS reads these globals when loader.js initializes the player.
+      currentRomUrl=URL.createObjectURL(romBlob);
       window.EJS_player='#game';
       window.EJS_core=core;
       window.EJS_gameUrl=currentRomUrl;
       window.EJS_pathtodata=DATA_PATH;
       window.EJS_startOnLoaded=true;
       window.EJS_biosUrl='';
-      // Recreate the player mount and reload the loader to apply the selected core + ROM.
       game.replaceChildren();
       const old=document.getElementById('emulatorjs-runtime');
       if(old)old.remove();
       const runtime=document.createElement('script');
       runtime.id='emulatorjs-runtime';
       runtime.src=DATA_PATH+'loader.js?session='+Date.now();
-      runtime.onload=()=>{status.textContent='EmulatorJS loaded. If the game does not start, confirm the ROM matches the selected console.';};
-      runtime.onerror=()=>{status.textContent='EmulatorJS failed to initialize. Check the data folder and ROM file.';};
+      runtime.onload=()=>{status.textContent='EmulatorJS loaded. If the game does not start, verify that the selected file is a valid ROM for this console.';};
+      runtime.onerror=()=>{status.textContent='EmulatorJS failed to initialize. Check your connection and ROM file.';};
       document.head.append(runtime);
     }catch(error){status.textContent=error.message;}
     finally{startButton.disabled=false;}
   }
   startButton.addEventListener('click',launch);
   window.addEventListener('beforeunload',()=>{if(currentRomUrl)URL.revokeObjectURL(currentRomUrl);});
-  // To use a hosted ROM instead, set window.EJS_gameUrl to HOSTED_ROMS[core]
-  // and keep EJS_core set to 'gba', 'nes', or 'snes' before initializing loader.js.
 })();
-</script>
+</script>>
 </body>
 </html>
