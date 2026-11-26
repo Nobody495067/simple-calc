@@ -203,7 +203,7 @@
     <div class="popular-controls" role="group" aria-label="Game categories">
       <button type="button" id="all-games-button" class="filter-btn secondary active" aria-pressed="true">All Games</button>
       <button type="button" id="popular-button" class="filter-btn" aria-pressed="false">Popular</button>
-      <button type="button" id="new-games-button" class="filter-btn" aria-pressed="false">New Games</button>
+      <button type="button" id="action-button" class="filter-btn" aria-pressed="false">Action</button>
       <button type="button" id="racing-button" class="filter-btn" aria-pressed="false">Racing</button>
       <button type="button" id="shooting-button" class="filter-btn" aria-pressed="false">Shooting</button>
       <button type="button" id="fnaf-button" class="filter-btn" aria-pressed="false">FNAF</button>
@@ -268,7 +268,7 @@
     const search = document.getElementById("search");
     const popularButton = document.getElementById("popular-button");
     const allGamesButton = document.getElementById("all-games-button");
-    const newGamesButton = document.getElementById("new-games-button");
+    const actionButton = document.getElementById("action-button");
     const racingButton = document.getElementById("racing-button");
     const shootingButton = document.getElementById("shooting-button");
     const fnafButton = document.getElementById("fnaf-button");
@@ -290,6 +290,7 @@
       ["./additions/pokerogue/index.html", "PokéRogue"],
       ["./additions/julius.html", "Julius"],
       ["./additions/clover-pit.html", "Clover Pit"],
+      ["./additions/ambient-lab.html", "Ambient Lab"],
     ]);
     let activeGameFilter = "all";
     const RECENT_KEY = "libraryRecentlyPlayed";
@@ -341,7 +342,7 @@
       "lastbreath",
       "untitledgoosegame"
     ]);
-    const newGameKeys = new Set(["60seconds", "animalcrossing", "plagueincevolved", "pokerogue", "julius", "cloverpit" ]);
+    const newGameKeys = new Set(["60seconds", "animalcrossing", "plagueincevolved", "pokerogue", "julius", "cloverpit", "ambientlab" ]);
     const newGamePaths = new Set([
       "https://rgc.zone/ports/ac-webport-main/index.html",
       "gamelist/60-Seconds/index.html",
@@ -349,8 +350,20 @@
       "./additions/pokerogue/index.html",
       "./additions/julius.html",
       "./additions/clover-pit.html",
+      "./additions/ambient-lab.html",
     ]);
     const gameCategoryGroups = {
+      action: [
+        ["Bad Ice Cream"], ["Bad Ice Cream 2"], ["Bad Ice Cream 3"],
+        ["Bad Piggies"], ["Bloxorz"], ["Cut The Rope"],
+        ["Dadish"], ["Dadish 2"], ["Dadish 3"],
+        ["Duck Life"], ["Duck Life 2"], ["Duck Life 3"], ["Duck Life 4"], ["Duck Life 5"],
+        ["Fancy Pants Adventure"], ["Fancy Pants Adventure 2"],
+        ["Fireboy And Watergirl"], ["Fireboy And Watergirl 2"], ["Fireboy And Watergirl 3"], ["Fireboy And Watergirl 4"],
+        ["Flappy Bird"], ["Doodle Jump"], ["Crossy Road"], ["Ducklings.io"],
+        ["Capybara Clicker"], ["Cookie Clicker"], ["Basketball Legends"], ["Basketball Stars"],
+        ["Basket Random"], ["Football Bros"], ["Baseball Bros"], ["8 Ball Classic"]
+      ],
       racing: [
         ["3D Car Simulator"],
         ["Blumgi Racers"],
@@ -958,7 +971,7 @@
       const buttons = {
         all: allGamesButton,
         popular: popularButton,
-        new: newGamesButton,
+        action: actionButton,
         racing: racingButton,
         shooting: shootingButton,
         fnaf: fnafButton,
@@ -1020,7 +1033,7 @@
 
     allGamesButton.addEventListener("click", () => setGameFilter("all"));
     popularButton.addEventListener("click", () => setGameFilter("popular"));
-    newGamesButton.addEventListener("click", () => setGameFilter("new"));
+    actionButton.addEventListener("click", () => setGameFilter("action"));
     racingButton.addEventListener("click", () => setGameFilter("racing"));
     shootingButton.addEventListener("click", () => setGameFilter("shooting"));
     fnafButton.addEventListener("click", () => setGameFilter("fnaf"));
