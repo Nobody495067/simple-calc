@@ -1,4 +1,4 @@
-const CACHE = "game-library-shell-v8";;
+const CACHE = "game-library-shell-v9";
 const FILES = ["./library.html", "./settings.html", "./manifest.webmanifest", "./directory.html", "./app-icon.svg", "./additions/ambient-lab.html", "./games-manifest.json", "./game-art-manifest.json"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(() => self.skipWaiting()));
@@ -10,8 +10,8 @@ self.addEventListener("fetch", event => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== "GET" || url.origin !== location.origin) return;
-  const isPage = request.mode === "navigate" || /\\.html?$/i.test(url.pathname);
-  const isManifest = /\\/(?:games-manifest|game-art-manifest)\\.json$/i.test(url.pathname);
+  const isPage = request.mode === "navigate" || /\.html?$/i.test(url.pathname);
+  const isManifest = /\/(?:games-manifest|game-art-manifest)\.json$/i.test(url.pathname);
   if (isManifest) {
     event.respondWith(fetch(request, { cache: "no-store" }).then(response => {
       if (response.ok && response.type === "basic") {
