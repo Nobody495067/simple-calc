@@ -1021,8 +1021,17 @@
       return base.replace(/\b\w/g, (letter) => letter.toUpperCase());
     }
 
+    function resolveGameUrl(value) {
+      // Older manifest entries may still point at the original calc Pages site.
+      // Re-home those paths under this repository's /simple-calc/calc/ directory.
+      const legacyPrefix = "https://Nobody495067.github.io/calc/";
+      if (value.startsWith(legacyPrefix)) {
+        return new URL(value.slice(legacyPrefix.length), libraryDirectory).href;
+      }
+      return new URL(value, libraryDirectory).href;
+    }
+
     async function openGame(url, title) {
-      if (url.startsWith("./additions/")) url = new URL(url, libraryDirectory).href;
       currentGameTitle.textContent = title;
       rememberRecentGame(url,title);
       gameFrame.hidden = true;
@@ -1048,7 +1057,7 @@
       // Resolve every local game from the deployed /calc/ library directory.
       // Do not depend on the document <base> tag: the library is also hosted
       // inside an about:blank wrapper when launched from the calculator.
-      gameFrame.src = new URL(url, libraryDirectory).href;
+      gameFrame.src = resolveGameUrl(url);
       gameFrame.hidden = false;
     }
 
