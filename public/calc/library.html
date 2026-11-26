@@ -114,7 +114,24 @@
     .pokemon-game-card:disabled { cursor: not-allowed; opacity: .65; }
     .pokemon-player { margin-top: 18px; }
 
-    html, body { min-height: 100%; overflow-x: hidden; overflow-y: auto; }
+    html, body {
+      width: 100%;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      overscroll-behavior-y: auto;
+      touch-action: pan-y;
+    }
+    body { min-height: 100vh !important; }
+    #library-view { position: relative; z-index: 2; min-height: 100vh; height: auto; overflow: visible; pointer-events: auto; }
+    #three-background { pointer-events: none !important; }
+    #list, #list .item, .game-card, .favorite-toggle, .popular-controls, .filter-btn { pointer-events: auto; }
+    .emulatorjs-panel { margin-top: 20px; padding: 15px; border: 1px solid var(--library-border); border-radius: 13px; background: rgba(12,18,15,.9); }
+    .emulatorjs-panel h2 { margin: 0 0 7px; font-size: 18px; color: var(--library-accent); }
+    .emulatorjs-panel p { margin: 0 0 12px; color: var(--library-muted); font-size: 13px; line-height: 1.5; }
+    #emulatorjs-frame { display: block; width: 100%; height: 780px; min-height: 620px; border: 1px solid var(--library-border); border-radius: 10px; background: #090d0b; }
+    @media (max-width: 600px) { #emulatorjs-frame { height: 820px; min-height: 700px; } }
     .music-area { max-width: 1440px; margin: 0 auto 24px; border-top: 1px solid var(--library-border); border-bottom: 1px solid var(--library-border); padding: 14px 0; }
     .music-area summary { cursor: pointer; color: var(--library-accent); font-size: 18px; font-weight: bold; }
     .music-content { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(280px, 1fr); gap: 20px; padding-top: 14px; align-items: center; }
@@ -271,6 +288,11 @@
           <span>Pokémon Red</span>
         </button>
       </div>
+      <section class="emulatorjs-panel" aria-label="EmulatorJS retro player">
+        <h2>EmulatorJS Retro Player</h2>
+        <p>Choose Game Boy Advance, NES, or SNES, then load a ROM file you own or a homebrew game. Your ROM stays in your browser session.</p>
+        <iframe id="emulatorjs-frame" title="EmulatorJS retro game player" src="emulatorjs-player.html" loading="lazy" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe>
+      </section>
       <div class="pokemon-player">
         <h2 id="pokemon-game-title" aria-live="polite">Choose a Pokémon game above</h2>
         <iframe id="pokemon-game-frame" title="Pokémon game" src="about:blank"
