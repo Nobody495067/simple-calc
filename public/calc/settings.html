@@ -50,6 +50,44 @@
       <div class="choices"><button id="save-image" type="button">Save image &amp; animate</button><button id="remove-image" type="button">Remove uploaded image</button></div>
       <p id="image-status" role="status" aria-live="polite" style="margin-top:12px"></p>
     </section>
+
+    <section id="save-settings">
+      <h2>Save states &amp; game saves</h2>
+      <p>Use EmulatorJS's built-in Save State and Load State controls in the player toolbar while a game is running. Support can vary by console core. Browser saves remain in this browser profile on this device.</p>
+      <div class="choices"><a class="back" href="emulatorjs-player.html" target="_blank" rel="noopener">Open Emulator Player</a></div>
+    </section>
+    <section id="controller-settings">
+      <h2>Controller &amp; keyboard mapping</h2>
+      <p>Set Player 1 keyboard keys here. These are applied when a game starts. For a connected gamepad, open the EmulatorJS toolbar and choose Controls to configure its buttons.</p>
+      <div class="key-row"><label for="control-up">D-pad Up</label><input class="control-key" id="control-up" data-control="4" type="text" maxlength="16" autocomplete="off"></div>
+      <div class="key-row"><label for="control-down">D-pad Down</label><input class="control-key" id="control-down" data-control="5" type="text" maxlength="16" autocomplete="off"></div>
+      <div class="key-row"><label for="control-left">D-pad Left</label><input class="control-key" id="control-left" data-control="6" type="text" maxlength="16" autocomplete="off"></div>
+      <div class="key-row"><label for="control-right">D-pad Right</label><input class="control-key" id="control-right" data-control="7" type="text" maxlength="16" autocomplete="off"></div>
+      <div class="key-row"><label for="control-a">A button</label><input class="control-key" id="control-a" data-control="8" type="text" maxlength="16" autocomplete="off"></div>
+      <div class="key-row"><label for="control-b">B button</label><input class="control-key" id="control-b" data-control="0" type="text" maxlength="16" autocomplete="off"></div>
+      <div class="key-row"><label for="control-x">X button</label><input class="control-key" id="control-x" data-control="9" type="text" maxlength="16" autocomplete="off"></div>
+      <div class="key-row"><label for="control-y">Y button</label><input class="control-key" id="control-y" data-control="1" type="text" maxlength="16" autocomplete="off"></div>
+      <div class="key-row"><label for="control-start">Start</label><input class="control-key" id="control-start" data-control="3" type="text" maxlength="16" autocomplete="off"></div>
+      <div class="key-row"><label for="control-select">Select</label><input class="control-key" id="control-select" data-control="2" type="text" maxlength="16" autocomplete="off"></div>
+      <div class="choices"><button id="reset-controls" type="button">Restore default controls</button></div>
+    </section>
+    <section id="audio-settings">
+      <h2>Audio</h2>
+      <p>Choose the starting volume for games. This is applied when the emulator launches.</p>
+      <div class="key-row"><label for="audio-volume">Emulator volume</label><input id="audio-volume" type="range" min="0" max="100" value="70"></div>
+      <div class="key-row"><label for="audio-muted">Start games muted</label><input id="audio-muted" type="checkbox"></div>
+    </section>
+    <section id="theme-settings">
+      <h2>Theme accents</h2>
+      <p>Choose an accent color for the library. Your existing background and wallpaper settings remain available above.</p>
+      <div class="choices" id="accent-choices">
+        <button type="button" data-accent="green">Green</button>
+        <button type="button" data-accent="blue">Blue</button>
+        <button type="button" data-accent="purple">Purple</button>
+        <button type="button" data-accent="orange">Orange</button>
+      </div>
+    </section>
+
     <section>
       <h2>Keybinds</h2>
       <p>Click a field and press the key you want to assign. Shortcuts are active while the library is open, except when typing in a text field.</p>
@@ -66,7 +104,8 @@
     </section>
   </main>
   <script>
-    const defaults = { background: "animated", panicKey: "", panicUrl: "", hideScroll: true, ambient: true, reduced: false, compact: false, confirmExit: false, intensity: 5 };
+    const defaultControls = { "0":"z", "1":"a", "2":"v", "3":"enter", "4":"up arrow", "5":"down arrow", "6":"left arrow", "7":"right arrow", "8":"x", "9":"s" };
+    const defaults = { background: "animated", audioVolume: 70, audioMuted: false, accent: "green", controllerKeys: { ...defaultControls }, panicKey: "", panicUrl: "", hideScroll: true, ambient: true, reduced: false, compact: false, confirmExit: false, intensity: 5 };
     let settings = { ...defaults };
     try {
       const savedSettings = localStorage.getItem("librarySettings");
@@ -74,6 +113,29 @@
       if (!savedSettings) localStorage.setItem("librarySettings", JSON.stringify(settings));
     } catch {}
     const status = document.getElementById("status");
+    const controlInputs = [...document.querySelectorAll(".control-key")];
+    function syncAdvancedInputs() {
+      document.getElementById("audio-volume").value = settings.audioVolume ?? 70;
+      document.getElementById("audio-muted").checked = !!settings.audioMuted;
+      controlInputs.forEach(input => { input.value = (settings.controllerKeys || defaultControls)[input.dataset.control] || ""; });
+      document.querySelectorAll("[data-accent]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.accent === (settings.accent || "green"))));
+    }
+    document.querySelectorAll("[data-accent]").forEach(button => button.addEventListener("click", () => {
+      settings.accent = button.dataset.accent;
+      syncAdvancedInputs();
+      status.textContent = "Accent selected. Save settings to apply it to the library.";
+    }));
+    controlInputs.forEach(input => input.addEventListener("keydown", event => {
+      event.preventDefault();
+      if (event.key === "Backspace" || event.key === "Delete") input.value = "";
+      else if (event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey) input.value = event.key.toLowerCase();
+      else if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Enter"," ","Tab"].includes(event.key)) input.value = ({ArrowUp:"up arrow",ArrowDown:"down arrow",ArrowLeft:"left arrow",ArrowRight:"right arrow",Enter:"enter"," ":"space",Tab:"tab"})[event.key] || input.value;
+      status.textContent = "Controller changes will be saved with Save settings.";
+    }));
+    document.getElementById("reset-controls").addEventListener("click", () => {
+      controlInputs.forEach(input => { input.value = defaultControls[input.dataset.control] || ""; });
+      status.textContent = "Default keyboard controls restored. Save settings to apply.";
+    });
     function save() {
       localStorage.setItem("librarySettings", JSON.stringify(settings));
       status.textContent = "Settings saved.";
@@ -117,8 +179,14 @@
       });
     }
     captureKey(panicInput);
+    document.getElementById("save").textContent = "Save settings";
     document.getElementById("save").addEventListener("click", () => {
       settings.panicKey = panicInput.value.trim().toLowerCase();
+      settings.audioVolume = Number(document.getElementById("audio-volume").value);
+      settings.audioMuted = document.getElementById("audio-muted").checked;
+      settings.controllerKeys = { ...defaultControls };
+      controlInputs.forEach(input => { settings.controllerKeys[input.dataset.control] = input.value.trim().toLowerCase(); });
+      settings.accent = document.querySelector("[data-accent][aria-pressed='true']")?.dataset.accent || settings.accent || "green";
       for (const [id,key] of [["hide-scroll","hideScroll"],["ambient","ambient"],["reduced","reduced"],["compact","compact"],["confirm-exit","confirmExit"]]) settings[key] = document.getElementById(id).checked;
       settings.intensity = Number(document.getElementById("intensity").value);
       settings.panicUrl = panicUrlInput.value.trim();
@@ -147,6 +215,7 @@
       settings = { ...defaults };
       panicInput.value = "";
       panicUrlInput.value = "";
+      syncAdvancedInputs();
       save();
       status.textContent = "Settings reset.";
     });
@@ -159,6 +228,7 @@
     (async()=>{try{const saved=await readImage();if(saved){imagePreview.src=saved;imageWrap.hidden=false;imageName.textContent="Saved image";}}catch{}})();
     document.getElementById("save-image").addEventListener("click",async()=>{const file=imageInput.files?.[0];if(!file){imageStatus.textContent="Choose an image first.";return;}try{const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file)});await storeImage(data);settings.background="animated";save();imageStatus.textContent="Image saved. Three.js animated background is enabled.";}catch(error){imageStatus.textContent="Could not save this image in browser storage.";console.error(error);}});
     document.getElementById("remove-image").addEventListener("click",async()=>{try{await deleteImage();imageInput.value="";imagePreview.removeAttribute("src");imageWrap.hidden=true;imageStatus.textContent="Uploaded image removed.";}catch{imageStatus.textContent="Could not remove the saved image."; }});
+    syncAdvancedInputs();
     updateBackgroundButtons();
 
   </script>
