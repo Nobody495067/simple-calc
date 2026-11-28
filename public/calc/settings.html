@@ -28,8 +28,11 @@
 </head>
 <body>
   <main>
-    <header><h1>Settings</h1><a class="back" href="library.html">← Library</a></header>
-    <section>
+    <header><h1>Advanced Settings</h1><a class="back" href="library.html">← Library</a></header>
+    <nav class="choices" aria-label="Settings sections" style="margin:0 0 20px">
+      <a class="back" href="#save-settings">Saves</a><a class="back" href="#controller-settings">Controller</a><a class="back" href="#wallpaper-settings">Wallpaper</a><a class="back" href="#audio-settings">Audio</a><a class="back" href="#privacy-settings">Privacy</a><a class="back" href="#theme-settings">Themes</a>
+    </nav>
+    <section id="wallpaper-settings">
       <h2>Background</h2>
       <p>Choose the appearance used by the game library.</p>
       <div class="choices" id="backgrounds">
@@ -53,7 +56,7 @@
 
     <section id="save-settings">
       <h2>Save states &amp; game saves</h2>
-      <p>Use EmulatorJS's built-in Save State and Load State controls in the player toolbar while a game is running. Support can vary by console core. Browser saves remain in this browser profile on this device.</p>
+      <p>Use EmulatorJS's built-in Save State and Load State controls in the player toolbar while a game is running. Save states can be downloaded and loaded again later; availability depends on the selected console core.</p>
       <div class="choices"><a class="back" href="emulatorjs-player.html" target="_blank" rel="noopener">Open Emulator Player</a></div>
     </section>
     <section id="controller-settings">
@@ -88,8 +91,8 @@
       </div>
     </section>
 
-    <section>
-      <h2>Keybinds</h2>
+    <section id="privacy-settings">
+      <h2>Privacy &amp; shortcuts</h2>
       <p>Click a field and press the key you want to assign. Shortcuts are active while the library is open, except when typing in a text field.</p>
       <div class="key-row"><label for="panic-key">Panic shortcut key (opens your chosen site in a new tab)</label><input id="panic-key" type="text" maxlength="1" placeholder="Not set" autocomplete="off"></div>
       <div class="key-row"><label for="panic-url">Panic destination website</label><input id="panic-url" type="url" placeholder="https://example.com" autocomplete="url" style="text-align:left"></div>
