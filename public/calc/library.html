@@ -984,6 +984,8 @@
         };
         const selectedBackground = settings.background || "animated";
         document.body.style.background = backgrounds[selectedBackground] || backgrounds.animated;
+        const accents = { green:"#55d879", blue:"#60a5fa", purple:"#c084fc", orange:"#fb923c" };
+        document.documentElement.style.setProperty("--library-accent", accents[settings.accent] || accents.green);
         document.body.classList.toggle("three-background-active", selectedBackground === "animated");
         if(selectedBackground === "animated") { document.body.classList.add("three-background-active"); startThreeLibraryBackground(); } else { document.body.classList.remove("three-background-active"); stopThreeLibraryBackground(); }
         if (settings.background === "light") {
