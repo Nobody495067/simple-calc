@@ -98,8 +98,6 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
   }
   function isDirectArchiveRom(file,core){
     return file.name.toLowerCase().endsWith('.zip') && ['arcade','mame2003','dos'].includes(core);
-  }  function matchingEntries(core){
-    return archiveEntries.filter(entry=>extensions[core].some(ext=>entry.name.toLowerCase().endsWith(ext)));
   }
   function refreshArchiveChoices(){
     const matches=matchingEntries(coreSelect.value);
