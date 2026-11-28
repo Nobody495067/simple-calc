@@ -39,7 +39,7 @@ p,li{color:var(--muted);line-height:1.65}
 <main>
 <header><h1>ROM Directory</h1><a href="library.html">← Game Library</a></header>
 <section class="panel">
-<h2>Game Boy Advance ROMs</h2>
+<h2>Browse ROM Collection</h2>
 <div class="rom-search-wrap">
   <div class="rom-filter-row">
     <input id="rom-search" type="search" placeholder="Search games, systems, or file types..." autocomplete="off" aria-label="Search ROMs">
@@ -12046,7 +12046,7 @@ p,li{color:var(--muted);line-height:1.65}
       const ext=getExtension(item);
       const linkText=(item.querySelector("a")?.textContent||"").toLocaleLowerCase();
       const normalizedQuery=query.replace(/^\./,"");
-      const queryMatch=!query||title.includes(query)||ext.slice(1).includes(normalizedQuery)||linkText.includes(query);
+      const queryMatch=!query||(query==="rom"&&romExtensions.has(ext))||title.includes(query)||ext.slice(1).includes(normalizedQuery)||linkText.includes(query);
       const formatMatch=format==="all"||(format==="rom"?romExtensions.has(ext):format==="other"?(!romExtensions.has(ext)&&ext!==".zip"):ext===format);
       item.hidden=!(queryMatch&&formatMatch);
       if(!item.hidden)visible++;
