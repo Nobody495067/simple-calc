@@ -6,53 +6,54 @@
 <meta name="theme-color" content="#0d1210">
 <title>ROM Directory | Game Library</title>
 <style>
-:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#0d1210;color:#f4f7f5;--green:#55d879;--muted:#9aa8a0}
-*{box-sizing:border-box}
-body{margin:0;padding:28px 16px;background:radial-gradient(ellipse at 50% 0%,rgba(48,112,70,.2),transparent 55%),#0d1210}
-main{max-width:900px;margin:auto}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-h1{color:var(--green);font-size:clamp(26px,4vw,36px);margin:0}
-a{color:var(--green)}
-.panel{margin-top:20px;padding:20px;border:1px solid #2b3b30;border-radius:14px;background:#151d19}
-p,li{color:var(--muted);line-height:1.65}
-.archive-link{display:inline-flex;padding:10px 16px;border:1px solid #3b9c5b;border-radius:9px;background:#267a42;color:#fff;font-weight:800;font-size:14px;text-decoration:none;white-space:nowrap}
-.archive-link:hover{background:#319651}
-.rom-list{display:grid;gap:12px;margin-top:18px}
-.rom-search-wrap{margin-top:18px}
-#rom-search{flex:1;min-width:220px;padding:14px 16px;border:1px solid #3b5944;border-radius:10px;background:#0d1510;color:#f4f7f5;font:inherit;font-size:15px;outline:none}
-.rom-filter-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-#rom-filter{min-width:220px;max-width:100%;padding:13px 14px;border:1px solid #3b5944;border-radius:10px;background:#0d1510;color:#f4f7f5;font:inherit}
-.filter-label{color:#cbd8ce;font-size:13px;font-weight:700}
-@media(max-width:560px){#rom-search,#rom-filter{width:100%;min-width:0;max-width:none}.filter-label{width:100%}}
-#rom-search:focus{border-color:#55d879;box-shadow:0 0 0 3px rgba(85,216,121,.14)}
-#rom-search::placeholder{color:#829188}
-#rom-results{margin:10px 2px 0;color:var(--muted);font-size:13px}
-.rom-item[hidden]{display:none}
-.rom-item{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px;border:1px solid #2b3b30;border-radius:12px;background:#101713}
-.rom-item h3{margin:0;color:#55d879;font-size:16px}
-.zip-slot{color:#9aa8a0;font-size:13px}
-.green-link{color:#55d879!important}
-.note{font-size:13px;margin-top:18px}
+:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#090d12;color:#e8edf3;--muted:#87919d}
+*{box-sizing:border-box}body{margin:0;padding:26px 14px;background:radial-gradient(ellipse at 50% -15%,rgba(153,65,184,.16),transparent 54%),#090d12}
+main{max-width:1040px;margin:0 auto}header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+header h1{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#c8a0d8;margin:0;font-weight:800}header>a{color:#b9c2ce;text-decoration:none;font-size:12px}
+.panel{overflow:hidden;margin-top:10px;padding:0;border:1px solid #303944;border-radius:13px;background:#111820;box-shadow:0 22px 70px rgba(0,0,0,.38)}
+.browser-topline{height:32px;display:flex;align-items:center;gap:10px;padding:0 13px;background:#171f28;border-bottom:1px solid #303944;color:#b7c1cc;font-size:10px;letter-spacing:.12em;font-weight:800}
+.window-mark{font-size:19px;color:#d5dce4;line-height:1}.browser-status{margin-left:auto;color:#75818e;font-size:9px}
+.browser-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 18px 11px}.browser-heading h2{font-size:18px;margin:0 0 4px;color:#f0f2f6}.browser-heading p{margin:0;color:#8995a2;font-size:11px}
+a{color:#c98be0}.archive-link{display:inline-flex;padding:8px 12px;border:1px solid #75408d;border-radius:7px;background:#35203f;color:#f4e8fa;font-weight:700;font-size:11px;text-decoration:none;white-space:nowrap}
+.rom-search-wrap{padding:0 16px 13px}#rom-search{width:100%;padding:11px 13px;border:1px solid #5e3270;border-radius:7px;background:#9b4bb6;color:#fff;font:inherit;font-size:13px;outline:none}
+#rom-search::placeholder{color:#f0dff5}#rom-search:focus{border-color:#d59be8;box-shadow:0 0 0 3px rgba(169,79,208,.2)}
+.quick-filters{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));margin-top:10px;border:1px solid #46515d;border-radius:8px;overflow:hidden}
+.quick-filter{min-height:34px;padding:7px 5px;border:0;border-right:1px solid #46515d;background:#151e27;color:#c4ccd5;font:inherit;font-size:11px;cursor:pointer}
+.quick-filter:last-child{border-right:0}.quick-filter:hover,.quick-filter.active{background:#382344;color:#f5e9fa}
+.advanced-filters{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:11px 0 9px}
+.format-control,.size-control{display:flex;align-items:center;gap:7px;min-height:33px;padding:5px 9px;border:1px solid #46515d;border-radius:7px;color:#cbd2da;font-size:11px}
+.format-control select{max-width:180px;border:0;background:transparent;color:#f0e7f5;font:inherit;outline:none}.format-control option{background:#151e27;color:#fff}
+.size-control span{display:flex;align-items:center;gap:5px;color:#aeb8c3}.size-control input{width:55px;padding:4px 6px;border:1px solid #4b5662;border-radius:5px;background:#0d141b;color:#fff;font:inherit}
+.clear-filter{padding:8px 11px;border:1px solid #46515d;border-radius:7px;background:#151e27;color:#bdc7d1;font:inherit;font-size:11px;cursor:pointer}
+.clear-filter:hover{border-color:#a94fd0;color:#fff}.results-line{display:grid;grid-template-columns:1fr 130px 70px;gap:10px;align-items:center;padding:9px 11px;border-top:1px solid #303944;border-bottom:1px solid #303944;color:#82909d;font-size:9px;letter-spacing:.1em}
+#rom-results{margin:0;color:#b8c2cc;font-size:11px;letter-spacing:0}.rom-list{display:grid;gap:0;margin:0;padding:0 10px 10px}
+.rom-item[hidden]{display:none}.rom-item{min-height:37px;display:grid;grid-template-columns:minmax(0,1fr) 90px;align-items:center;gap:12px;padding:7px 10px;border:0;border-bottom:1px solid rgba(63,75,87,.55);border-radius:0;background:transparent}
+.rom-item:hover{background:#1a2530}.rom-item h3{min-width:0;margin:0;color:#d9e0e7;font-size:11px;font-weight:500;line-height:1.4;overflow-wrap:anywhere}
+.rom-item .archive-link{justify-self:end;min-width:78px;padding:4px 7px;border:1px solid #384552;border-radius:5px;background:#202b36;color:#cbd5df;font-size:9px;font-weight:600;text-align:center}
+.rom-item .archive-link:hover{border-color:#a94fd0;background:#352344;color:#fff}.note{font-size:11px;margin:12px 17px 16px;color:#8995a2}
+@media(max-width:650px){body{padding:14px 9px}.browser-heading{align-items:flex-start}.quick-filters{grid-template-columns:repeat(3,minmax(0,1fr))}.quick-filter:nth-child(3){border-right:0}.quick-filter:nth-child(-n+3){border-bottom:1px solid #46515d}.advanced-filters{justify-content:flex-start}.format-control{width:100%;justify-content:space-between}.results-line{grid-template-columns:1fr 78px}.results-line span:last-child{display:none}.rom-item{grid-template-columns:minmax(0,1fr) 80px}.rom-item h3{font-size:10px}}
 </style>
 </head>
 <body>
 <main>
 <header><h1>ROM Directory</h1><a href="library.html">← Game Library</a></header>
-<section class="panel">
-<h2>Browse ROM Collection</h2>
+<section class="panel file-browser">
+<div class="browser-topline"><span class="window-mark">×</span><span>ROM DIRECTORY</span><span class="browser-status">FILE BROWSER</span></div>
+<div class="browser-heading"><div><h2>Browse ROM Collection</h2><p>Search and filter by system, format, or file size.</p></div><a class="archive-link" href="library.html">← Library</a></div>
 <div class="rom-search-wrap">
-  <div class="rom-filter-row">
-    <input id="rom-search" type="search" placeholder="Search games, systems, or file types..." autocomplete="off" aria-label="Search ROMs">
-    <label class="filter-label" for="rom-filter">Filter</label>
-    <select id="rom-filter" aria-label="Filter by file type">
-      <option value="all">All formats</option><option value="rom">ROM files (all)</option>
-      <option value=".nds">Nintendo DS · NDS</option><option value=".gba">Game Boy Advance · GBA</option><option value=".gb">Game Boy · GB</option><option value=".gbc">Game Boy Color · GBC</option>
-      <option value=".nes">NES · NES</option><option value=".sfc">SNES · SFC</option><option value=".z64">Nintendo 64 · Z64</option>
-      <option value=".chd">Disc image · CHD (PS1 and others)</option><option value=".cue">Disc cue · CUE</option><option value=".iso">Disc image · ISO</option><option value=".bin">Binary image · BIN</option><option value=".pbp">PlayStation · PBP</option>
-      <option value=".zip">ZIP archives</option><option value="other">Other formats</option>
-    </select>
-  </div>
-  <p id="rom-results" aria-live="polite">Showing all files</p>
+<input id="rom-search" type="search" placeholder="Search games, systems, or file extensions..." autocomplete="off" aria-label="Search ROMs">
+<div class="quick-filters" role="group" aria-label="Filter by system">
+<button type="button" class="quick-filter active" data-system="all">All files</button><button type="button" class="quick-filter" data-system="nintendo">Nintendo</button><button type="button" class="quick-filter" data-system="sega">Sega</button><button type="button" class="quick-filter" data-system="playstation">PlayStation</button><button type="button" class="quick-filter" data-system="arcade">Arcade</button><button type="button" class="quick-filter" data-system="other">Other</button>
+</div>
+<div class="advanced-filters">
+<label class="format-control">Format<select id="rom-filter" aria-label="Filter by file type">
+<option value="all">All formats</option><option value="rom">ROM files (all)</option><option value=".nds">Nintendo DS · NDS</option><option value=".gba">Game Boy Advance · GBA</option><option value=".gb">Game Boy · GB</option><option value=".gbc">Game Boy Color · GBC</option><option value=".nes">NES</option><option value=".sfc">SNES · SFC</option><option value=".z64">Nintendo 64 · Z64</option><option value=".chd">Disc image · CHD</option><option value=".cue">Disc cue · CUE</option><option value=".iso">Disc image · ISO</option><option value=".bin">Binary image · BIN</option><option value=".pbp">PlayStation · PBP</option><option value=".zip">ZIP archives</option><option value="other">Other formats</option>
+</select></label>
+<label class="size-control">Smaller than <span><input id="rom-max-size" type="number" min="0" step="1" placeholder="Any"> MB</span></label>
+<label class="size-control">Larger than <span><input id="rom-min-size" type="number" min="0" step="1" placeholder="Any"> MB</span></label>
+<button id="clear-filters" class="clear-filter" type="button">Clear filters</button>
+</div>
+<div class="results-line"><span id="rom-results" aria-live="polite">Showing all files</span><span>NAME ↓</span><span>SIZE</span></div>
 </div>
 <div class="rom-list" id="rom-list">
   <article class="rom-item">
@@ -12021,41 +12022,21 @@ p,li{color:var(--muted);line-height:1.65}
 </main>
 <script>
 (() => {
-  const search=document.getElementById("rom-search");
-  const items=Array.from(document.querySelectorAll("#rom-list .rom-item"));
-  const results=document.getElementById("rom-results");
-  const formatFilter=document.getElementById("rom-filter");
-  if(!search||!results||!formatFilter)return;
-  const romExtensions=new Set([".nds",".gba",".gb",".gbc",".nes",".fds",".sfc",".smc",".fig",".z64",".n64",".v64",".3ds",".cci",".cxi",".3dsx",".vb",".sms",".md",".gen",".smd",".32x",".gg",".chd",".cue",".iso",".bin",".pbp",".cso",".wad",".d64",".t64",".crt",".prg",".adf",".adz",".a26",".a52",".a78",".j64",".jag",".abs",".lnx",".col",".cv",".ngp",".ngc",".pce",".ws",".wsc"]);
-  function getExtension(item){
-    const href=item.querySelector("a[href]")?.getAttribute("href")||"";
-    let decoded=href.split("?")[0];
-    try{decoded=decodeURIComponent(decoded);}catch{}
-    const match=decoded.match(/\.([a-z0-9]+)$/i);
-    if(match)return "."+match[1].toLowerCase();
-    const label=item.querySelector("a")?.textContent||"";
-    const fromLabel=label.match(/\b([A-Z0-9]{2,5})\b/i);
-    return fromLabel?"."+fromLabel[1].toLowerCase():"";
-  }
-  function filterRoms(){
-    const query=search.value.trim().toLocaleLowerCase();
-    const format=formatFilter.value;
-    let visible=0;
-    for(const item of items){
-      const title=(item.querySelector("h3")?.textContent||"").toLocaleLowerCase();
-      const ext=getExtension(item);
-      const linkText=(item.querySelector("a")?.textContent||"").toLocaleLowerCase();
-      const normalizedQuery=query.replace(/^\./,"");
-      const queryMatch=!query||(query==="rom"&&romExtensions.has(ext))||title.includes(query)||ext.slice(1).includes(normalizedQuery)||linkText.includes(query);
-      const formatMatch=format==="all"||(format==="rom"?romExtensions.has(ext):format==="other"?(!romExtensions.has(ext)&&ext!==".zip"):ext===format);
-      item.hidden=!(queryMatch&&formatMatch);
-      if(!item.hidden)visible++;
-    }
-    results.textContent=`Showing ${visible} of ${items.length} files`;
-  }
-  filterRoms();
-  search.addEventListener("input",filterRoms);
-  formatFilter.addEventListener("change",filterRoms);
+ const search=document.getElementById("rom-search"),items=Array.from(document.querySelectorAll("#rom-list .rom-item")),results=document.getElementById("rom-results"),formatFilter=document.getElementById("rom-filter"),minSize=document.getElementById("rom-min-size"),maxSize=document.getElementById("rom-max-size"),quickButtons=Array.from(document.querySelectorAll(".quick-filter")),clearButton=document.getElementById("clear-filters");
+ if(!search||!results||!formatFilter)return;
+ const romExt=new Set([".nds",".gba",".gb",".gbc",".nes",".fds",".sfc",".smc",".fig",".z64",".n64",".v64",".3ds",".cci",".cxi",".3dsx",".vb",".sms",".md",".gen",".smd",".32x",".gg",".chd",".cue",".iso",".bin",".pbp",".cso",".wad",".d64",".t64",".crt",".prg",".adf",".adz",".a26",".a52",".a78",".j64",".jag",".abs",".lnx",".col",".cv",".ngp",".ngc",".pce",".ws",".wsc"]);
+ const groups={nintendo:new Set([".nds",".gba",".gb",".gbc",".nes",".fds",".sfc",".smc",".fig",".z64",".n64",".v64",".3ds",".cci",".cxi",".3dsx",".vb"]),sega:new Set([".sms",".md",".gen",".smd",".32x",".gg"]),playstation:new Set([".chd",".cue",".iso",".bin",".pbp",".cso"]),arcade:new Set([".zip"])};
+ function extOf(item){let href=item.querySelector("a[href]")?.getAttribute("href")||"";try{href=decodeURIComponent(href.split("?")[0])}catch{}const m=href.match(/\.([a-z0-9]+)$/i);if(m)return "."+m[1].toLowerCase();const t=item.querySelector("a")?.textContent||"",n=t.match(/\b([A-Z0-9]{2,5})\b/i);return n?"."+n[1].toLowerCase():""}
+ function sizeOf(item){const m=(item.querySelector("a")?.textContent||"").match(/([\d,.]+)\s*(KB|MB|GB)/i);if(!m)return null;const n=parseFloat(m[1].replace(/,/g,"")),u=m[2].toUpperCase();return u==="GB"?n*1024:u==="KB"?n/1024:n}
+ function systemMatch(ext,system){if(system==="all")return true;if(system==="other")return !Object.values(groups).some(set=>set.has(ext));return groups[system]?.has(ext)??false}
+ function filter(){const q=search.value.trim().toLowerCase(),fmt=formatFilter.value,sys=document.querySelector(".quick-filter.active")?.dataset.system||"all",min=parseFloat(minSize.value),max=parseFloat(maxSize.value);let count=0;
+  for(const item of items){const title=(item.querySelector("h3")?.textContent||"").toLowerCase(),ext=extOf(item),link=(item.querySelector("a")?.textContent||"").toLowerCase(),size=sizeOf(item),nq=q.replace(/^\./,"");const qok=!q||(q==="rom"&&romExt.has(ext))||title.includes(q)||ext.slice(1).includes(nq)||link.includes(q);const fok=fmt==="all"||(fmt==="rom"?romExt.has(ext):fmt==="other"?(!romExt.has(ext)&&ext!==".zip"):ext===fmt);const sok=(minSize.value===""||size===null||size>=min)&&(maxSize.value===""||size===null||size<=max);const ok=qok&&fok&&sok&&systemMatch(ext,sys);item.hidden=!ok;if(ok)count++}
+  results.textContent="Showing "+count.toLocaleString()+" of "+items.length.toLocaleString()+" files";
+ }
+ quickButtons.forEach(btn=>btn.addEventListener("click",()=>{quickButtons.forEach(b=>b.classList.toggle("active",b===btn));filter()}));
+ [search,formatFilter,minSize,maxSize].forEach(el=>el.addEventListener(el===search?"input":"change",filter));
+ clearButton?.addEventListener("click",()=>{search.value="";formatFilter.value="all";minSize.value="";maxSize.value="";quickButtons.forEach(b=>b.classList.toggle("active",b.dataset.system==="all"));filter()});
+ filter();
 })();
 </script>
 </body>
