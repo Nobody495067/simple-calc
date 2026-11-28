@@ -36,7 +36,7 @@ p,li{color:var(--muted);line-height:1.65}
 <header><h1>ROM Directory</h1><a href="library.html">← Game Library</a></header>
 <section class="panel">
 <h2>Game Boy Advance ROMs</h2>
-<div class="rom-search-wrap"><input id="rom-search" type="search" placeholder="Search ROMs by game title..." autocomplete="off" aria-label="Search ROMs"><p id="rom-results" aria-live="polite">Showing all ROMs</p></div>
+<div class="rom-search-wrap"><input id="rom-search" type="search" placeholder="Search ROMs by game title..." autocomplete="off" aria-label="Search ROMs"><p id="rom-results" aria-live="polite">Showing all 2990 ROMs</p></div>
 <div class="rom-list" id="rom-list">
   <article class="rom-item">
   <h3>Learn with PokemonTyping Adventure (Europe)</h3>
@@ -12018,6 +12018,7 @@ p,li{color:var(--muted);line-height:1.65}
     }
     results.textContent = query ? `Showing ${visible} of ${items.length} ROMs` : `Showing all ${items.length} ROMs`;
   }
+  filterRoms();
   search.addEventListener("input", filterRoms);
 })();
 </script>
