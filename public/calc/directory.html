@@ -18,6 +18,12 @@ p,li{color:var(--muted);line-height:1.65}
 .archive-link{display:inline-flex;padding:10px 16px;border:1px solid #3b9c5b;border-radius:9px;background:#267a42;color:#fff;font-weight:800;font-size:14px;text-decoration:none;white-space:nowrap}
 .archive-link:hover{background:#319651}
 .rom-list{display:grid;gap:12px;margin-top:18px}
+.rom-search-wrap{margin-top:18px}
+#rom-search{width:100%;padding:14px 16px;border:1px solid #3b5944;border-radius:10px;background:#0d1510;color:#f4f7f5;font:inherit;font-size:15px;outline:none}
+#rom-search:focus{border-color:#55d879;box-shadow:0 0 0 3px rgba(85,216,121,.14)}
+#rom-search::placeholder{color:#829188}
+#rom-results{margin:10px 2px 0;color:var(--muted);font-size:13px}
+.rom-item[hidden]{display:none}
 .rom-item{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px;border:1px solid #2b3b30;border-radius:12px;background:#101713}
 .rom-item h3{margin:0;color:#55d879;font-size:16px}
 .zip-slot{color:#9aa8a0;font-size:13px}
@@ -30,7 +36,8 @@ p,li{color:var(--muted);line-height:1.65}
 <header><h1>ROM Directory</h1><a href="library.html">← Game Library</a></header>
 <section class="panel">
 <h2>Game Boy Advance ROMs</h2>
-<div class="rom-list">
+<div class="rom-search-wrap"><input id="rom-search" type="search" placeholder="Search ROMs by game title..." autocomplete="off" aria-label="Search ROMs"><p id="rom-results" aria-live="polite">Showing all ROMs</p></div>
+<div class="rom-list" id="rom-list">
   <article class="rom-item">
     <h3>Pocket Monsters - Emerald (Japan)</h3>
     <a class="archive-link" href="https://archive.org/download/GameBoyAdvanceTOSEC/Pocket%20Monsters%20-%20Emerald%20%28Japan%29.zip">Download ZIP (6.4M)</a>
@@ -11799,5 +11806,24 @@ p,li{color:var(--muted);line-height:1.65}
 <p class="note">Add links to files you are authorized to distribute or download. Each ZIP link can be placed beside its game title.</p>
 </section>
 </main>
+<script>
+(() => {
+  const search = document.getElementById("rom-search");
+  const items = Array.from(document.querySelectorAll("#rom-list .rom-item"));
+  const results = document.getElementById("rom-results");
+  if (!search || !results) return;
+  function filterRoms() {
+    const query = search.value.trim().toLocaleLowerCase();
+    let visible = 0;
+    for (const item of items) {
+      const matches = item.querySelector("h3")?.textContent.toLocaleLowerCase().includes(query) ?? false;
+      item.hidden = !matches;
+      if (matches) visible++;
+    }
+    results.textContent = query ? `Showing ${visible} of ${items.length} ROMs` : `Showing all ${items.length} ROMs`;
+  }
+  search.addEventListener("input", filterRoms);
+})();
+</script>
 </body>
 </html>
