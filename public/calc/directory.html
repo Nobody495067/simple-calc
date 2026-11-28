@@ -19,7 +19,11 @@ p,li{color:var(--muted);line-height:1.65}
 .archive-link:hover{background:#319651}
 .rom-list{display:grid;gap:12px;margin-top:18px}
 .rom-search-wrap{margin-top:18px}
-#rom-search{width:100%;padding:14px 16px;border:1px solid #3b5944;border-radius:10px;background:#0d1510;color:#f4f7f5;font:inherit;font-size:15px;outline:none}
+#rom-search{flex:1;min-width:220px;padding:14px 16px;border:1px solid #3b5944;border-radius:10px;background:#0d1510;color:#f4f7f5;font:inherit;font-size:15px;outline:none}
+.rom-filter-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#rom-filter{min-width:220px;max-width:100%;padding:13px 14px;border:1px solid #3b5944;border-radius:10px;background:#0d1510;color:#f4f7f5;font:inherit}
+.filter-label{color:#cbd8ce;font-size:13px;font-weight:700}
+@media(max-width:560px){#rom-search,#rom-filter{width:100%;min-width:0;max-width:none}.filter-label{width:100%}}
 #rom-search:focus{border-color:#55d879;box-shadow:0 0 0 3px rgba(85,216,121,.14)}
 #rom-search::placeholder{color:#829188}
 #rom-results{margin:10px 2px 0;color:var(--muted);font-size:13px}
@@ -36,7 +40,20 @@ p,li{color:var(--muted);line-height:1.65}
 <header><h1>ROM Directory</h1><a href="library.html">← Game Library</a></header>
 <section class="panel">
 <h2>Game Boy Advance ROMs</h2>
-<div class="rom-search-wrap"><input id="rom-search" type="search" placeholder="Search ROMs by game title..." autocomplete="off" aria-label="Search ROMs"><p id="rom-results" aria-live="polite">Showing all 2990 ROMs</p></div>
+<div class="rom-search-wrap">
+  <div class="rom-filter-row">
+    <input id="rom-search" type="search" placeholder="Search games, systems, or file types..." autocomplete="off" aria-label="Search ROMs">
+    <label class="filter-label" for="rom-filter">Filter</label>
+    <select id="rom-filter" aria-label="Filter by file type">
+      <option value="all">All formats</option><option value="rom">ROM files (all)</option>
+      <option value=".nds">Nintendo DS · NDS</option><option value=".gba">Game Boy Advance · GBA</option><option value=".gb">Game Boy · GB</option><option value=".gbc">Game Boy Color · GBC</option>
+      <option value=".nes">NES · NES</option><option value=".sfc">SNES · SFC</option><option value=".z64">Nintendo 64 · Z64</option>
+      <option value=".chd">Disc image · CHD (PS1 and others)</option><option value=".cue">Disc cue · CUE</option><option value=".iso">Disc image · ISO</option><option value=".bin">Binary image · BIN</option><option value=".pbp">PlayStation · PBP</option>
+      <option value=".zip">ZIP archives</option><option value="other">Other formats</option>
+    </select>
+  </div>
+  <p id="rom-results" aria-live="polite">Showing all files</p>
+</div>
 <div class="rom-list" id="rom-list">
   <article class="rom-item">
   <h3>Learn with PokemonTyping Adventure (Europe)</h3>
@@ -12004,22 +12021,41 @@ p,li{color:var(--muted);line-height:1.65}
 </main>
 <script>
 (() => {
-  const search = document.getElementById("rom-search");
-  const items = Array.from(document.querySelectorAll("#rom-list .rom-item"));
-  const results = document.getElementById("rom-results");
-  if (!search || !results) return;
-  function filterRoms() {
-    const query = search.value.trim().toLocaleLowerCase();
-    let visible = 0;
-    for (const item of items) {
-      const matches = item.querySelector("h3")?.textContent.toLocaleLowerCase().includes(query) ?? false;
-      item.hidden = !matches;
-      if (matches) visible++;
+  const search=document.getElementById("rom-search");
+  const items=Array.from(document.querySelectorAll("#rom-list .rom-item"));
+  const results=document.getElementById("rom-results");
+  const formatFilter=document.getElementById("rom-filter");
+  if(!search||!results||!formatFilter)return;
+  const romExtensions=new Set([".nds",".gba",".gb",".gbc",".nes",".fds",".sfc",".smc",".fig",".z64",".n64",".v64",".3ds",".cci",".cxi",".3dsx",".vb",".sms",".md",".gen",".smd",".32x",".gg",".chd",".cue",".iso",".bin",".pbp",".cso",".wad",".d64",".t64",".crt",".prg",".adf",".adz",".a26",".a52",".a78",".j64",".jag",".abs",".lnx",".col",".cv",".ngp",".ngc",".pce",".ws",".wsc"]);
+  function getExtension(item){
+    const href=item.querySelector("a[href]")?.getAttribute("href")||"";
+    let decoded=href.split("?")[0];
+    try{decoded=decodeURIComponent(decoded);}catch{}
+    const match=decoded.match(/\.([a-z0-9]+)$/i);
+    if(match)return "."+match[1].toLowerCase();
+    const label=item.querySelector("a")?.textContent||"";
+    const fromLabel=label.match(/\b([A-Z0-9]{2,5})\b/i);
+    return fromLabel?"."+fromLabel[1].toLowerCase():"";
+  }
+  function filterRoms(){
+    const query=search.value.trim().toLocaleLowerCase();
+    const format=formatFilter.value;
+    let visible=0;
+    for(const item of items){
+      const title=(item.querySelector("h3")?.textContent||"").toLocaleLowerCase();
+      const ext=getExtension(item);
+      const linkText=(item.querySelector("a")?.textContent||"").toLocaleLowerCase();
+      const normalizedQuery=query.replace(/^\./,"");
+      const queryMatch=!query||title.includes(query)||ext.slice(1).includes(normalizedQuery)||linkText.includes(query);
+      const formatMatch=format==="all"||(format==="rom"?romExtensions.has(ext):format==="other"?(!romExtensions.has(ext)&&ext!==".zip"):ext===format);
+      item.hidden=!(queryMatch&&formatMatch);
+      if(!item.hidden)visible++;
     }
-    results.textContent = query ? `Showing ${visible} of ${items.length} ROMs` : `Showing all ${items.length} ROMs`;
+    results.textContent=`Showing ${visible} of ${items.length} files`;
   }
   filterRoms();
-  search.addEventListener("input", filterRoms);
+  search.addEventListener("input",filterRoms);
+  formatFilter.addEventListener("change",filterRoms);
 })();
 </script>
 </body>
