@@ -33,10 +33,21 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
     <div class="controls">
       <label>Console
         <select id="core">
-          <option value="gba">Game Boy Advance</option>
-          <option value="nes">Nintendo Entertainment System</option>
-          <option value="snes">Super Nintendo</option>
-          <option value="nds">Nintendo DS</option>
+          <optgroup label="Nintendo">
+            <option value="nes">NES / Famicom</option><option value="snes">SNES / Super Famicom</option><option value="n64">Nintendo 64</option><option value="nds">Nintendo DS</option><option value="3ds">Nintendo 3DS (Azahar)</option><option value="gb">Game Boy / Game Boy Color</option><option value="gba">Game Boy Advance</option><option value="vb">Virtual Boy</option>
+          </optgroup>
+          <optgroup label="Sega">
+            <option value="segaMS">Master System</option><option value="segaMD">Genesis / Mega Drive</option><option value="segaCD">Sega CD</option><option value="sega32x">32X</option><option value="segaSaturn">Saturn</option><option value="segaGG">Game Gear</option>
+          </optgroup>
+          <optgroup label="PlayStation">
+            <option value="psx">PlayStation (PS1)</option><option value="psp">PlayStation Portable (PSP)</option>
+          </optgroup>
+          <optgroup label="Arcade &amp; Computers">
+            <option value="arcade">Arcade</option><option value="mame2003">MAME 2003</option><option value="dos">MS-DOS</option><option value="prboom">DOOM</option><option value="c64">Commodore 64</option><option value="plus4">Commodore Plus/4</option><option value="amiga">Amiga</option>
+          </optgroup>
+          <optgroup label="Atari &amp; Other">
+            <option value="atari2600">Atari 2600</option><option value="a5200">Atari 5200</option><option value="atari7800">Atari 7800</option><option value="jaguar">Atari Jaguar</option><option value="lynx">Atari Lynx</option><option value="3do">3DO</option><option value="coleco">ColecoVision</option><option value="ngp">Neo Geo Pocket / Color</option><option value="pcfx">PC-FX</option><option value="pce">TurboGrafx-16 / PC Engine</option><option value="ws">WonderSwan / Color</option>
+          </optgroup>
         </select>
       </label>
       <label>Choose a ROM or ZIP file
@@ -47,8 +58,8 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
       </label>
       <button id="start" type="button">Extract &amp; Play</button>
     </div>
-    <p class="note">Choose a ROM you are authorized to use, or a ZIP containing one. ZIP files are extracted in your browser; nothing is uploaded. On a Chromebook, download your file first, then use the file picker above.</p>
-    <p id="status" role="status" aria-live="polite">Choose a console and a compatible ROM file. Nintendo DS .nds files are supported.</p>
+    <p class="note">Choose a compatible game file you are authorized to use. ZIP containers can be unpacked in your browser; arcade/MAME ZIPs are passed through as game archives. Disc systems may need their own BIOS files, and 3DS/PSP/PS1 can be demanding on a Chromebook. Nothing is uploaded.</p>
+    <p id="status" role="status" aria-live="polite">Choose a system and a matching game file. Supported formats vary by system; some systems require BIOS files or stronger hardware.</p>
     <div id="game"></div>
   </section>
   <section class="panel">
@@ -69,7 +80,22 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
   let currentRomUrl=null;
   let archiveEntries=[];
   const DATA_PATH='https://cdn.emulatorjs.org/stable/data/';
-  const extensions={gba:['.gba'],nes:['.nes'],snes:['.sfc','.smc'],nds:['.nds']};
+  const extensions={
+    gba:['.gba'],nes:['.nes','.fds','.unf','.unif'],snes:['.sfc','.smc'],
+    n64:['.z64','.n64','.v64'],nds:['.nds'], '3ds':['.3ds','.cci','.cxi','.3dsx'],
+    gb:['.gb','.gbc'],vb:['.vb'],
+    segaMS:['.sms'],segaMD:['.md','.gen','.smd'],segaCD:['.cue','.chd','.iso','.bin'],
+    sega32x:['.32x'],segaSaturn:['.cue','.chd','.iso','.bin'],segaGG:['.gg'],
+    psx:['.chd','.cue','.iso','.bin','.pbp'],psp:['.iso','.cso','.pbp'],
+    arcade:['.zip'],mame2003:['.zip'],dos:['.zip','.exe','.img'],prboom:['.wad'],
+    c64:['.d64','.t64','.crt','.prg'],plus4:['.d64','.t64','.prg'],amiga:['.adf','.adz','.uae'],
+    atari2600:['.a26','.bin'],a5200:['.a52'],atari7800:['.a78'],jaguar:['.j64','.jag','.abs'],lynx:['.lnx'],
+    '3do':['.iso','.cue','.chd'],coleco:['.col','.cv'],ngp:['.ngp','.ngc'],pcfx:['.cue','.chd','.iso'],
+    pce:['.pce','.cue','.chd'],ws:['.ws','.wsc']
+  };
+  const archiveContainerExtensions=['.zip'];
+  function extensionOf(name){const match=String(name||'').toLowerCase().match(/\\.([a-z0-9]+)$/);return match?'.'+match[1]:'';}
+  function isDirectArchiveRom(file,core){return extensionOf(file.name)==='.zip' && (core==='arcade'||core==='mame2003');}
 
   function matchingEntries(core){
     return archiveEntries.filter(entry=>extensions[core].some(ext=>entry.name.toLowerCase().endsWith(ext)));
@@ -107,7 +133,7 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
       refreshArchiveChoices();
       status.textContent=archiveEntries.length
         ? 'Found '+archiveEntries.length+' supported ROM file(s). Choose the one to play.'
-        : 'No supported GBA, NES, SNES, or Nintendo DS ROM was found in this ZIP.';
+        : 'No supported ROM file was found in this ZIP for the available systems.';
     }catch(error){status.textContent='Could not read this ZIP: '+error.message;}
   });
 
@@ -121,27 +147,28 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
     status.textContent='Preparing game…';
     try{
       let romBlob=file;
-      if(file.name.toLowerCase().endsWith('.zip')){
+      if(file.name.toLowerCase().endsWith('.zip') && !isDirectArchiveRom(file,core)){
         if(!window.JSZip)throw new Error('The ZIP extractor could not load. Refresh the page and try again.');
         const zip=await JSZip.loadAsync(file);
         const matches=matchingEntries(core);
         const selectedName=entrySelect.value || (matches[0]&&matches[0].name);
         const selected=matches.find(entry=>entry.name===selectedName);
-        if(!selected)throw new Error('No matching ROM was found in this ZIP for the selected console.');
+        if(!selected)throw new Error('No matching ROM was found in this ZIP for the selected system.');
         romBlob=await selected.async('blob');
         status.textContent='ZIP extracted. Loading EmulatorJS…';
       }else{
         const lower=file.name.toLowerCase();
         if(!extensions[core].some(ext=>lower.endsWith(ext))){
-          throw new Error('That file extension does not match the selected console.');
+          throw new Error('That file extension does not match the selected system. Check the supported formats for that console.');
         }
       }
 
       if(currentRomUrl)URL.revokeObjectURL(currentRomUrl);
       currentRomUrl=URL.createObjectURL(romBlob);
       window.EJS_player='#game';
-      // Use DeSmuME 2015 for Nintendo DS so no external melonDS BIOS files are required.\n      window.EJS_core=core==='nds'?'desmume2015':core;
+      // Use DeSmuME 2015 for Nintendo DS so no external melonDS BIOS files are required.\n      window.EJS_core=core;
       window.EJS_gameUrl=currentRomUrl;
+      window.EJS_controlScheme=({nes:'nes',snes:'snes',n64:'n64',nds:'nds','3ds':'nds',gb:'gb',gba:'gba',vb:'vb',segaMS:'segaMS',segaMD:'segaMD',segaCD:'segaCD',sega32x:'sega32x',segaSaturn:'segaSaturn',segaGG:'segaGG',psx:'psx',psp:'gba',arcade:'arcade',mame2003:'mame',atari2600:'atari2600',atari7800:'atari7800',lynx:'lynx',jaguar:'jaguar','3do':'3do'})[core]||core;
       window.EJS_gameName=file.name.replace(/\.[^.]+$/, '');
       // Keep saves and save states isolated for each selected ROM.
       let gameId=2166136261;
