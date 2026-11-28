@@ -142,6 +142,17 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
       window.EJS_player='#game';
       window.EJS_core=core;
       window.EJS_gameUrl=currentRomUrl;
+      window.EJS_gameName=file.name.replace(/\\.[^.]+$/, '');
+      // Give each ROM its own numeric save/cache namespace instead of EmulatorJS's shared default ID.
+      let gameId=2166136261;
+      for(const char of (core+':'+file.name).toLowerCase()){
+        gameId^=char.charCodeAt(0);
+        gameId=Math.imul(gameId,16777619);
+      }
+      window.EJS_gameID=gameId>>>0;
+      // Skip the optional IndexedDB download cache while testing/fixing Chromebook cache failures.
+      // ROM loading still works; emulator save files remain available through EmulatorJS.
+      window.EJS_cacheConfig={enabled:false};
       let playerPrefs={};try{playerPrefs=JSON.parse(localStorage.getItem('librarySettings')||'{}');}catch{}
       window.EJS_volume=playerPrefs.audioMuted?0:Math.max(0,Math.min(1,Number(playerPrefs.audioVolume??70)/100));
       const keyMap=playerPrefs.controllerKeys||{};
