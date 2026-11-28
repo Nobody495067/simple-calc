@@ -33,6 +33,55 @@
       .key-row { grid-template-columns: 1fr; gap: 8px; }
       section { padding: 16px; }
     }
+
+    /* Compact landscape settings layout */
+    body { padding: 18px clamp(14px, 2vw, 30px) 28px; background: radial-gradient(ellipse at 50% -18%, rgba(48,112,70,.18), transparent 52%), #0d1210; }
+    main { width: min(1480px, 100%); grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; align-items: stretch; }
+    header, nav { grid-column: 1 / -1; }
+    header { margin-bottom: 0; }
+    nav { padding: 5px 0 10px; margin-bottom: 2px !important; gap: 7px; }
+    h1 { font-size: clamp(26px, 3vw, 34px); }
+    .back { padding: 8px 12px; border-radius: 9px; font-size: 13px; }
+    section { padding: 15px 16px; border-radius: 13px; box-shadow: 0 7px 20px rgba(0,0,0,.15); }
+    h2 { font-size: 16px; margin-bottom: 6px; }
+    p { font-size: 13px; line-height: 1.42; margin-bottom: 10px; }
+    .choices { gap: 7px; }
+    button { padding: 8px 11px; font-size: 12px; border-radius: 9px; }
+    .appearance-group { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1.25fr .8fr; gap: 12px; align-items: stretch; }
+    .appearance-group section { min-width: 0; }
+    .appearance-group .key-row { grid-template-columns: 1fr; gap: 7px; padding: 8px 0; }
+    .appearance-group input[type="file"] { text-align: left; font-size: 12px; }
+    #image-preview { max-height: 130px !important; }
+    #wallpaper-settings #apply-animated:not([hidden]) { display: inline-flex !important; }
+    #save-settings { grid-column: span 4; }
+    #controller-settings { grid-column: span 8; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; align-content: start; }
+    #controller-settings h2, #controller-settings p, #controller-settings .choices { grid-column: 1 / -1; }
+    #controller-settings .key-row { grid-template-columns: minmax(0, 1fr) minmax(90px, 150px); gap: 10px; padding: 7px 0; font-size: 13px; }
+    #audio-settings { grid-column: span 4; }
+    #privacy-settings { grid-column: span 8; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; align-content: start; }
+    #privacy-settings h2, #privacy-settings p, #privacy-settings .choices, #privacy-settings #status { grid-column: 1 / -1; }
+    #privacy-settings .key-row { grid-template-columns: minmax(0, 1fr) minmax(100px, 190px); gap: 10px; padding: 7px 0; font-size: 13px; }
+    #privacy-settings .key-row:nth-of-type(2) { grid-column: 1 / -1; }
+    #status { margin-top: 8px; }
+    @media (max-width: 980px) {
+      .appearance-group { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .appearance-group #theme-settings { grid-column: 1 / -1; }
+      #save-settings, #audio-settings { grid-column: span 5; }
+      #controller-settings, #privacy-settings { grid-column: span 7; }
+    }
+    @media (max-width: 680px) {
+      body { padding: 14px 12px 24px; }
+      main { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+      header, nav, .appearance-group, #save-settings, #controller-settings, #audio-settings, #privacy-settings { grid-column: 1; }
+      .appearance-group { grid-template-columns: minmax(0, 1fr); }
+      .appearance-group #theme-settings { grid-column: 1; }
+      #controller-settings, #privacy-settings { display: block; }
+      #controller-settings .key-row, #privacy-settings .key-row { grid-template-columns: 1fr minmax(110px, 42%); }
+      #privacy-settings .key-row:nth-of-type(2) { grid-column: auto; }
+      nav { position: static; }
+      section { padding: 14px; }
+    }
+
   </style>
 </head>
 <body>
@@ -41,7 +90,8 @@
     <nav class="choices" aria-label="Settings sections" style="margin:0 0 20px">
       <a class="back" href="#save-settings">Saves</a><a class="back" href="#controller-settings">Controller</a><a class="back" href="#wallpaper-settings">Wallpaper</a><a class="back" href="#audio-settings">Audio</a><a class="back" href="#privacy-settings">Privacy</a><a class="back" href="#theme-settings">Themes</a>
     </nav>
-    <section id="wallpaper-settings">
+    <div class="appearance-group" id="appearance-settings">
+<section id="wallpaper-settings">
       <h2>Background</h2>
       <p>Choose the appearance used by the game library.</p>
       <div class="choices" id="backgrounds">
@@ -63,7 +113,19 @@
       <p id="image-status" role="status" aria-live="polite" style="margin-top:12px"></p>
     </section>
 
-    <section id="save-settings">
+    <section id="theme-settings">
+      <h2>Theme accents</h2>
+      <p>Choose an accent color for the library. Your existing background and wallpaper settings remain available above.</p>
+      <div class="choices" id="accent-choices">
+        <button type="button" data-accent="green">Green</button>
+        <button type="button" data-accent="blue">Blue</button>
+        <button type="button" data-accent="purple">Purple</button>
+        <button type="button" data-accent="orange">Orange</button>
+      </div>
+    </section>
+</div>
+
+<section id="save-settings">
       <h2>Save states &amp; game saves</h2>
       <p>Use EmulatorJS's built-in Save State and Load State controls in the player toolbar while a game is running. Save states can be downloaded and loaded again later; availability depends on the selected console core.</p>
       <div class="choices"><a class="back" href="emulatorjs-player.html" target="_blank" rel="noopener">Open Emulator Player</a></div>
@@ -89,16 +151,7 @@
       <div class="key-row"><label for="audio-volume">Emulator volume</label><input id="audio-volume" type="range" min="0" max="100" value="70"></div>
       <div class="key-row"><label for="audio-muted">Start games muted</label><input id="audio-muted" type="checkbox"></div>
     </section>
-    <section id="theme-settings">
-      <h2>Theme accents</h2>
-      <p>Choose an accent color for the library. Your existing background and wallpaper settings remain available above.</p>
-      <div class="choices" id="accent-choices">
-        <button type="button" data-accent="green">Green</button>
-        <button type="button" data-accent="blue">Blue</button>
-        <button type="button" data-accent="purple">Purple</button>
-        <button type="button" data-accent="orange">Orange</button>
-      </div>
-    </section>
+    
 
     <section id="privacy-settings">
       <h2>Privacy &amp; shortcuts</h2>
