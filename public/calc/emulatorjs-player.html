@@ -36,10 +36,11 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
           <option value="gba">Game Boy Advance</option>
           <option value="nes">Nintendo Entertainment System</option>
           <option value="snes">Super Nintendo</option>
+          <option value="nds">Nintendo DS</option>
         </select>
       </label>
       <label>Choose a ROM or ZIP file
-        <input id="rom" type="file" accept=".zip,.gba,.gb,.gbc,.nes,.sfc,.smc,application/zip,application/octet-stream">
+        <input id="rom" type="file" accept=".zip,.gba,.gb,.gbc,.nes,.sfc,.smc,.nds,application/zip,application/octet-stream">
       </label>
       <label id="archive-entry-wrap" hidden>ROM inside ZIP
         <select id="archive-entry"></select>
@@ -47,7 +48,7 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
       <button id="start" type="button">Extract &amp; Play</button>
     </div>
     <p class="note">Choose a ROM you are authorized to use, or a ZIP containing one. ZIP files are extracted in your browser; nothing is uploaded. On a Chromebook, download your file first, then use the file picker above.</p>
-    <p id="status" role="status" aria-live="polite">Choose a console and a compatible ROM file.</p>
+    <p id="status" role="status" aria-live="polite">Choose a console and a compatible ROM file. Nintendo DS .nds files are supported.</p>
     <div id="game"></div>
   </section>
   <section class="panel">
@@ -68,7 +69,7 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
   let currentRomUrl=null;
   let archiveEntries=[];
   const DATA_PATH='https://cdn.emulatorjs.org/stable/data/';
-  const extensions={gba:['.gba'],nes:['.nes'],snes:['.sfc','.smc']};
+  const extensions={gba:['.gba'],nes:['.nes'],snes:['.sfc','.smc'],nds:['.nds']};
 
   function matchingEntries(core){
     return archiveEntries.filter(entry=>extensions[core].some(ext=>entry.name.toLowerCase().endsWith(ext)));
@@ -93,16 +94,20 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
     entryWrap.hidden=true;
     const file=romInput.files&&romInput.files[0];
     if(!file)return;
-    if(!file.name.toLowerCase().endsWith('.zip'))return;
+    if(!file.name.toLowerCase().endsWith('.zip')){
+      if(file.name.toLowerCase().endsWith('.nds'))coreSelect.value='nds';
+      status.textContent='Selected '+file.name+'. Choose Extract & Play when ready.';
+      return;
+    }
     status.textContent='Reading ZIP contents…';
     try{
       if(!window.JSZip)throw new Error('The ZIP extractor could not load. Check your connection and try again.');
       const zip=await JSZip.loadAsync(file);
-      archiveEntries=Object.values(zip.files).filter(entry=>!entry.dir && /\.(gba|nes|sfc|smc)$/i.test(entry.name));
+      archiveEntries=Object.values(zip.files).filter(entry=>!entry.dir && /\.(gba|nes|sfc|smc|nds)$/i.test(entry.name));
       refreshArchiveChoices();
       status.textContent=archiveEntries.length
         ? 'Found '+archiveEntries.length+' supported ROM file(s). Choose the one to play.'
-        : 'No supported GBA, NES, or SNES ROM was found in this ZIP.';
+        : 'No supported GBA, NES, SNES, or Nintendo DS ROM was found in this ZIP.';
     }catch(error){status.textContent='Could not read this ZIP: '+error.message;}
   });
 
