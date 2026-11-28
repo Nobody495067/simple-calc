@@ -34,7 +34,7 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
       <label>Console
         <select id="core">
           <optgroup label="Nintendo">
-            <option value="nes">NES / Famicom</option><option value="snes">SNES / Super Famicom</option><option value="n64">Nintendo 64</option><option value="nds">Nintendo DS</option><option value="3ds">Nintendo 3DS (Azahar)</option><option value="gb">Game Boy / Game Boy Color</option><option value="gba">Game Boy Advance</option><option value="vb">Virtual Boy</option>
+            <option value="nes">NES / Famicom</option><option value="snes">SNES / Super Famicom</option><option value="n64">Nintendo 64</option><option value="nds">Nintendo DS</option><option value="3ds">Nintendo 3DS (experimental)</option><option value="gb">Game Boy / Game Boy Color</option><option value="gba">Game Boy Advance</option><option value="vb">Virtual Boy</option>
           </optgroup>
           <optgroup label="Sega">
             <option value="segaMS">Master System</option><option value="segaMD">Genesis / Mega Drive</option><option value="segaCD">Sega CD</option><option value="sega32x">32X</option><option value="segaSaturn">Saturn</option><option value="segaGG">Game Gear</option>
@@ -81,23 +81,24 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
   let archiveEntries=[];
   const DATA_PATH='https://cdn.emulatorjs.org/stable/data/';
   const extensions={
-    gba:['.gba'],nes:['.nes','.fds','.unf','.unif'],snes:['.sfc','.smc'],
-    n64:['.z64','.n64','.v64'],nds:['.nds'], '3ds':['.3ds','.cci','.cxi','.3dsx'],
+    gba:['.gba'],nes:['.nes','.fds','.unf','.unif'],snes:['.sfc','.smc','.fig'],
+    n64:['.z64','.n64','.v64'],nds:['.nds'],'3ds':['.3ds','.cci','.cxi','.3dsx'],
     gb:['.gb','.gbc'],vb:['.vb'],
     segaMS:['.sms'],segaMD:['.md','.gen','.smd'],segaCD:['.cue','.chd','.iso','.bin'],
     sega32x:['.32x'],segaSaturn:['.cue','.chd','.iso','.bin'],segaGG:['.gg'],
     psx:['.chd','.cue','.iso','.bin','.pbp'],psp:['.iso','.cso','.pbp'],
-    arcade:['.zip'],mame2003:['.zip'],dos:['.zip','.exe','.img'],prboom:['.wad'],
+    arcade:['.zip'],mame2003:['.zip'],dos:['.zip'],prboom:['.wad'],
     c64:['.d64','.t64','.crt','.prg'],plus4:['.d64','.t64','.prg'],amiga:['.adf','.adz','.uae'],
-    atari2600:['.a26','.bin'],a5200:['.a52'],atari7800:['.a78'],jaguar:['.j64','.jag','.abs'],lynx:['.lnx'],
+    atari2600:['.a26','.bin'],a5200:['.a52','.bin'],atari7800:['.a78','.bin'],jaguar:['.j64','.jag','.abs'],lynx:['.lnx'],
     '3do':['.iso','.cue','.chd'],coleco:['.col','.cv'],ngp:['.ngp','.ngc'],pcfx:['.cue','.chd','.iso'],
     pce:['.pce','.cue','.chd'],ws:['.ws','.wsc']
   };
-  const archiveContainerExtensions=['.zip'];
-  function extensionOf(name){const match=String(name||'').toLowerCase().match(/\\.([a-z0-9]+)$/);return match?'.'+match[1]:'';}
-  function isDirectArchiveRom(file,core){return extensionOf(file.name)==='.zip' && (core==='arcade'||core==='mame2003');}
-
   function matchingEntries(core){
+    return archiveEntries.filter(entry=>extensions[core].some(ext=>entry.name.toLowerCase().endsWith(ext)));
+  }
+  function isDirectArchiveRom(file,core){
+    return file.name.toLowerCase().endsWith('.zip') && ['arcade','mame2003','dos'].includes(core);
+  }  function matchingEntries(core){
     return archiveEntries.filter(entry=>extensions[core].some(ext=>entry.name.toLowerCase().endsWith(ext)));
   }
   function refreshArchiveChoices(){
@@ -168,8 +169,7 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
       window.EJS_player='#game';
       // Use DeSmuME 2015 for Nintendo DS so no external melonDS BIOS files are required.\n      window.EJS_core=core;
       window.EJS_gameUrl=currentRomUrl;
-      window.EJS_controlScheme=({nes:'nes',snes:'snes',n64:'n64',nds:'nds','3ds':'nds',gb:'gb',gba:'gba',vb:'vb',segaMS:'segaMS',segaMD:'segaMD',segaCD:'segaCD',sega32x:'sega32x',segaSaturn:'segaSaturn',segaGG:'segaGG',psx:'psx',psp:'gba',arcade:'arcade',mame2003:'mame',atari2600:'atari2600',atari7800:'atari7800',lynx:'lynx',jaguar:'jaguar','3do':'3do'})[core]||core;
-      window.EJS_gameName=file.name.replace(/\.[^.]+$/, '');
+            window.EJS_gameName=file.name.replace(/\.[^.]+$/, '');
       // Keep saves and save states isolated for each selected ROM.
       let gameId=2166136261;
       for(const char of (core+':'+file.name).toLowerCase()){
