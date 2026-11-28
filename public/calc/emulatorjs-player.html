@@ -167,7 +167,7 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
       if(currentRomUrl)URL.revokeObjectURL(currentRomUrl);
       currentRomUrl=URL.createObjectURL(romBlob);
       window.EJS_player='#game';
-      // Use DeSmuME 2015 for Nintendo DS so no external melonDS BIOS files are required.\n      window.EJS_core=core;
+      window.EJS_core=core;
       window.EJS_gameUrl=currentRomUrl;
             window.EJS_gameName=file.name.replace(/\.[^.]+$/, '');
       // Keep saves and save states isolated for each selected ROM.
@@ -187,8 +187,9 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
       window.EJS_pathtodata=DATA_PATH;
       window.EJS_startOnLoaded=true;
       window.EJS_disableAutoLang=true;
-      window.EJS_language='en-US';\n      window.EJS_DEBUG_XX=true;
-      // DeSmuME 2015 does not require the melonDS BIOS bundle.\n      window.EJS_biosUrl='';
+      window.EJS_language='en-US';
+      window.EJS_DEBUG_XX=true;
+      
       game.replaceChildren();
       const old=document.getElementById('emulatorjs-runtime');
       if(old)old.remove();
