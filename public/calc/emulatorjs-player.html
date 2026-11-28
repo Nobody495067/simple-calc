@@ -146,9 +146,12 @@ button{background:#267a42;border-color:#3b9c5b;font-weight:800;cursor:pointer}bu
       window.EJS_volume=playerPrefs.audioMuted?0:Math.max(0,Math.min(1,Number(playerPrefs.audioVolume??70)/100));
       const keyMap=playerPrefs.controllerKeys||{};
       window.EJS_defaultControls={0:{
-        0:{value:keyMap["0"]||"z"},1:{value:keyMap["1"]||"a"},2:{value:keyMap["2"]||"v"},3:{value:keyMap["3"]||"enter"},
-        4:{value:keyMap["4"]||"up arrow"},5:{value:keyMap["5"]||"down arrow"},6:{value:keyMap["6"]||"left arrow"},7:{value:keyMap["7"]||"right arrow"},
-        8:{value:keyMap["8"]||"x"},9:{value:keyMap["9"]||"s"}
+        0:{value:keyMap["0"]||"z",value2:"BUTTON_2"},1:{value:keyMap["1"]||"a",value2:"BUTTON_4"},
+        2:{value:keyMap["2"]||"v",value2:"SELECT"},3:{value:keyMap["3"]||"enter",value2:"START"},
+        4:{value:keyMap["4"]||"up arrow",value2:"DPAD_UP"},5:{value:keyMap["5"]||"down arrow",value2:"DPAD_DOWN"},
+        6:{value:keyMap["6"]||"left arrow",value2:"DPAD_LEFT"},7:{value:keyMap["7"]||"right arrow",value2:"DPAD_RIGHT"},
+        8:{value:keyMap["8"]||"x",value2:"BUTTON_1"},9:{value:keyMap["9"]||"s",value2:"BUTTON_3"},
+        10:{value:"q",value2:"LEFT_TOP_SHOULDER"},11:{value:"e",value2:"RIGHT_TOP_SHOULDER"}
       }};
       window.EJS_pathtodata=DATA_PATH;
       window.EJS_startOnLoaded=true;
