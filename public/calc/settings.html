@@ -38,7 +38,7 @@
         <button type="button" data-background="purple">Purple</button>
         <button type="button" data-background="light">Light</button>
         <button type="button" data-background="animated">✦ Three.js Background</button>
-        <button type="button" id="apply-animated">Apply Animated Wallpaper</button>
+        <button type="button" id="apply-animated" hidden style="display:none">Apply Animated Wallpaper</button>
       </div>
       <p id="background-status" role="status" aria-live="polite" style="margin-top:12px"></p>
     </section>
@@ -83,6 +83,10 @@
       document.querySelectorAll("[data-background]").forEach(button => {
         button.setAttribute("aria-pressed", String(button.dataset.background === settings.background));
       });
+      const applyButton = document.getElementById("apply-animated");
+      const showApply = settings.background === "animated";
+      applyButton.hidden = !showApply;
+      applyButton.style.display = showApply ? "" : "none";
     }
     document.querySelectorAll("[data-background]").forEach(button => {
       button.addEventListener("click", () => {
