@@ -128,7 +128,7 @@
 <section id="save-settings">
       <h2>Save states &amp; game saves</h2>
       <p>Use EmulatorJS's built-in Save State and Load State controls in the player toolbar while a game is running. Save states can be downloaded and loaded again later; availability depends on the selected console core.</p>
-      <div class="choices"><a class="back" href="emulatorjs-player.html" target="_blank" rel="noopener">Open Emulator Player</a></div>
+      <div class="choices"><a class="back" href="about:blank" target="_blank" rel="noopener" onclick="event.preventDefault(); const player=window.open('about:blank', '_blank'); if(player){player.location.href=new URL('emulatorjs-player.html', window.location.href).href;}">Open Emulator Player</a></div>
     </section>
     <section id="controller-settings">
       <h2>Controller &amp; keyboard mapping</h2>
