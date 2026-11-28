@@ -134,6 +134,143 @@
     @media (max-width: 600px) { .youtube-row { grid-template-columns: minmax(0, 1fr); } }
     @media (max-width: 600px) { body { padding: 16px 11px; } ul { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; } .music-content { grid-template-columns: minmax(0, 1fr); } .item-title { min-height: 56px; padding: 11px; font-size: 13px; } .popular-controls { gap: 7px; } .filter-btn { padding: 9px 12px; font-size: 12px; } }
     @media (prefers-reduced-motion: reduce) { .item { transition: none; } .item:hover, .item:focus-within { transform: none; } }
+
+    /* Visual refresh inspired by the supplied game-library reference.
+       Keep the existing game data, controls, launch handlers and player untouched. */
+    :root {
+      --library-panel: #111a27;
+      --library-border: rgba(148, 163, 184, .18);
+      --library-text: #f4f7ff;
+      --library-muted: #9aabc2;
+      --library-accent: #8cff55;
+      --library-hover: #1b2a3b;
+      --library-cover: #17283b;
+      --library-shadow: 0 8px 22px rgba(0,0,0,.22);
+    }
+    html, body { background: #0b1220 !important; color: var(--library-text); }
+    body {
+      padding: 76px clamp(12px, 2.2vw, 34px) 36px !important;
+      background:
+        radial-gradient(ellipse at 78% 16%, rgba(35, 105, 118, .23), transparent 32%),
+        radial-gradient(ellipse at 16% 4%, rgba(45, 83, 112, .18), transparent 36%),
+        linear-gradient(155deg, #101d2a 0%, #0b1220 58%, #0a111c 100%) !important;
+    }
+    body::before {
+      opacity: .22;
+      background:
+        radial-gradient(ellipse at 76% 20%, rgba(140,255,85,.22), transparent 28%),
+        radial-gradient(ellipse at 18% 64%, rgba(32,126,175,.16), transparent 38%);
+    }
+    #library-view { max-width: 1720px; margin: 0 auto; }
+    .top-actions {
+      position: absolute !important;
+      top: -62px !important;
+      left: calc(-1 * clamp(12px, 2.2vw, 34px)) !important;
+      right: calc(-1 * clamp(12px, 2.2vw, 34px)) !important;
+      min-height: 58px;
+      padding: 7px clamp(12px, 2.2vw, 34px);
+      justify-content: flex-end;
+      background: rgba(7, 12, 21, .94);
+      border-bottom: 1px solid rgba(148,163,184,.18);
+      box-shadow: 0 8px 22px rgba(0,0,0,.18);
+      backdrop-filter: blur(14px);
+    }
+    .rom-announcement {
+      border-color: rgba(140,255,85,.24);
+      background: rgba(140,255,85,.08);
+      color: #caffb2;
+    }
+    .settings-link {
+      min-width: 42px; height: 42px; border: 1px solid rgba(140,255,85,.45);
+      border-radius: 12px; background: #142131; color: var(--library-accent);
+      box-shadow: none;
+    }
+    h1 {
+      max-width: 100%; margin: 14px 0 14px; text-align: left;
+      color: #f4f7ff; font-size: clamp(42px, 7vw, 82px);
+      font-weight: 850; letter-spacing: -.065em; line-height: 1.02;
+    }
+    #install-app { border-radius: 12px; padding: 11px 18px; }
+    #game-count {
+      text-align: left !important; color: #9eb0c7 !important;
+      margin: 0 0 12px !important; font-size: 13px; font-weight: 600 !important;
+    }
+    .search-container {
+      display: flex; max-width: 760px; margin: 0 0 22px; text-align: left;
+    }
+    #search {
+      min-height: 52px; padding: 15px 18px; border-radius: 13px;
+      border: 1px solid rgba(148,163,184,.2);
+      background: rgba(11,18,32,.88); color: #f4f7ff;
+      box-shadow: 0 8px 22px rgba(0,0,0,.18);
+    }
+    .popular-controls {
+      justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto;
+      max-width: 100%; margin: 0 0 28px; padding: 9px 0 12px;
+      scrollbar-width: thin;
+    }
+    .filter-btn {
+      flex: 0 0 auto; border-radius: 12px; padding: 11px 17px;
+      background: #172337; border: 1px solid rgba(148,163,184,.17);
+      color: #e0e9f7; font-size: 13px; font-weight: 750;
+      box-shadow: 0 3px 10px rgba(0,0,0,.12);
+    }
+    .filter-btn.secondary { background: #172337; color: #e0e9f7; }
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--library-accent); border-color: var(--library-accent);
+      color: #101a12; box-shadow: 0 0 0 3px rgba(140,255,85,.10);
+    }
+    #list {
+      max-width: 100%; margin: 0 auto;
+      grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+      gap: 18px 12px;
+    }
+    .item { min-width: 0; }
+    .game-card {
+      border: 0; border-radius: 13px; background: transparent;
+      box-shadow: none; overflow: visible;
+    }
+    .game-card:hover { background: transparent; border-color: transparent; }
+    .game-art {
+      aspect-ratio: 1 / 1; border-radius: 12px;
+      border: 1px solid rgba(148,163,184,.16);
+      background: #17283b; box-shadow: 0 5px 15px rgba(0,0,0,.24);
+    }
+    .game-art img { object-fit: cover; }
+    .item-title {
+      min-height: 0; padding: 8px 2px 3px; color: #f2f6ff;
+      font-size: 12px; font-weight: 750; line-height: 1.25;
+    }
+    .favorite-toggle {
+      width: auto; margin: 2px 0 0 2px; padding: 3px 7px;
+      border-radius: 7px; border-color: rgba(148,163,184,.14);
+      background: rgba(18,29,45,.78); color: #aebdd1;
+      font-size: 10px; line-height: 1.3;
+    }
+    .favorite-toggle.is-favorite { color: #ffe28a; }
+    #status { color: #9aabc2; }
+    .recent-section, .emulatorjs-panel {
+      border-color: rgba(148,163,184,.18);
+      border-radius: 16px; background: rgba(17,26,39,.78);
+      box-shadow: 0 10px 28px rgba(0,0,0,.16);
+    }
+    .recent-game { background: #172337; border-radius: 11px; }
+    .music-area { border-color: rgba(148,163,184,.18); }
+    .music-area summary { color: var(--library-accent); }
+    button { border-radius: 10px; }
+    @media (min-width: 1500px) {
+      #list { grid-template-columns: repeat(auto-fill, minmax(122px, 1fr)); }
+    }
+    @media (max-width: 700px) {
+      body { padding: 70px 12px 28px !important; }
+      .top-actions { top: -58px !important; min-height: 52px; }
+      .rom-announcement { max-width: calc(100vw - 80px); }
+      h1 { font-size: clamp(38px, 11vw, 58px); }
+      #list { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px 9px; }
+      .game-art { border-radius: 10px; }
+      .item-title { font-size: 11px; padding: 7px 1px 3px; }
+    }
+
   </style>
 
 <script id="fullscreen-script">
@@ -224,7 +361,7 @@
       <span class="rom-announcement">Added ROM directory · Easy to use · Instant downloads</span>
       <a class="settings-link" href="settings.html" aria-label="Open settings" title="Settings">⚙</a>
           </div>
-    <h1>Library</h1>
+    <h1>Unblocked Games</h1>
     <div style="display:flex;justify-content:center;margin:0 auto 14px"><button type="button" id="install-app" class="filter-btn secondary">Install app</button></div>
     <div id="game-count" style="text-align: center; color: #888; margin-bottom: 15px; font-weight: bold;">Total Games: 0</div>
     <div class="search-container">
